@@ -8,10 +8,9 @@ import { apiError } from './actions';
 import { postForgetPwd } from '../../../helpers/authUtils';
 
 //If user is login then dispatch redux action's are directly from here.
-function* forgetUser({ payload: { username, history } }) {
+function* forgetUser({ payload: { qmsid, history } }) {
         try {
-            console.log("In saga..."+username);
-            const response = yield call(postForgetPwd, '/forget-pwd', {email: username});
+            const response = yield call(postForgetPwd, {qmsid});
             if(response)
                history.push('/reset-password');
         } catch (error) {

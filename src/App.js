@@ -7,13 +7,13 @@ import './custom.css';
 import './App.scss';
 
 //Fake backend
-import fakeBackend from './helpers/fakeBackend';
+// import fakeBackend from './helpers/fakeBackend';
 
 // Get all Auth methods
 import { isUserAuthenticated } from './helpers/authUtils';
 
 // Activating fake backend
-fakeBackend();
+// fakeBackend();
 
 
 function withLayout(WrappedComponent) {

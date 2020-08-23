@@ -24,6 +24,7 @@ const fakeBackend = () => {
   });
 
   mock.onPost('/post-login').reply(function (config) {
+    console.log('Fake backend', config);
     const user = JSON.parse(config['data']);
     const validUser = users.filter(usr => usr.email === user.username && usr.password === user.password);
 

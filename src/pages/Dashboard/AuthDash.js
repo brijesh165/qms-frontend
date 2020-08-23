@@ -164,7 +164,7 @@ QMSのダッシュボードにようこそ！</BreadcrumbItem>
                         <Col xl='12'>
                             {
                                 this.state.questions.map((item,index) =>
-                                    <Card className='card-4 mt-3'>
+                                    <Card className='card-4 mt-3' key={index}>
                                         <Row>
                                             <Col xl='5 text-center mt-3' >
                                                 {

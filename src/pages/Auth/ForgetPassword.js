@@ -10,13 +10,13 @@ class ForgetPassword extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { username: "" }
+        this.state = { qmsid: "" }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
 
     handleSubmit(event, values) {
-        this.props.forgetUser(values.username, this.props.history);
+        this.props.forgetUser(values.qmsid, this.props.history);
     }
 
     render() {
@@ -35,7 +35,7 @@ class ForgetPassword extends Component {
                         </div>
                         <div className="account-card-content">
                             <AvForm className="form-horizontal m-t-30" onValidSubmit={this.handleSubmit} >
-                                <AvField name="username" label="ユーザーID" value={this.state.username} placeholder="会員に登録されているユーザID、を入力してください。" type="text" required />
+                                <AvField name="qmsid" label="ユーザーID" value={this.state.qmsid} placeholder="会員に登録されているユーザID、を入力してください。" type="text" required />
 
                                 <Row className="form-group m-t-20 mb-0">
                                     <Col md="12" className="text-right">

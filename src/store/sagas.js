@@ -3,7 +3,8 @@ import { all } from 'redux-saga/effects'
 //public
 import accountSaga from './auth/register/saga';
 import loginSaga from './auth/login/saga';
- import forgetSaga from './auth/forgetpwd/saga';
+import forgetSaga from './auth/forgetpwd/saga';
+import resetSaga from './auth/resetpwd/saga';
 
 export default function* rootSaga() {
     yield all([
@@ -11,6 +12,7 @@ export default function* rootSaga() {
         //public
         accountSaga(),
         loginSaga(),
-         forgetSaga(),
+        forgetSaga(),
+        resetSaga()
     ])
 }

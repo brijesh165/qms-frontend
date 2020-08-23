@@ -40,19 +40,25 @@ const postRegister = (url, data) => {
 }
 
 // Login Method
-const postLogin = (url, data) => {
-    return axios.post(url, data).then(response => {
+const postLogin = (data) => {
+
+    // axios.post("http://localhost:5000/login", data).then(response => {
+    //     console.log(response);
+    // });
+
+    return axios.post(`http://localhost:5000/login`, data).then(response => {
         if (response.status === 400 || response.status === 500)
             throw response.data;
         return response.data;
     }).catch(err => {
+        console.log('App Util error : ',err);
         throw err[1];
     });
 }
 
 // postForgetPwd 
-const postForgetPwd = (url, data) => {
-    return axios.post(url, data).then(response => {
+const postForgetPwd = (data) => {
+    return axios.post(`http://localhost:5000/forget-password`, data).then(response => {
         if (response.status === 400 || response.status === 500)
             throw response.data;
         return response.data;
@@ -61,7 +67,16 @@ const postForgetPwd = (url, data) => {
     });
 }
 
+// postResetPwd 
+const postResetPwd = (data) => {
+    return axios.post(`http://localhost:5000/reset-password`, data).then(response => {
+        if (response.status === 400 || response.status === 500)
+        {throw response.data;}
+        
+        return response.data;
+    }).catch(err => {
+        throw err[1];
+    });
+}
 
-
-
-export { setLoggeedInUser, getLoggedInUser, isUserAuthenticated, postRegister, postLogin, postForgetPwd }
+export { setLoggeedInUser, getLoggedInUser, isUserAuthenticated, postRegister, postLogin, postForgetPwd, postResetPwd }

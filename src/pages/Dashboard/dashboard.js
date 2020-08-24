@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem, Input, Table,Dropdown,DropdownMenu,DropdownItem, DropdownToggle } from 'reactstrap';
+import { Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem, Input, Table, Dropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -11,12 +11,12 @@ const options = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' },
-  ];
+];
 
 
 const CustomTitle = (data) => (
-        <a>{data.name}</a>
-    )
+    <a>{data.name}</a>
+)
 
 
 
@@ -25,8 +25,8 @@ class Dashboard extends Component {
         super(props);
         this.state = {
             confirm_both: false,
-            success_dlg:'',
-            error_dlg:''
+            success_dlg: '',
+            error_dlg: ''
         };
     }
 
@@ -36,21 +36,16 @@ class Dashboard extends Component {
     }
 
     render() {
-        if(this.props.role == 'enduser'){
-            return(
-                <EndUserDash/>
-                
-            )
-        }else{
-            return(
-                <AuthDash/>
-            )
+        if (this.props.role == 'enduser') {
+            return (<EndUserDash />)
+        } else {
+            return (<AuthDash />)
         }
     }
 }
 
-const mapStateToProps = ({Login}) => {
-    return{
+const mapStateToProps = ({ Login }) => {
+    return {
         role: Login.role
     }
 }

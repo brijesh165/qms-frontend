@@ -16,6 +16,7 @@ class Pageslogin extends Component {
 
 
     handleSubmit(event, values) {
+        event.preventDefault();
         this.props.checkLogin(values.username, values.password, this.props.history);
     }
 

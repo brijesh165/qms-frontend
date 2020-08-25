@@ -8,6 +8,7 @@ import Account from './auth/register/reducer';
 import Login from './auth/login/reducer';
 import Forget from './auth/forgetpwd/reducer';
 import Reset from './auth/resetpwd/reducer';
+import Profile from './profile/reducer';
 
 
 const rootReducer = combineReducers({
@@ -19,7 +20,8 @@ const rootReducer = combineReducers({
     Account,
     Login,
     Forget,
-    Reset
+    Reset,
+    Profile
 
 });
 

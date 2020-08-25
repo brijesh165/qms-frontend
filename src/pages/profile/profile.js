@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem, Input, Table, Dropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
-import { activateAuthLayout } from '../../store/actions';
+import { activateAuthLayout, profileUpdateSuccessful } from '../../store/actions';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
-
-import { Scrollbars } from 'react-custom-scrollbars';
-import Toggler from '../../components/dashToggler'
-import DataTable from 'react-data-table-component';
-import data from '../../data/questions.json'
-import Select from 'react-select';
+// import { Scrollbars } from 'react-custom-scrollbars';
+// import Toggler from '../../components/dashToggler'
+// import DataTable from 'react-data-table-component';
+// import data from '../../data/questions.json'
+// import Select from 'react-select';
 
 import 'chartist/dist/scss/chartist.scss';
 
@@ -22,10 +21,24 @@ class Profile extends Component {
 			token: localStorageData.token,
 			role: "",
 			username: "",
-			email: "",
-			designation: "",
-			company: ""
+			useremail: "",
+			userdelg: "",
+			usercompany: ""
 		};
+		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleChange(event) {
+		const {name, value} = event.target;
+		this.setState({
+			[name]: value
+		});
+	}
+
+	handleSubmit(event) {
+		event.preventDefault();
+		this.props.profileUpdateSuccessful(this.state, this.props.history);
 	}
 
 	componentDidMount() {
@@ -36,9 +49,9 @@ class Profile extends Component {
 			this.setState({
 				role: response.data.role,
 				username: response.data.username,
-				email: response.data.useremail,
-				designation: response.data.userdelg,
-				company: response.data.usercompany
+				useremail: response.data.useremail,
+				userdelg: response.data.userdelg,
+				usercompany: response.data.usercompany
 			});
 		}).catch(error => {
 			console.log(error);
@@ -115,7 +128,7 @@ class Profile extends Component {
 													<h5 className="card-title mb-0"></h5>
 												</div>
 												<div className="card-body">
-													<form>
+													<form onSubmit={this.handleSubmit}>
 														<div className="row">
 															<div className="col-md-12">
 																<div className="form-group">
@@ -123,28 +136,37 @@ class Profile extends Component {
 																	<input type="text" 
 																		className="form-control" 
 																		id="inputUsername" 
+																		name="username"
 																		placeholder="田中_12" 
 																		value={this.state.username} 
+																		onChange={this.handleChange}
 																		disabled={this.state.role === 'Super-Admin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-email-input">メール</label>
 																	<Input type="email" 
 																			id="example-email-input"
-																			value={this.state.email}
+																			name="useremail"
+																			value={this.state.useremail}
+																			onChange={this.handleChange}
 																			disabled={this.state.role === 'Super-Admin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-designation-input">指定</label>
 																	<Input type="text" 
 																			id="example-designation-input"
-																			value={this.state.designation}
+																			name="userdelg"
+																			value={this.state.userdelg}
+																			onChange={this.handleChange}
 																			disabled={this.state.role === 'Super-Admin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-company-input">会社</label>
-																	<Input type="text" id="example-company-input"
-																			value={this.state.company} 
+																	<Input type="text" 
+																			id="example-company-input"
+																			name="usercompany"
+																			value={this.state.usercompany} 
+																			onChange={this.handleChange}
 																			disabled={this.state.role === 'Super-Admin' ? false : true} />
 																</div>
 															</div>
@@ -212,4 +234,10 @@ class Profile extends Component {
 	}
 }
 
-export default withRouter(connect(null, { activateAuthLayout })(Profile));
+const mapStatetoProps = state => {
+	console.log(state.Profile);
+    const { user, loginError, loading } = state.Profile;
+    return { user, loginError, loading };
+}
+
+export default withRouter(connect(mapStatetoProps, { activateAuthLayout, profileUpdateSuccessful })(Profile));

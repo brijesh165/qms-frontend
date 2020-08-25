@@ -5,6 +5,7 @@ import accountSaga from './auth/register/saga';
 import loginSaga from './auth/login/saga';
 import forgetSaga from './auth/forgetpwd/saga';
 import resetSaga from './auth/resetpwd/saga';
+import profileUpdateSaga from './profile/saga';
 
 export default function* rootSaga() {
     yield all([
@@ -13,6 +14,7 @@ export default function* rootSaga() {
         accountSaga(),
         loginSaga(),
         forgetSaga(),
-        resetSaga()
+        resetSaga(),
+        profileUpdateSaga()
     ])
 }

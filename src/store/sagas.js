@@ -6,15 +6,15 @@ import loginSaga from './auth/login/saga';
 import forgetSaga from './auth/forgetpwd/saga';
 import resetSaga from './auth/resetpwd/saga';
 import profileUpdateSaga from './profile/saga';
+import addUserSaga from './userManagement/saga';
 
 export default function* rootSaga() {
     yield all([
-
-        //public
         accountSaga(),
         loginSaga(),
         forgetSaga(),
         resetSaga(),
-        profileUpdateSaga()
+        profileUpdateSaga(),
+        addUserSaga()
     ])
 }

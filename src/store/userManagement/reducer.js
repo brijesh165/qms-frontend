@@ -1,13 +1,13 @@
-import { PROFILE_UPDATE_SUCCESSFUL, API_FAILED } from './actionTypes';
+import { API_FAILED, ADD_USER_SUCCESSFUL } from './actionTypes';
 
 const initialState = {
     profileError: null, loading: null
 }
 
-const profile = (state = initialState, action) => {
+const userManagement = (state = initialState, action) => {
     console.log('Reducer', action.type);
     switch (action.type) {
-        case PROFILE_UPDATE_SUCCESSFUL:
+        case ADD_USER_SUCCESSFUL:
             state = {
                 ...state,
                 loading: false,
@@ -29,4 +29,4 @@ const profile = (state = initialState, action) => {
     return state;
 }
 
-export default profile;
+export default userManagement;

@@ -10,6 +10,7 @@ import { setLoggeedInUser,postLogin } from '../../../helpers/authUtils';
 //If user is login then dispatch redux action's are directly from here.
 function* loginUser({ payload: { username, password, history } }) {
         try {
+            console.log('Saga', username);
             const response = yield call(postLogin, {qmsid: username, userpassword: password});
              setLoggeedInUser(response);
              yield put(loginUserSuccessful(response));

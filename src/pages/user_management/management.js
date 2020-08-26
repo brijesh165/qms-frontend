@@ -22,6 +22,7 @@ import { activateAuthLayout } from '../../store/actions';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import { addUserSuccessful } from './../../store/actions';
 import 'chartist/dist/scss/chartist.scss';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { Editor } from 'react-draft-wysiwyg';
@@ -60,6 +61,11 @@ class UserManagement extends Component {
     }
 
     handleSubmit(event, values) {
+        console.log(values.username);
+        this.props.addUserSuccessful({"username": values.username, 
+                                        "useremail": values.useremail, 
+                                        "userdesgig": values.userdesgig, 
+                                        "usercompany": values.usercompany}, this.props.history);
         // this.props.checkLogin(values.username, values.useremail, values.userdesgig, values.usercompany, this.props.history);
     }
 
@@ -125,7 +131,7 @@ class UserManagement extends Component {
                                 <div className="float-right d-none d-md-block">
                                     {/* <SettingMenu /> */}
                                     <Button color="primary" className="waves-effect waves-light mr-3" onClick={this.toggleEditModal}>管理者を追加</Button>
-                                    <Button color="primary" className="waves-effect waves-light">ユーザーを追加する</Button>
+                                    <Button color="primary" className="waves-effect waves-light" onClick={this.toggleEditModal}>ユーザーを追加する</Button>
                                 </div>
                             </Col>
                         </Row>
@@ -291,4 +297,4 @@ const mapStateToProps = ({ Login }) => {
 }
 
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout })(UserManagement));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, addUserSuccessful })(UserManagement));

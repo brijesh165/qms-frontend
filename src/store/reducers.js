@@ -9,7 +9,7 @@ import Login from './auth/login/reducer';
 import Forget from './auth/forgetpwd/reducer';
 import Reset from './auth/resetpwd/reducer';
 import Profile from './profile/reducer';
-
+import userManagement from './userManagement/reducer';
 
 const rootReducer = combineReducers({
 
@@ -21,8 +21,8 @@ const rootReducer = combineReducers({
     Login,
     Forget,
     Reset,
-    Profile
-
+    Profile,
+    userManagement
 });
 
 export default rootReducer;

@@ -23,7 +23,11 @@ class Profile extends Component {
 			username: "",
 			useremail: "",
 			userdelg: "",
-			usercompany: ""
+			usercompany: "",
+			userpassword: "",
+			userconfirmpassword: "",
+			forProfileUpdate: false,
+			forPasswordUpddate: true
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -31,6 +35,18 @@ class Profile extends Component {
 
 	handleChange(event) {
 		const {name, value} = event.target;
+		// if (name === "username" || name === "useremail" || name === "userdelg" || name === "usercompany") {
+		// 	this.setState({
+		// 		forProfileUpdate: true
+		// 	})
+		// }
+
+		// if (name === "userpassword" || name === "userconfirmpassword") {
+		// 	this.setState({
+		// 		forPasswordUpddate: true
+		// 	})
+		// }
+
 		this.setState({
 			[name]: value
 		});
@@ -39,6 +55,19 @@ class Profile extends Component {
 	handleSubmit(event) {
 		event.preventDefault();
 		this.props.profileUpdateSuccessful(this.state, this.props.history);
+		// this.setState({
+		// 	forProfileUpdate: false
+		// })
+
+		// if (this.state.userpassword !== this.state.userconfirmpassword) {
+		// 	alert('Password does not match. Please try adain!');
+		// } else {
+		// 	console.log('Password Update Called!!!');
+		// 	this.props.passwordUpdateSuccessful(this.state.userpassword, this.props.history);
+		// 	this.setState({
+		// 		forPasswordUpddate: false
+		// 	})
+		// }
 	}
 
 	componentDidMount() {
@@ -196,19 +225,29 @@ class Profile extends Component {
 												<div className="card-body">
 													<h5 className="card-title">パスワード</h5>
 
-													<form>
-														<div className="form-group">
+													<form onSubmit={this.handleSubmit}>
+														{/* <div className="form-group">
 															<label htmlFor="inputPasswordCurrent">現在のパスワード</label>
 															<input type="password" className="form-control" id="inputPasswordCurrent" />
 															<small><a href="#">パスワードをお忘れですか？</a></small>
-														</div>
+														</div> */}
 														<div className="form-group">
 															<label htmlFor="inputPasswordNew">新しいパスワード</label>
-															<input type="password" className="form-control" id="inputPasswordNew" />
+															<input type="password" 
+																	className="form-control" 
+																	id="inputPasswordNew"
+																	name="userpassword"
+																	value={this.state.userpassword}
+																	onChange={this.handleChange} />
 														</div>
 														<div className="form-group">
-															<label htmlFor="inputPasswordNew2">パスワードを確認してください</label>
-															<input type="password" className="form-control" id="inputPasswordNew2" />
+															<label htmlFor="inputPasswordNew2">パスワードを認証する</label>
+															<input type="password" 
+																className="form-control" 
+																id="inputPasswordNew2"
+																name="userconfirmpassword"
+																value={this.state.userconfirmpassword}
+																onChange={this.handleChange} />
 														</div>
 														<button type="submit" className="btn btn-primary">変更を保存</button>
 													</form>
@@ -235,7 +274,6 @@ class Profile extends Component {
 }
 
 const mapStatetoProps = state => {
-	console.log(state.Profile);
     const { user, loginError, loading } = state.Profile;
     return { user, loginError, loading };
 }

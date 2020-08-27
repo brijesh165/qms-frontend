@@ -29,19 +29,17 @@ import { Editor } from 'react-draft-wysiwyg';
 import Select from 'react-select';
 
 import EditToggler from '../../components/userEditToggler';
-
-import data from '../../data/questions.json'
+import axios from 'axios';
+// import data from '../../data/questions.json'
 
 
 const optionGroup = [
-
     { label: "アンケート1", value: "Tent" },
     { label: "アンケート2", value: "Flashlight" },
     { label: "アンケート3", value: "Toilet Paper" }
-
 ];
 
-
+const localStorageData = JSON.parse(localStorage.getItem('user'));
 
 class UserManagement extends Component {
     constructor(props) {
@@ -51,21 +49,24 @@ class UserManagement extends Component {
             success_dlg: '',
             error_dlg: '',
             selectedEmail: [],
-            users: data,
+            users: [],
             username: '',
             useremail: '',
-            userdesgig: '',
+            userdelg: '',
             usercompany: '',
+            userrole: ''
         };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleSubmit(event, values) {
-        console.log(values.username);
-        this.props.addUserSuccessful({"username": values.username, 
-                                        "useremail": values.useremail, 
-                                        "userdesgig": values.userdesgig, 
-                                        "usercompany": values.usercompany}, this.props.history);
+        this.props.addUserSuccessful({
+            "username": values.username,
+            "useremail": values.useremail,
+            "userdesig": values.userdesig,
+            "usercompany": values.usercompany,
+            "userrole": values.userrole
+        }, this.props.history);
         // this.props.checkLogin(values.username, values.useremail, values.userdesgig, values.usercompany, this.props.history);
     }
 
@@ -75,6 +76,16 @@ class UserManagement extends Component {
 
     componentDidMount() {
         this.props.activateAuthLayout();
+        axios.get('http://localhost:5000/user-management', { params: { token: localStorageData.token } })
+        .then((response) => {
+            console.log(response.data.SuperUser);
+            this.setState({
+                users: response.data.SuperUser
+            })
+        })
+        .catch((error) => {
+            console.log('User Management Error : ', error);
+        })
     }
 
     addEmail = (item, event) => {
@@ -95,7 +106,7 @@ class UserManagement extends Component {
 
     searchUser = (event) => {
         console.log(event.target.value, 'vvvv')
-        let new_data = data.filter(item => {
+        let new_data = this.state.users.filter(item => {
             return item.name.toLowerCase().includes(event.target.value.toLowerCase())
         })
         console.log(new_data, 'vvvv')
@@ -131,7 +142,6 @@ class UserManagement extends Component {
                                 <div className="float-right d-none d-md-block">
                                     {/* <SettingMenu /> */}
                                     <Button color="primary" className="waves-effect waves-light mr-3" onClick={this.toggleEditModal}>管理者を追加</Button>
-                                    <Button color="primary" className="waves-effect waves-light" onClick={this.toggleEditModal}>ユーザーを追加する</Button>
                                 </div>
                             </Col>
                         </Row>
@@ -149,9 +159,12 @@ class UserManagement extends Component {
                             <AvForm className="form-horizontal m-t-30" onValidSubmit={this.handleSubmit} >
                                 <AvField name="username" label="ユーザー名" value={this.state.username} placeholder="ユーザー名を入力してください" type="text" required />
                                 <AvField name="useremail" label="ユーザーのメール" value={this.state.useremail} placeholder="メールアドレスを入力してください" type="text" required />
-                                <AvField name="userdesgig" label="ユーザー指定" value={this.state.userdesgig} placeholder="指定を入力してください" type="text" required />
+                                <AvField name="userdesig" label="ユーザー指定" value={this.state.userdesig} placeholder="指定を入力してください" type="text" required />
                                 <AvField name="usercompany" label="ユーザー会社" value={this.state.usercompany} placeholder="会社を入力してください" type="text" required />
-                            
+                                <AvField name="userrole" type="select" label="オプション" value={this.state.userrole}>
+                                    <option value="Admin" disabled={this.props.role === "admin"}>管理者</option>
+                                    <option value="User">ユーザー</option>
+                                </AvField>
                                 <Row className="form-group m-t-20">
                                     <Col sm="6">
                                     </Col>
@@ -174,15 +187,15 @@ class UserManagement extends Component {
                                             <thead>
                                                 <tr>
                                                     <th scope="col">選択</th>
-                                                    <th scope="col">ユーザーID</th>
-                                                    <th scope="col">名前</th>
-                                                    {
+                                                    <th scope="col">ユーザー名</th>
+                                                    <th scope="col">ユーザー会社</th>
+                                                    {/* {
                                                         this.props.role == 'superadmin' &&
                                                         <th scope="col">会社名</th>
-                                                    }
-                                                    <th scope="col">パスワード</th>
+                                                    } */}
+                                                    <th scope="col">ユーザー指定</th>
                                                     <th scope="col" colSpan="2">権限ステータス</th>
-                                                    {/* <th scope="col" colSpan="2">Action</th> */}
+                                                    <th scope="col">Action</th>
 
                                                 </tr>
                                             </thead>
@@ -193,16 +206,17 @@ class UserManagement extends Component {
                                                             <td><Input type='checkbox' onClick={(event) => this.addEmail(item, event)} /></td>
                                                             <th scope="row">{item.userid}</th>
                                                             <td>
-                                                                <div>
-                                                                    <img src={require(`./../../images/users/${item.image}`)} alt="" className="thumb-md rounded-circle mr-2" /> {item.username}
-                                                                </div>
+                                                            {item.username}
+                                                                {/* <div>
+                                                                    <img src={require(`./../../images/users/${item.image}`)} alt="" className="thumb-md rounded-circle mr-2" /> 
+                                                                </div> */}
                                                             </td>
                                                             {
                                                                 this.props.role == 'superadmin' &&
                                                                 <th scope="col">{item.company}</th>
                                                             }
                                                             <th>{item._id}</th>
-                                                            <td><span className="badge badge-success">
+                                                            <td colSpan="2"><span className="badge badge-success">
                                                                 {
                                                                     this.props.role == '管理者' ?
                                                                         item.role == 'ユーザー管理' ? 'end user' : '管理者'

@@ -1,4 +1,4 @@
-import { ADD_USER_SUCCESSFUL, API_FAILED } from './actionTypes';
+import { ADD_USER_SUCCESSFUL, GET_USER_DATA, API_FAILED } from './actionTypes';
 
 export const addUserSuccessful = (user_data, history) => {
     console.log('Action : ', user_data);

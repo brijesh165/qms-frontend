@@ -1,11 +1,9 @@
 import axios from 'axios';
 
+const localStorageData = JSON.parse(localStorage.getItem('user'));
 const addUserSuccess = (data) => {
     try {
-        const localStorageData = JSON.parse(localStorage.getItem('user'));
-        console.log('Profile Util : ', localStorageData.token);
-        console.log('Profile Util : ', data);
-        return axios.post(`http://localhost:5000/create-Admin`, data, { params: { token: localStorageData.token } })
+        return axios.post(`http://localhost:5000/create-user`, data.user_data, { params: { token: localStorageData.token } })
             .then(response => {
                 console.log('Profile Utils : ', response);
                 if (response.status === 400 || response.status === 500)
@@ -16,7 +14,7 @@ const addUserSuccess = (data) => {
                 throw err[1];
             })
     } catch (error) {
-        console.log('Profile Util error : ', error);
+        console.log('User Management Util error : ', error);
     }
 }
 

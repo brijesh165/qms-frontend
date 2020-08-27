@@ -15,6 +15,6 @@ export default function* rootSaga() {
         forgetSaga(),
         resetSaga(),
         profileUpdateSaga(),
-        addUserSaga()
+        addUserSaga(),
     ])
 }

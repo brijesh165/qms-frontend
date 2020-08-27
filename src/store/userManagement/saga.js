@@ -6,7 +6,7 @@ import { apiError } from './actions';
 
 // AUTH related methods
 // import { setLoggeedInUser,postLogin } from '../../../helpers/authUtils';
-import { addUserSuccess } from '../.././helpers/userManagementUtil';
+import { addUserSuccess, getUserData } from '../.././helpers/userManagementUtil';
 
 //If user is login then dispatch redux action's are directly from here.
 function* addUserSuccesss({ payload: { user_data, history } }) {
@@ -28,5 +28,5 @@ function* addUserSaga() {
     yield all([fork(watchAddUser)]);
 }
 
-
 export default addUserSaga;
+// export default getUserSaga;

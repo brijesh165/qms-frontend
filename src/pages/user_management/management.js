@@ -15,14 +15,12 @@ import {
     Button,
     Modal,
     ModalBody,
-    ModalFooter,
 } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { activateAuthLayout } from '../../store/actions';
-import { Link, withRouter } from 'react-router-dom';
+import { activateAuthLayout, addUserSuccessful, sendemailsuccessful } from '../../store/actions';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { addUserSuccessful } from './../../store/actions';
 import 'chartist/dist/scss/chartist.scss';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { Editor } from 'react-draft-wysiwyg';
@@ -54,9 +52,14 @@ class UserManagement extends Component {
             useremail: '',
             userdelg: '',
             usercompany: '',
-            userrole: ''
+            userrole: '',
+            emailsubject: '',
+            expiresat: '',
+            sendbody: ''
         };
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleEmailSubmit = this.handleEmailSubmit.bind(this);
+        this.handleEditorChange = this.handleEditorChange.bind(this);
     }
 
     handleSubmit(event, values) {
@@ -70,28 +73,65 @@ class UserManagement extends Component {
         // this.props.checkLogin(values.username, values.useremail, values.userdesgig, values.usercompany, this.props.history);
     }
 
+    handleEditorChange = (event) => {
+        // console.log('Handle Editor Change', event.blocks[0].text);
+        this.setState({
+            sendbody: event.blocks[0].text
+        })
+    }
+
+    handleChange = (event) => {
+        const {name, value} = event.target;
+        this.setState({
+            [name]: value
+        });
+    }
+
+    handleEmailSubmit(event, values) {
+        event.preventDefault();
+        console.log('Handle Email Submit: ', 
+        this.state.emailsubject, this.state.expiresat, 
+        this.state.selectedGroup.label, this.state.selectedEmail,
+        this.state.sendbody);
+        this.props.sendemailsuccessful({
+            "sendsubject": this.state.emailsubject,
+            "sendusers": this.state.selectedEmail,
+            "sendsurvey": this.state.selectedGroup.label,
+            "expirydate": this.state.expiresat,
+            "sendbody": this.state.sendbody,
+            "send": "True",
+        }, this.props.history);
+    }
+
     handleSelectGroup = (selectedGroup) => {
         this.setState({ selectedGroup });
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.props.activateAuthLayout();
-        axios.get('http://localhost:5000/user-management', { params: { token: localStorageData.token } })
-        .then((response) => {
-            console.log(response.data.SuperUser);
-            this.setState({
-                users: response.data.SuperUser
+        await axios.get('http://localhost:5000/user-management', { params: { token: localStorageData.token } })
+            .then((response) => {
+                console.log(response.data.SuperUser);
+                this.setState({
+                    users: response.data.SuperUser
+                })
             })
-        })
-        .catch((error) => {
-            console.log('User Management Error : ', error);
-        })
+            .catch((error) => {
+                console.log('User Management Error : ', error);
+            })
+    }
+
+    componentWillUnmount() {
+        this.setState = (state, callback) => {
+            return;
+        }
     }
 
     addEmail = (item, event) => {
+        console.log('Checked Item : ', item);
         if (event.target.checked) {
             let selectedEmail = [...this.state.selectedEmail]
-            selectedEmail.push(item.email)
+            selectedEmail.push(item.useremail)
             this.setState({ selectedEmail: selectedEmail })
 
         } else {
@@ -107,7 +147,7 @@ class UserManagement extends Component {
     searchUser = (event) => {
         console.log(event.target.value, 'vvvv')
         let new_data = this.state.users.filter(item => {
-            return item.name.toLowerCase().includes(event.target.value.toLowerCase())
+            return item.username.toLowerCase().includes(event.target.value.toLowerCase())
         })
         console.log(new_data, 'vvvv')
 
@@ -147,6 +187,7 @@ class UserManagement extends Component {
                         </Row>
                     </div>
 
+                    {/* Add User Model */}
                     <Modal className="modal-lg" isOpen={this.state.toggleEditModal} toggle={() => this.setState({ toggleEditModal: false })}>
                         <div className="modal-header">
                             <h5 className="modal-title mt-0" id="myLargeModalLabel">管理者を追加</h5>
@@ -177,6 +218,7 @@ class UserManagement extends Component {
                         </ModalBody>
                     </Modal>
 
+                    {/* User Management User Table */}
                     <Row>
                         <Col xl="12 text-center">
                             <Card>
@@ -201,21 +243,22 @@ class UserManagement extends Component {
                                             </thead>
                                             <tbody>
                                                 {
-                                                    this.state.users.map(item => (
-                                                        <tr>
+                                                    this.state.users.map((item, index) => (
+                                                        <tr key={index}>
                                                             <td><Input type='checkbox' onClick={(event) => this.addEmail(item, event)} /></td>
-                                                            <th scope="row">{item.userid}</th>
+                                                            <th scope="row">{item.username}</th>
                                                             <td>
-                                                            {item.username}
+                                                                {item.usercompany}
                                                                 {/* <div>
                                                                     <img src={require(`./../../images/users/${item.image}`)} alt="" className="thumb-md rounded-circle mr-2" /> 
                                                                 </div> */}
                                                             </td>
-                                                            {
+                                                            <td scope="row">{item.userdelg}</td>
+                                                            {/* {
                                                                 this.props.role == 'superadmin' &&
-                                                                <th scope="col">{item.company}</th>
-                                                            }
-                                                            <th>{item._id}</th>
+                                                                <th scope="col">{item.userdelg}</th>
+                                                            } */}
+                                                            {/* <th>{item._id}</th> */}
                                                             <td colSpan="2"><span className="badge badge-success">
                                                                 {
                                                                     this.props.role == '管理者' ?
@@ -227,6 +270,7 @@ class UserManagement extends Component {
                                                             <td>
                                                                 <div>
                                                                     <EditToggler
+                                                                        user={item}
                                                                         role={this.props.role}
                                                                     />
                                                                     {/* <Link to="#" className="btn btn-primary btn-sm">編集</Link> */}
@@ -245,24 +289,33 @@ class UserManagement extends Component {
 
                     </Row>
 
+                    {/* Email Box */}
                     <Row className="align-items-center" style={{ border: '1px solid grey', borderRadius: 5, padding: 10 }}>
                         {/* <Col xl="12" > */}
+                        <Form onSubmit={this.handleEmailSubmit}>
                         <Col xl="6">
-                            <Form>
+                            {/* <Form> */}
                                 <FormGroup row>
                                     <Label htmlFor="example-email-input" sm="2">メール</Label>
                                     <Col sm="10">
-                                        <Input type="email" value={this.state.selectedEmail.map(item => item)} id="example-email-input" />
+                                        <Input type="email" 
+                                                disabled 
+                                                value={this.state.selectedEmail.map(item => item)} 
+                                                id="example-email-input" />
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="example-text-input" sm="2">件名</Label>
                                     <Col sm="10">
-                                        <Input type="text" defaultValue="" id="example-text-input" />
+                                        <Input type="text" 
+                                        name="emailsubject"
+                                        onChange={this.handleChange}
+                                        value={this.state.emailsubject}
+                                        id="example-text-input" />
                                     </Col>
                                 </FormGroup>
 
-                            </Form>
+                            {/* </Form> */}
                         </Col>
                         <Col xl="6">
                             <FormGroup row>
@@ -276,9 +329,21 @@ class UserManagement extends Component {
                                     />
                                 </Col>
                             </FormGroup>
+                            <FormGroup row>
+                                <Label htmlFor="exampleDatetime" sm="3.5" className="mr-5">期限切れ</Label>
+                                <Col sm="6">
+                                    <Input 
+                                        type="date"
+                                        name="expiresat"
+                                        onChange={this.handleChange}
+                                        value={this.state.expiresat}
+                                        id="exampleDatetime"
+                                        placeholder="期限切れ"
+                                    />
+                                </Col>
+                            </FormGroup>
                         </Col>
                         <Col xl="12" >
-
                             <Editor
                                 toolbarClassName="toolbarClassName"
                                 wrapperClassName="wrapperClassName"
@@ -288,13 +353,19 @@ class UserManagement extends Component {
                                     {
                                         locale: "ja"
                                     }
-                                } />
+                                } 
+                                name="sendbody"
+                                value={this.state.sendbody}
+                                onChange={this.handleEditorChange}
+                                />
                         </Col>
                         <Col xl='12 pull-right mt-4'>
-                            <Button color="primary" className="waves-effect waves-light"> <span>送信</span> <i className="fab fa-telegram-plane m-l-10"></i> </Button>
-
+                            <Button type="submit" color="primary" 
+                                    className="waves-effect waves-light"> 
+                                    <span>送信</span> <i className="fab fa-telegram-plane m-l-10"></i>
+                            </Button>
                         </Col>
-
+                        </Form>
                     </Row>
 
 
@@ -311,4 +382,4 @@ const mapStateToProps = ({ Login }) => {
 }
 
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout, addUserSuccessful })(UserManagement));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, addUserSuccessful, sendemailsuccessful })(UserManagement));

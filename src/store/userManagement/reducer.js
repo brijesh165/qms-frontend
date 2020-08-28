@@ -1,25 +1,47 @@
-import { API_FAILED, ADD_USER_SUCCESSFUL } from './actionTypes';
+import userManagementTypes from './actionTypes';
+import userManagementSagas from './saga';
 
 const initialState = {
-    profileError: null, loading: null, userData: null
+    userManagementError: null, loading: null, userData: null
 }
 
 const userManagement = (state = initialState, action) => {
     console.log('Reducer', action.type);
     console.log('Reducer', action.payload);
     switch (action.type) {
-        case ADD_USER_SUCCESSFUL:
+        case userManagementTypes.ADD_USER_SUCCESSFUL:
             state = {
                 ...state,
                 loading: false,
                 userManagementError: null,
             }
             break;
-        case API_FAILED:
+        case userManagementTypes.DELETE_USER_SUCCESSFUL: 
+            state = {
+                ...state, 
+                loading: false,
+                userManagementError: null
+            }
+            break;
+        case userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL: 
+            state = {
+                ...state, 
+                loading: false,
+                userManagementError: null
+            }
+            break;
+        case userManagementTypes.SEND_EMAIL_SUCCESSFUL: 
+            state = {
+                ...state, 
+                loading: false,
+                userManagementError: null
+            }
+            break;
+        case userManagementTypes.API_FAILED:
             state = {
                 ...state,
                 loading: false,
-                profileError: action.payload
+                userManagementError: action.payload
             }
             break;
 

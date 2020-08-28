@@ -1,16 +1,36 @@
-import { ADD_USER_SUCCESSFUL, GET_USER_DATA, API_FAILED } from './actionTypes';
+import userManagementTypes from './actionTypes';
 
-export const addUserSuccessful = (user_data, history) => {
-    console.log('Action : ', user_data);
-    return {
-        type: ADD_USER_SUCCESSFUL,
+export const addUserSuccessful = (user_data, history) => (
+    console.log('Action Add', user_data),
+    {
+        type: userManagementTypes.ADD_USER_SUCCESSFUL,
         payload: {user_data, history}
-    }
-}
+})
+
+export const deleteUserSuccessful = (user_data, history) => (
+    console.log('Action Add: ', user_data),
+    {
+        type: userManagementTypes.DELETE_USER_SUCCESSFUL,
+        payload: {user_data, history}
+})
+
+export const changeUserRoleSuccessful = (user_data, history) => (
+    console.log('Action Change: ', user_data),
+    {
+        type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL,
+        payload: {user_data, history}
+})
+
+export const sendemailsuccessful = (email_data, history) => (
+    console.log('Action Change: ', email_data),
+    {
+        type: userManagementTypes.SEND_EMAIL_SUCCESSFUL,
+        payload: {email_data, history}
+})
 
 export const apiError = (error) => {
     return {
-        type: API_FAILED,
+        type: userManagementTypes.API_FAILED,
         payload: error
     }
 }

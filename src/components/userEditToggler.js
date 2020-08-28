@@ -1,16 +1,29 @@
-import React from 'react'
-import { Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem, Input, Table,Dropdown,DropdownMenu,DropdownItem, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
+import React from 'react';
+import {useDispatch} from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { deleteUserSuccessful, changeUserRoleSuccessful } from '../store/actions';
+import { DropdownMenu,DropdownItem, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 
-
-const EditToggler = (props) => (
-    <UncontrolledDropdown >
+const EditToggler = (props) => {
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const onDeleteHandler = async (event) => {
+        event.preventDefault();
+        dispatch(deleteUserSuccessful(props.user, history));
+    }
+    const onChangeRoleHandler = (event) => {
+        event.preventDefault();
+        dispatch(changeUserRoleSuccessful(props.user, history));
+    }
+    return (
+        <UncontrolledDropdown >
         <DropdownToggle className="btn btn-primary btn-sm">
             編集
         </DropdownToggle>
         <DropdownMenu className="language-switch" right>
             {/* <DropdownItem tag="a" href="#">パスワードを変更</DropdownItem> */}
-            <DropdownItem tag="a" href="#">ユーザーを削除</DropdownItem>
-            <DropdownItem tag="a" href="#">役割を変更</DropdownItem>
+            <DropdownItem tag="a" href="#" onClick={onDeleteHandler}>ユーザーを削除</DropdownItem>
+            <DropdownItem tag="a" href="#" onClick={onChangeRoleHandler}>役割を変更</DropdownItem>
             {/* <DropdownItem divider />
             {
                 props.role == 'superadmin'&&
@@ -19,6 +32,8 @@ const EditToggler = (props) => (
             
         </DropdownMenu>
     </UncontrolledDropdown>
-)
+    )
 
-export default EditToggler
+}
+
+export default EditToggler;

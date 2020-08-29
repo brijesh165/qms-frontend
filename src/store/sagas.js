@@ -9,7 +9,7 @@ import profileUpdateSaga from './profile/saga';
 // import addUserSaga from './userManagement/saga';
 // import deleteUserSaga from './userManagement/saga';
 import userManagementSagas from './userManagement/saga';
-
+import questionnaireManagementSagas from './questionnaire/saga';
 export default function* rootSaga() {
     yield all([
         accountSaga(),
@@ -17,7 +17,8 @@ export default function* rootSaga() {
         forgetSaga(),
         resetSaga(),
         profileUpdateSaga(),
-        userManagementSagas()
+        userManagementSagas(),
+        questionnaireManagementSagas()
         // addUserSaga(),
         // deleteUserSaga()
     ])

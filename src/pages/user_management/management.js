@@ -81,7 +81,7 @@ class UserManagement extends Component {
     }
 
     handleChange = (event) => {
-        const {name, value} = event.target;
+        const { name, value } = event.target;
         this.setState({
             [name]: value
         });
@@ -89,10 +89,10 @@ class UserManagement extends Component {
 
     handleEmailSubmit(event, values) {
         event.preventDefault();
-        console.log('Handle Email Submit: ', 
-        this.state.emailsubject, this.state.expiresat, 
-        this.state.selectedGroup.label, this.state.selectedEmail,
-        this.state.sendbody);
+        console.log('Handle Email Submit: ',
+            this.state.emailsubject, this.state.expiresat,
+            this.state.selectedGroup.label, this.state.selectedEmail,
+            this.state.sendbody);
         this.props.sendemailsuccessful({
             "sendsubject": this.state.emailsubject,
             "sendusers": this.state.selectedEmail,
@@ -136,7 +136,7 @@ class UserManagement extends Component {
 
         } else {
             let new_mails = [...this.state.selectedEmail].map(itm => {
-                if (itm != item.email) {
+                if (itm !== item.email) {
                     return itm
                 }
             })
@@ -253,7 +253,7 @@ class UserManagement extends Component {
                                                                     <img src={require(`./../../images/users/${item.image}`)} alt="" className="thumb-md rounded-circle mr-2" /> 
                                                                 </div> */}
                                                             </td>
-                                                            <td scope="row">{item.userdelg}</td>
+                                                            <td>{item.userdelg}</td>
                                                             {/* {
                                                                 this.props.role == 'superadmin' &&
                                                                 <th scope="col">{item.userdelg}</th>
@@ -261,8 +261,8 @@ class UserManagement extends Component {
                                                             {/* <th>{item._id}</th> */}
                                                             <td colSpan="2"><span className="badge badge-success">
                                                                 {
-                                                                    this.props.role == '管理者' ?
-                                                                        item.role == 'ユーザー管理' ? 'end user' : '管理者'
+                                                                    this.props.role === '管理者' ?
+                                                                        item.role === 'ユーザー管理' ? 'end user' : '管理者'
                                                                         :
                                                                         '管理者'
                                                                 }
@@ -293,82 +293,108 @@ class UserManagement extends Component {
                     <Row className="align-items-center" style={{ border: '1px solid grey', borderRadius: 5, padding: 10 }}>
                         {/* <Col xl="12" > */}
                         <Form onSubmit={this.handleEmailSubmit}>
-                        <Col xl="6">
-                            {/* <Form> */}
-                                <FormGroup row>
-                                    <Label htmlFor="example-email-input" sm="2">メール</Label>
-                                    <Col sm="10">
-                                        <Input type="email" 
-                                                disabled 
-                                                value={this.state.selectedEmail.map(item => item)} 
-                                                id="example-email-input" />
-                                    </Col>
-                                </FormGroup>
-                                <FormGroup row>
-                                    <Label htmlFor="example-text-input" sm="2">件名</Label>
-                                    <Col sm="10">
-                                        <Input type="text" 
-                                        name="emailsubject"
-                                        onChange={this.handleChange}
-                                        value={this.state.emailsubject}
-                                        id="example-text-input" />
-                                    </Col>
-                                </FormGroup>
+                            <Row>
+                                <Col md={6}>
+                                    {/* <Form> */}
+                                    <FormGroup>
+                                        <Label htmlFor="example-email-input">メール</Label>
+                                        <Input type="email"
+                                            disabled
+                                            value={this.state.selectedEmail.map(item => item)}
+                                            id="example-email-input" />
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label htmlFor="example-email-input">アンケートを選択</Label>
+                                        <Select
+                                            placeholder="検索"
+                                            value={selectedGroup}
+                                            onChange={this.handleSelectGroup}
+                                            options={optionGroup}
+                                        />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label htmlFor="example-text-input">件名</Label>
+                                        
+                                            <Input type="text"
+                                                name="emailsubject"
+                                                onChange={this.handleChange}
+                                                value={this.state.emailsubject}
+                                                id="example-text-input" />
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label htmlFor="exampleDatetime">期限切れ</Label>
+                                            <Input
+                                                type="date"
+                                                name="expiresat"
+                                                onChange={this.handleChange}
+                                                value={this.state.expiresat}
+                                                id="exampleDatetime"
+                                                placeholder="期限切れ"
+                                            />
+                                    </FormGroup>
+                                </Col>
+                            </Row>
 
-                            {/* </Form> */}
-                        </Col>
-                        <Col xl="6">
+                                {/* </Form> */}
+                            {/* <Col xl="6">
+                                <FormGroup row>
+                                    <Label htmlFor="example-email-input" sm="3.5">アンケートを選択</Label>
+                                    <Col sm="6">
+                                        <Select
+                                            placeholder="検索"
+                                            value={selectedGroup}
+                                            onChange={this.handleSelectGroup}
+                                            options={optionGroup}
+                                        />
+                                    </Col>
+                                    <br /><br />
+                                    </FormGroup>
                             <FormGroup row>
-                                <Label htmlFor="example-email-input" sm="3.5">アンケートを選択</Label>
-                                <Col sm="6">
-                                    <Select
-                                        placeholder="検索"
-                                        value={selectedGroup}
-                                        onChange={this.handleSelectGroup}
-                                        options={optionGroup}
-                                    />
-                                </Col>
-                            </FormGroup>
-                            <FormGroup row>
-                                <Label htmlFor="exampleDatetime" sm="3.5" className="mr-5">期限切れ</Label>
-                                <Col sm="6">
-                                    <Input 
-                                        type="date"
-                                        name="expiresat"
-                                        onChange={this.handleChange}
-                                        value={this.state.expiresat}
-                                        id="exampleDatetime"
-                                        placeholder="期限切れ"
-                                    />
-                                </Col>
-                            </FormGroup>
-                        </Col>
-                        <Col xl="12" >
-                            <Editor
-                                toolbarClassName="toolbarClassName"
-                                wrapperClassName="wrapperClassName"
-                                editorClassName="editorClassName"
-                                localization=
-                                {
+                                    <Label htmlFor="exampleDatetime" sm="3.5" className="mr-5">期限切れ</Label>
+                                    <Col sm="6">
+                                        <Input
+                                            type="date"
+                                            name="expiresat"
+                                            onChange={this.handleChange}
+                                            value={this.state.expiresat}
+                                            id="exampleDatetime"
+                                            placeholder="期限切れ"
+                                        />
+                                    </Col>
+                                </FormGroup>
+                            </Col> */}
+                            <Col xl="12" >
+                                <Editor
+                                    toolbarClassName="toolbarClassName"
+                                    wrapperClassName="wrapperClassName"
+                                    editorClassName="editorClassName"
+                                    localization=
                                     {
-                                        locale: "ja"
+                                        {
+                                            locale: "ja"
+                                        }
                                     }
-                                } 
-                                name="sendbody"
-                                value={this.state.sendbody}
-                                onChange={this.handleEditorChange}
+                                    name="sendbody"
+                                    value={this.state.sendbody}
+                                    onChange={this.handleEditorChange}
                                 />
-                        </Col>
-                        <Col xl='12 pull-right mt-4'>
-                            <Button type="submit" color="primary" 
-                                    className="waves-effect waves-light"> 
+                            </Col>
+                            <Col xl='12 pull-right mt-4'>
+                                <Button type="submit" color="primary"
+                                    className="waves-effect waves-light">
                                     <span>送信</span> <i className="fab fa-telegram-plane m-l-10"></i>
-                            </Button>
-                        </Col>
+                                </Button>
+                            </Col>
                         </Form>
                     </Row>
-
-
                 </Container>
 
             </React.Fragment>

@@ -1,5 +1,4 @@
 import userManagementTypes from './actionTypes';
-import userManagementSagas from './saga';
 
 const initialState = {
     userManagementError: null, loading: null, userData: null

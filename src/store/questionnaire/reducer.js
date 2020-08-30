@@ -16,26 +16,57 @@ const questionnaireManagement = (state = initialState, action) => {
                 questionnaireManagementError: null,
             }
             break;
+        case questionnaire.GET_QUESTIONNAIRE_START: 
+            state = {
+                ...state,
+                loading: false,
+                questionnaireManagementError: null,            
+            }
+            break;
         case questionnaire.GET_QUESTIONNAIRE_SUCCESSFUL: 
             state = {
                 ...state,
                 loading: false,
                 questionnaireManagementError: null,
-                question: action.payload
+                questions: action.payload
             }
-            break;
-        case questionnaire.DELETE_QUESTIONNAIRE_SUCCESSFUL: 
+            break;    
+        case questionnaire.DELETE_QUESTIONNAIRE_START: 
             state = {
                 ...state,
                 loading: false,
-                questionnaireManagementError: null
+                questionnaireManagementError: null,
+            }
+            break;
+        case questionnaire.DELETE_QUESTIONNAIRE_SUCCESSFUL:
+            const prevStateQuestion = [...state.questions];
+            const deletedQuestions = prevStateQuestion.filter((item) => {
+                return item.id !== action.payload
+            });
+            console.log('DELETE SUCCESS : ', deletedQuestions);
+            state = {
+                ...state,
+                loading: false,
+                questionnaireManagementError: null,
+                questions: deletedQuestions
+            }
+            break;
+        case questionnaire.COPY_QUESTIONNAIRE_START: 
+            state = {
+                ...state,
+                loading: false,
+                questionnaireManagementError: null,
             }
             break;
         case questionnaire.COPY_QUESTIONNAIRE_SUCCESSFUL: 
+        console.log('COPY SUCCESSS REDUCER', action.payload);
+            const updatedQuestion = [...state.questions, action.payload.question];
+            console.log('Updated Questions : ', ...state.questions);
             state = {
                 ...state,
                 loading: false,
-                questionnaireManagementError: null
+                questionnaireManagementError: null,
+                questions: updatedQuestion
             }
             break;
         case questionnaire.API_FAILED:

@@ -26,8 +26,11 @@ import Editable from 'react-x-editable';
 import _ from 'lodash'
 import Rating from 'react-rating';
 
-import {addquestionnairesuccessful, getquestionnairesuccessful, deletequestionnairesuccessful} from './../../store/actions';
-
+import {addquestionnairesuccessful, 
+        getquestionnairestart, 
+        copyquestionnairestart, 
+        deletequestionnairestart} from './../../store/actions';
+import QuestionModal from '../../components/questionModal'
 import smimg1 from '../../images/small/img-5.jpg';
 
 import Select from 'react-select';
@@ -49,12 +52,25 @@ class Questionnaire extends Component {
         super(props);
         this.state = {
             modal_large: false,
+            modal_edit: false,
             form_header: '',
             form_name: '',
             questions: [{ name: 'アンケート1', date: '締切日: 12/06/2020', },],
-            children: [[],]
-
+            children: [[],],
+            selectedQuestion: ''
         };
+    }
+
+    toggleEditModal = (index) => {
+        this.setState({ modal_edit: true })
+        let question = this.props.questions[index]
+        question.name = this.props.questions[index].questname
+        question.date = this.props.questions[index].createdAt
+        console.log('Questions : ', question);
+        this.setState({ selectedQuestion: question }, () => {
+            this.setState({ toggleEditModal: !this.state.toggleEditModal })
+        })
+        console.log('Toggle Edit Modal : ', this.state.selectedQuestion);
     }
 
     questionTypeHandler = (type, options, parentIndex, childIndex) => {
@@ -294,8 +310,7 @@ class Questionnaire extends Component {
 
     componentDidMount() {
         this.props.activateAuthLayout();
-        const questions = this.props.getquestionnairesuccessful();
-        console.log(questions);
+        this.props.getquestionnairestart();
     }
 
     onChangeText = (event) => {
@@ -303,6 +318,26 @@ class Questionnaire extends Component {
             [event.target.name]: event.target.value
         })
     }
+
+    onReEditSubmit = () => {
+        const question_data = {
+            "create": "True",
+            "questname": this.state.form_name,
+            "questdata": this.state.children
+        }
+        this.props.addquestionnairesuccessful(question_data);
+
+        if (this.props.success) {
+            this.setState(prevState => ({
+                questions: [...prevState.questions, {
+                    name: this.state.form_name,
+                    date: '12/12/2020',
+                    children: this.state.children
+                }]
+            }), () => console.log(this.state.questions, 'llllll'))
+            this.setState({ form_header: '', form_name: '', modal_large: false, children: [[],] })    
+        }    }
+
     onSubmitForm = () => {
         const question_data = {
             "create": "True",
@@ -312,9 +347,6 @@ class Questionnaire extends Component {
         this.props.addquestionnairesuccessful(question_data);
 
         if (this.props.success) {
-            console.log('Form Header : ', this.state.form_header);
-            console.log('Form Name : ', this.state.form_name);
-            console.log('All Question : ', this.state.children);
             this.setState(prevState => ({
                 questions: [...prevState.questions, {
                     name: this.state.form_name,
@@ -416,16 +448,15 @@ class Questionnaire extends Component {
         this.setState({ children: new_children })
 
     }
-    deleteQuestion = (index) => {
-        let new_questions = [...this.state.questions];
-        new_questions.splice(index, 1);
-        this.setState({ questions: new_questions })
+    deleteQuestion = (item) => {
+        this.props.deletequestionnairestart(item);
     }
 
     duplicateQuestion = (item) => {
-        let new_questions = [...this.state.questions];
-        new_questions.push(item)
-        this.setState({ questions: new_questions })
+        // let new_questions = [...this.state.questions];
+        // new_questions.push(item)
+        // this.setState({ questions: new_questions })
+        this.props.copyquestionnairestart(item);
     }
     //   selectNextQ = (item, child) => {
     //     let items = []
@@ -504,25 +535,25 @@ class Questionnaire extends Component {
                         </Card>
 
                         {
-
-                            this.state.questions.map((item, ind) => (
+                            this.props.questions.map((item, ind) => (
+                                console.log('INSIDE MAP : ', item._id),
                                 <Card className='card-4' style={{ height: 230, width: 230, borderRadius: 8, margin: 8 }}>
                                     <UncontrolledDropdown style={{ position: 'absolute', top: 5, right: 5, border: 0, backgroundColor: 'white', borderRadius: '50%' }} >
                                         <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 35, height: 35, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
                                             <i style={{ color: 'black', fontSize: 17 }} className='mdi mdi-dots-vertical'></i>
                                         </DropdownToggle>
                                         <DropdownMenu right>
-                                            <DropdownItem onClick={() => this.duplicateQuestion(item)} >アンケート複製</DropdownItem>
+                                            <DropdownItem onClick={() => this.duplicateQuestion(item._id)} >アンケート複製</DropdownItem>
                                             {/* <DropdownItem divider /> */}
-                                            <DropdownItem>再編集</DropdownItem>
-                                            <DropdownItem onClick={() => this.deleteQuestion(ind)} >削除</DropdownItem>
+                                            <DropdownItem onClick={() => this.toggleEditModal(ind)} >再編集</DropdownItem>
+                                            <DropdownItem onClick={() => this.deleteQuestion(item._id)} >削除</DropdownItem>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
                                     <img style={{ borderTopLeftRadius: 8, borderTopRightRadius: 8 }} className="card-img-top img-fluid" src={smimg1} alt="veltrix" />
                                     <CardBody style={{ padding: 10 }}>
                                         <Row>
-                                            <Col md='8 text-left '>
-                                                <p>
+                                            <Col className="mt-3" md='12 text-center'>
+                                                {/* <p>
                                                     <Editable
                                                         name="username"
                                                         dataType="text"
@@ -539,8 +570,10 @@ class Questionnaire extends Component {
                                                         }}
                                                         value={item.name.slice(0, 20)}
                                                     />
-                                                </p>
-                                                <span>{item.date}</span>
+                                                </p> */}
+                                                <span>{item.questname.slice(0,20)}</span>
+                                                <br />
+                                                <span>{item.createdAt}</span>
                                             </Col>
                                             <Col md='4 p-0 mt-3'>
                                                 {/* <Switch
@@ -562,6 +595,158 @@ class Questionnaire extends Component {
 
                     </Row>
 
+                    {/* Re-Edit PopUP */}
+                    <Modal className="modal-lg" isOpen={this.state.modal_edit} toggle={this.tog_large} >
+                        <div className="modal-header">
+                            <h5 className="modal-title mt-0" id="myLargeModalLabel">新しいアンケートを作成しています。</h5>
+                            <button onClick={() => this.setState({ modal_edit: false })} type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <ModalBody>
+                            <Form>
+                                <FormGroup row>
+                                    <Label htmlFor="example-search-input" sm="2">アンケート名</Label>
+                                    <Col sm="10">
+                                        <Input type="search" name={'form_name'} value={this.state.form_name} id="example-search-input" onChange={this.onChangeText} />
+                                    </Col>
+                                </FormGroup>
+                            </Form>
+                            <Col xs='12 text-center'>
+
+                                {
+                                    this.state.selectedQuestion ? 
+                                    this.state.selectedQuestion.questions.map((item, index) => (
+                                        <>
+                                            {
+                                                this.state.children.length > 1 &&
+                                                <h5 className='pull-left'>{index + 1}のセクション{this.state.children.length}</h5>
+                                            }
+                                            {
+                                                item.map((child, childIndex) => (
+                                                    <Card className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
+                                                        <Button onClick={() => this.splitChildren(index, childIndex)} style={{ position: 'absolute', bottom: 5, right: 5, border: 0, backgroundColor: 'transparent' }}><i style={{ color: 'black', fontSize: 20 }} className='mdi mdi-arrow-split-horizontal'></i></Button>
+                                                        <Button onClick={() => this.deleteQ(index, childIndex)} style={{ position: 'absolute', top: 5, right: 5, border: 0, backgroundColor: 'transparent' }}>
+                                                            <i style={{ color: 'red', fontSize: 20 }} className='mdi mdi-trash-can'></i>
+                                                        </Button>
+                                                        <Row>
+                                                            <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }}>
+                                                                <Input placeholder='質問を入力してください。' value={child.question} type="text" id="example-text-input" onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
+                                                                {this.questionTypeHandler(child.type, child.options, index, childIndex)}
+                                                                {/* <Input style={{marginTop:12}} disabled  type="text" name={'form_header'}  id="example-text-input" /> */}
+
+                                                            </Col>
+                                                            <Col xs='4' style={{ marginTop: 20 }}>
+                                                                <Select
+                                                                    value={child.type}
+                                                                    onChange={(value) => this.handleSelectGroup(value, index, childIndex)}
+                                                                    options={options}
+                                                                />
+                                                                {
+                                                                    child.type.value == 1 || child.type.value == 2 ?
+                                                                        child.options.map(it =>
+                                                                            <Input className='mt-2' type="select" name="ddlCreditCardType" id="ddlCreditCardType">
+                                                                                <option value="">次の質問へ</option>
+                                                                                {
+                                                                                    item.map((itm, i) =>
+                                                                                        itm.question != child.question &&
+                                                                                        <option value={i}>{itm.question}</option>
+                                                                                    )
+                                                                                }
+                                                                                <option value="DI">アンケートを送信</option>
+                                                                            </Input>
+                                                                        )
+                                                                        :
+                                                                        <Input className='mt-2' type="select" name="ddlCreditCardType" id="ddlCreditCardType">
+                                                                            <option value="">次の質問へ</option>
+                                                                            {
+                                                                                item.map((itm, i) =>
+                                                                                    itm.question != child.question &&
+                                                                                    <option value={i}>{itm.question}</option>
+                                                                                )
+                                                                            }
+                                                                            <option value="DI">アンケートを送信</option>
+                                                                        </Input>
+                                                                }
+                                                                {/* <Select
+                                                        className='mt-2'
+                                                        options={item.map((itm, i) =>  itm.question != child.question && {label: itm.question, value: i})}
+                                                        options = {() => this.selectNextQ(item, child)}
+
+                                                    /> */}
+                                                            </Col>
+                                                            <Col xs='2' style={{ marginTop: 20 }}>
+                                                                <Label check>
+                                                                    <Input type="checkbox" />
+                                                            必須
+                                                        </Label>
+                                                            </Col>
+                                                            <Col xs='1' style={{ marginTop: 20 }}>
+
+                                                            </Col>
+                                                        </Row>
+                                                    </Card>
+                                                ))}
+                                            <hr />
+                                            {
+                                                this.state.children.length > 1 &&
+                                                <Col md='6'>
+                                                    <Row>
+                                                        {
+                                                            index + 1 != this.state.children.length &&
+                                                            <>
+                                                                <Col className='col-md-3' style={{ marginTop: 5, padding: 0 }}>
+                                                                    <p>セクション1の後 {index + 1}</p>
+                                                                </Col>
+                                                                <Col className={{ padding: 0 }}>
+                                                                    <Input type="select" name="ddlCreditCardType" id="ddlCreditCardType">
+                                                                        <option value="">次のセクションに進む</option>
+                                                                        {
+                                                                            this.state.children.map((item, index) => (
+                                                                                <option value="DI">セクション {index + 1}</option>
+                                                                            ))
+                                                                        }
+                                                                        <option value="DI">アンケートを送信</option>
+                                                                    </Input>
+                                                                </Col>
+                                                            </>
+                                                        }
+                                                    </Row>
+
+                                                </Col>
+                                            }
+                                        </>
+                                    )) : null
+                                }
+                                <Button type="button" color="primary" onClick={this.addChildren} className="waves-effect">質問を追加</Button>
+
+                                {
+                                    this.state.children[0].length > 0 &&
+                                    <Card className='mt-3' style={{ width: '100%', height: 70, border: '1px solid grey', borderRadius: 5 }}>
+                                        <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
+                                            <Editable
+                                                name="username"
+                                                dataType="text"
+                                                mode="inline"
+                                                title="Please enter username"
+                                                validate={(value) => {
+                                                    if (!value) {
+                                                        return 'Required';
+                                                    }
+                                                }}
+                                                value="ご協力ありがとうございました。"
+                                            />
+
+                                        </Row>
+                                    </Card>
+                                }
+                            </Col>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button type="button" color="secondary" onClick={() => this.setState({ modal_edit: false })} className="waves-effect">閉じる</Button>
+                            <Button onClick={this.onReEditSubmit} type="button" color="primary" className="waves-effect waves-light">変更を保存</Button>
+                        </ModalFooter>
+                    </Modal>
 
 
                     {/* Create Survay PopUP */}
@@ -679,15 +864,10 @@ class Questionnaire extends Component {
                                                                 </Col>
                                                             </>
                                                         }
-
-
-
                                                     </Row>
 
                                                 </Col>
                                             }
-
-
                                         </>
                                     ))
                                 }
@@ -728,13 +908,16 @@ class Questionnaire extends Component {
 }
 
 const mapStateToProps = (state) => {
+    console.log(state.questionnaireManagement.questions);
     return {
-        success: state.questionnaireManagement.success
+        success: state.questionnaireManagement.success,
+        questions: state.questionnaireManagement.questions
     }
 }
 
 export default withRouter(connect(mapStateToProps, 
                                 { activateAuthLayout, 
                                     addquestionnairesuccessful, 
-                                    getquestionnairesuccessful,
-                                    deletequestionnairesuccessful })(Questionnaire));
+                                    getquestionnairestart,
+                                    copyquestionnairestart,
+                                    deletequestionnairestart })(Questionnaire));

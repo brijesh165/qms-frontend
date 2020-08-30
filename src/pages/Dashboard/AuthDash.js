@@ -79,10 +79,11 @@ class AuthDash extends Component {
     }
     toggleEditModal = (index) => {
         let question = this.state.questions[index]
+        console.log('Questions : ', question);
         this.setState({ selectedQuestion: question }, () => {
             this.setState({ toggleEditModal: !this.state.toggleEditModal })
         })
-
+        console.log('Toggle Edit Modal : ', this.state.selectedQuestion);
     }
 
     render() {

@@ -37,10 +37,14 @@ const getQuestionnaireSuccess = () => {
     }
 }
 
-const deleteQuestionnaireSuccess = (id) => {
+const deleteQuestionnaireSuccess = (data) => {
     try {
-        console.log('Questionnaire DELETE',);
-        return axios.post(`http://localhost:5000/questionare`, id, {params: {token: localStorageData.token}})
+        const newData = {
+            remove: "True",
+            id: data
+        };
+        console.log('Questionnaire Data', newData);
+        return axios.post(`http://localhost:5000/questionare`, newData, {params: {token: localStorageData.token}})
             .then(response => {
                 console.log('Questionnaire Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
@@ -57,8 +61,12 @@ const deleteQuestionnaireSuccess = (id) => {
 
 const copyQuestionnaireSuccess = (data) => {
     try {
-        console.log('Questionnaire Data', data);
-        return axios.post(`http://localhost:5000/questionare`, data, { params: { token: localStorageData.token } })
+        const newData = {
+            copy: "True",
+            id: data.question_data
+        };
+        console.log('Questionnaire Data', newData);
+        return axios.post(`http://localhost:5000/questionare`, newData, { params: { token: localStorageData.token } })
             .then(response => {
                 console.log('Questionnaire Management Util : ', response);
                 if (response.status === 400 || response.status === 500)

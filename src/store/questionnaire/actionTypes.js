@@ -1,4 +1,7 @@
 const questionnaire = {
+    SEARCH_QUESTIONNAIRE_START: 'search_questionnaire_start',
+    SEARCH_QUESTIONNAIRE_SUCCESSFUL: 'search_questionnaire_successful',
+    ADD_QUESTIONNAIRE_START: 'add_questionnaire_start',
     ADD_QUESTIONNAIRE_SUCCESSFUL: 'add_questionnaire_successful',
     GET_QUESTIONNAIRE_START: 'get_questionnaire_start',
     GET_QUESTIONNAIRE_SUCCESSFUL: 'get_questionnaire_successful',

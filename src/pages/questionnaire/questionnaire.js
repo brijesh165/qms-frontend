@@ -26,7 +26,8 @@ import Editable from 'react-x-editable';
 import _ from 'lodash'
 import Rating from 'react-rating';
 
-import {addquestionnairesuccessful, 
+import {searchquestionnairestrart, 
+        addquestionnairestrart, 
         getquestionnairestart, 
         copyquestionnairestart, 
         deletequestionnairestart} from './../../store/actions';
@@ -57,7 +58,8 @@ class Questionnaire extends Component {
             form_name: '',
             questions: [{ name: 'アンケート1', date: '締切日: 12/06/2020', },],
             children: [[],],
-            selectedQuestion: ''
+            selectedQuestion: '',
+            searchQuestionnaire: ''
         };
     }
 
@@ -344,18 +346,16 @@ class Questionnaire extends Component {
             "questname": this.state.form_name,
             "questdata": this.state.children
         }
-        this.props.addquestionnairesuccessful(question_data);
-
-        if (this.props.success) {
-            this.setState(prevState => ({
-                questions: [...prevState.questions, {
-                    name: this.state.form_name,
-                    date: '12/12/2020',
-                    children: this.state.children
-                }]
-            }), () => console.log(this.state.questions, 'llllll'))
-            this.setState({ form_header: '', form_name: '', modal_large: false, children: [[],] })    
-        }
+        this.props.addquestionnairestrart(question_data);
+        this.setState({ modal_large: true })
+        this.setState(prevState => ({
+            questions: [...prevState.questions, {
+                name: this.state.form_name,
+                date: '12/12/2020',
+                children: this.state.children
+            }]
+        }), () => console.log(this.state.questions, 'llllll'))
+        this.setState({ form_header: '', form_name: '', modal_large: false, children: [[],] })    
     }
 
 
@@ -458,6 +458,20 @@ class Questionnaire extends Component {
         // this.setState({ questions: new_questions })
         this.props.copyquestionnairestart(item);
     }
+
+    searchQuestion = () => {
+        this.props.searchquestionnairestrart(this.state.searchQuestionnaire);
+    }
+
+    handleInputChange = (event) => {
+        const {name, value} = event.target;
+        this.setState({
+            [name]: value
+        });
+        this.searchQuestion();
+    }
+
+
     //   selectNextQ = (item, child) => {
     //     let items = []
     //     item.map((itm, i) => {
@@ -510,7 +524,12 @@ class Questionnaire extends Component {
                                 <Breadcrumb>
                                     <form role="search" className="app-search">
                                         <div className="form-group mb-0">
-                                            <input type="text" className="form-control" placeholder="アンケート検索" />
+                                            <input type="text" 
+                                                    className="form-control" 
+                                                    placeholder="アンケート検索"
+                                                    name="searchQuestionnaire"
+                                                    value={this.state.searchQuestionnaire}
+                                                    onChange={this.handleInputChange} />
                                             <button type="submit"><i className="fa fa-search"></i></button>
                                         </div>
                                     </form>
@@ -543,10 +562,10 @@ class Questionnaire extends Component {
                                             <i style={{ color: 'black', fontSize: 17 }} className='mdi mdi-dots-vertical'></i>
                                         </DropdownToggle>
                                         <DropdownMenu right>
-                                            <DropdownItem onClick={() => this.duplicateQuestion(item._id)} >アンケート複製</DropdownItem>
+                                            <DropdownItem onClick={() => this.duplicateQuestion(item.id)} >アンケート複製</DropdownItem>
                                             {/* <DropdownItem divider /> */}
                                             <DropdownItem onClick={() => this.toggleEditModal(ind)} >再編集</DropdownItem>
-                                            <DropdownItem onClick={() => this.deleteQuestion(item._id)} >削除</DropdownItem>
+                                            <DropdownItem onClick={() => this.deleteQuestion(item.id)} >削除</DropdownItem>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
                                     <img style={{ borderTopLeftRadius: 8, borderTopRightRadius: 8 }} className="card-img-top img-fluid" src={smimg1} alt="veltrix" />
@@ -910,14 +929,15 @@ class Questionnaire extends Component {
 const mapStateToProps = (state) => {
     console.log(state.questionnaireManagement.questions);
     return {
-        success: state.questionnaireManagement.success,
+        addQuestionSuccess: state.questionnaireManagement.addQuestionSuccess,
         questions: state.questionnaireManagement.questions
     }
 }
 
 export default withRouter(connect(mapStateToProps, 
                                 { activateAuthLayout, 
-                                    addquestionnairesuccessful, 
+                                    searchquestionnairestrart,
+                                    addquestionnairestrart, 
                                     getquestionnairestart,
                                     copyquestionnairestart,
                                     deletequestionnairestart })(Questionnaire));

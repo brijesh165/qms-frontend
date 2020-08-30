@@ -5,24 +5,45 @@ import questionnaire from './actionTypes';
 import { apiError } from './actions';
 
 // AUTH related methods
-import { addQuestionnaireSuccess, 
+import {searchQuestionnaireSuccess,
+        addQuestionnaireSuccess, 
         getQuestionnaireSuccess, 
         deleteQuestionnaireSuccess, 
         copyQuestionnaireSuccess } from '../.././helpers/questionnaireUtil';
 
 //If user is login then dispatch redux action's are directly from here.
+function* searchQuestionnaireSuccesss( {payload: questname} ) {
+    try {
+        console.log('Saga', questname);
+        const response = yield call(searchQuestionnaireSuccess, questname );
+        console.log(response);
+        yield put({type: questionnaire.SEARCH_QUESTIONNAIRE_SUCCESSFUL,
+                    payload: response})
+    } catch (error) {
+        console.log('ADD QUESTION ERROR', error);
+        yield put(apiError(error));
+    }
+}
+
+export function* watchSearchQuestionnaire() {
+    yield takeEvery(questionnaire.SEARCH_QUESTIONNAIRE_START, searchQuestionnaireSuccesss)
+}
+
 function* addQuestionnaireSuccesss( payload ) {
     try {
         console.log('Saga', payload.payload);
         const response = yield call(addQuestionnaireSuccess, payload.payload );
         console.log(response);
+        yield put({type: questionnaire.ADD_QUESTIONNAIRE_SUCCESSFUL,
+                    payload: response})
     } catch (error) {
+        console.log('ADD QUESTION ERROR', error);
         yield put(apiError(error));
     }
 }
 
 export function* watchAddQuestionnaire() {
-    yield takeEvery(questionnaire.ADD_QUESTIONNAIRE_SUCCESSFUL, addQuestionnaireSuccesss)
+    yield takeEvery(questionnaire.ADD_QUESTIONNAIRE_START, addQuestionnaireSuccesss)
 }
 
 function* getQuestionnaireSuccesss() {
@@ -85,7 +106,8 @@ export function* watchCopyQuestionnaire() {
 }
 
 function* questionnaireManagementSagas() {
-    yield all([call(watchAddQuestionnaire),
+    yield all([call(watchSearchQuestionnaire),
+            call(watchAddQuestionnaire),
             call(watchGetQuestionnaire),
             call(watchDeleteQuestionnaire),
             call(watchCopyQuestionnaire)]);

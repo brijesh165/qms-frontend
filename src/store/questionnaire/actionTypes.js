@@ -3,6 +3,8 @@ const questionnaire = {
     SEARCH_QUESTIONNAIRE_SUCCESSFUL: 'search_questionnaire_successful',
     ADD_QUESTIONNAIRE_START: 'add_questionnaire_start',
     ADD_QUESTIONNAIRE_SUCCESSFUL: 'add_questionnaire_successful',
+    REEDIT_QUESTIONNAIRE_START: 'REEDIT_questionnaire_start',
+    REEDIT_QUESTIONNAIRE_SUCCESSFUL: 'REEDIT_questionnaire_successful',
     GET_QUESTIONNAIRE_START: 'get_questionnaire_start',
     GET_QUESTIONNAIRE_SUCCESSFUL: 'get_questionnaire_successful',
     DELETE_QUESTIONNAIRE_START: 'delete_questionnaire_start',

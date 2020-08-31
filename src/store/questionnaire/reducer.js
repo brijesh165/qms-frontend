@@ -71,6 +71,26 @@ const questionnaireManagement = (state = initialState, action) => {
                 questions: addQuestion
             }
             break;
+        case questionnaire.REEDIT_QUESTIONNAIRE_START:
+            state = {
+                ...state,
+                loading: false,
+                addQuestionSuccess: false,
+                questionnaireManagementError: null,
+            }
+            break;
+        case questionnaire.REEDIT_QUESTIONNAIRE_SUCCESSFUL:
+            let prevQuestionss = [...state.questions];
+            const reeditQuestion = [...prevQuestionss, action.payload];
+            state = {
+                ...state,
+                loading: false,
+                questionnaireManagementError: null,
+                addQuestionSuccess: true,
+                questions: reeditQuestion
+            }
+            break;
+
         case questionnaire.DELETE_QUESTIONNAIRE_START:
             state = {
                 ...state,

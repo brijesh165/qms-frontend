@@ -41,6 +41,24 @@ const addQuestionnaireSuccess = (data) => {
     }
 }
 
+const reeditQuestionnaireSuccess = (data) => {
+    try {
+        console.log('Questionnaire Data', data);
+        return axios.post(`http://localhost:5000/questionare`, data, { params: { token: localStorageData.token } })
+            .then(response => {
+                console.log('Questionnaire Management Util : ', response);
+                if (response.status === 400 || response.status === 500)
+                    throw response.data;
+                return response.data;
+            }).catch(err => {
+                console.log('Questionnaire Util error : ', err);
+                throw err[1];
+            })
+    } catch (error) {
+        console.log('Questionnaire Management Util error : ', error);
+    }
+}
+
 const getQuestionnaireSuccess = () => {
     try {
         console.log('Questionnaire GET',);
@@ -103,4 +121,9 @@ const copyQuestionnaireSuccess = (data) => {
     }
 }
 
-export { searchQuestionnaireSuccess, addQuestionnaireSuccess, getQuestionnaireSuccess, deleteQuestionnaireSuccess, copyQuestionnaireSuccess };
+export { searchQuestionnaireSuccess, 
+        addQuestionnaireSuccess, 
+        reeditQuestionnaireSuccess,
+        getQuestionnaireSuccess, 
+        deleteQuestionnaireSuccess, 
+        copyQuestionnaireSuccess };

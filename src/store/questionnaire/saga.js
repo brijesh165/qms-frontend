@@ -9,6 +9,7 @@ import {searchQuestionnaireSuccess,
         addQuestionnaireSuccess, 
         getQuestionnaireSuccess, 
         deleteQuestionnaireSuccess, 
+        reeditQuestionnaireSuccess,
         copyQuestionnaireSuccess } from '../.././helpers/questionnaireUtil';
 
 //If user is login then dispatch redux action's are directly from here.
@@ -44,6 +45,23 @@ function* addQuestionnaireSuccesss( payload ) {
 
 export function* watchAddQuestionnaire() {
     yield takeEvery(questionnaire.ADD_QUESTIONNAIRE_START, addQuestionnaireSuccesss)
+}
+
+function* reeditQuestionnaireSuccesss( payload ) {
+    try {
+        console.log('Saga', payload.payload);
+        const response = yield call(reeditQuestionnaireSuccess, payload.payload );
+        console.log(response);
+        yield put({type: questionnaire.REEDIT_QUESTIONNAIRE_SUCCESSFUL,
+                    payload: response})
+    } catch (error) {
+        console.log('REEDIT QUESTION ERROR', error);
+        yield put(apiError(error));
+    }
+}
+
+export function* watchReEditQuestionnaire() {
+    yield takeEvery(questionnaire.REEDIT_QUESTIONNAIRE_START, reeditQuestionnaireSuccesss)
 }
 
 function* getQuestionnaireSuccesss() {
@@ -109,6 +127,7 @@ function* questionnaireManagementSagas() {
     yield all([call(watchSearchQuestionnaire),
             call(watchAddQuestionnaire),
             call(watchGetQuestionnaire),
+            call(watchReEditQuestionnaire),
             call(watchDeleteQuestionnaire),
             call(watchCopyQuestionnaire)]);
 }

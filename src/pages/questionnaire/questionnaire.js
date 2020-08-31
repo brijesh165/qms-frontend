@@ -28,6 +28,7 @@ import Rating from 'react-rating';
 
 import {searchquestionnairestrart, 
         addquestionnairestrart, 
+        reeditquestionnairestart,
         getquestionnairestart, 
         copyquestionnairestart, 
         deletequestionnairestart} from './../../store/actions';
@@ -58,18 +59,24 @@ class Questionnaire extends Component {
             form_name: '',
             questions: [{ name: 'アンケート1', date: '締切日: 12/06/2020', },],
             children: [[],],
+            reeditchildren:[[],],
             selectedQuestion: '',
             searchQuestionnaire: ''
         };
+        // this.setState({
+        //     children: this.props.questions    
+        // })
     }
 
     toggleEditModal = (index) => {
         this.setState({ modal_edit: true })
         let question = this.props.questions[index]
+        console.log(question);
         question.name = this.props.questions[index].questname
         question.date = this.props.questions[index].createdAt
-        console.log('Questions : ', question);
-        this.setState({ selectedQuestion: question }, () => {
+        // console.log('Questions : ', question);
+        // console.log('Children : ', this.state.children);
+        this.setState({ children: question.questions }, () => {
             this.setState({ toggleEditModal: !this.state.toggleEditModal })
         })
         console.log('Toggle Edit Modal : ', this.state.selectedQuestion);
@@ -327,7 +334,8 @@ class Questionnaire extends Component {
             "questname": this.state.form_name,
             "questdata": this.state.children
         }
-        this.props.addquestionnairesuccessful(question_data);
+
+        this.props.reeditquestionnairestart(question_data);
 
         if (this.props.success) {
             this.setState(prevState => ({
@@ -371,6 +379,13 @@ class Questionnaire extends Component {
         console.log(new_children, 'ckckckckckck')
         this.setState({ children: new_children })
     }
+
+    onReEditChangeQuestion = (e, childIndex, parentIndex) => {
+        let children = [...this.state.children];
+        children[parentIndex][childIndex] = e.target.value;
+        this.setState({children: children})
+    }
+
     onChangeQuestion = (e, childIndex, parentIndex) => {
         let children = [...this.state.children];
         children[parentIndex][childIndex].question = e.target.value
@@ -634,8 +649,8 @@ class Questionnaire extends Component {
                             <Col xs='12 text-center'>
 
                                 {
-                                    this.state.selectedQuestion ? 
-                                    this.state.selectedQuestion.questions.map((item, index) => (
+                                    this.state.children ? 
+                                    this.state.children.map((item, index) => (
                                         <>
                                             {
                                                 this.state.children.length > 1 &&
@@ -938,6 +953,7 @@ export default withRouter(connect(mapStateToProps,
                                 { activateAuthLayout, 
                                     searchquestionnairestrart,
                                     addquestionnairestrart, 
+                                    reeditquestionnairestart,
                                     getquestionnairestart,
                                     copyquestionnairestart,
                                     deletequestionnairestart })(Questionnaire));

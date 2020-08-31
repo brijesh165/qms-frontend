@@ -13,6 +13,13 @@ export const addquestionnairestrart = (question_data) => (
         payload: question_data
 })
 
+export const reeditquestionnairestart = (question_data) => (
+    {
+        type: questionnaire.REEDIT_QUESTIONNAIRE_START,
+        payload: question_data
+    }
+)
+
 export const deletequestionnairestart = (question_data) => (
     {
         type: questionnaire.DELETE_QUESTIONNAIRE_START,

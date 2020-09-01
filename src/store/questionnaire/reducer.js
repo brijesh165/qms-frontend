@@ -81,13 +81,15 @@ const questionnaireManagement = (state = initialState, action) => {
             break;
         case questionnaire.REEDIT_QUESTIONNAIRE_SUCCESSFUL:
             let prevQuestionss = [...state.questions];
-            const reeditQuestion = [...prevQuestionss, action.payload];
+            const resp = [];
+            resp.push(action.payload);
+            const mapedQuestion = prevQuestionss.map(obj => resp.find(o => o.id === obj.id) || obj);
             state = {
                 ...state,
                 loading: false,
                 questionnaireManagementError: null,
                 addQuestionSuccess: true,
-                questions: reeditQuestion
+                questions: mapedQuestion
             }
             break;
 

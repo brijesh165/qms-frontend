@@ -11,6 +11,7 @@ import Reset from './auth/resetpwd/reducer';
 import Profile from './profile/reducer';
 import userManagement from './userManagement/reducer';
 import questionnaireManagement from './questionnaire/reducer';
+import dashboardManagement from './dashboard/reducer';
 
 const rootReducer = combineReducers({
 
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
     Reset,
     Profile,
     userManagement,
-    questionnaireManagement
+    questionnaireManagement,
+    dashboardManagement
 });
 
 export default rootReducer;

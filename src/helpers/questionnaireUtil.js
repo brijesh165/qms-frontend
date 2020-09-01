@@ -44,7 +44,7 @@ const addQuestionnaireSuccess = (data) => {
 const reeditQuestionnaireSuccess = (data) => {
     try {
         console.log('Questionnaire Data', data);
-        return axios.post(`http://localhost:5000/questionare`, data, { params: { token: localStorageData.token } })
+        return axios.post(`http://localhost:5000/dashboard`, data, { params: { token: localStorageData.token } })
             .then(response => {
                 console.log('Questionnaire Management Util : ', response);
                 if (response.status === 400 || response.status === 500)

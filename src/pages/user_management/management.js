@@ -309,7 +309,7 @@ class UserManagement extends Component {
                                         <Label htmlFor="example-email-input">アンケートを選択</Label>
                                         <Select
                                             placeholder="検索"
-                                            value={selectedGroup}
+                                            value={this.props.questions.questname}
                                             onChange={this.handleSelectGroup}
                                             options={optionGroup}
                                         />
@@ -401,9 +401,11 @@ class UserManagement extends Component {
         );
     }
 }
-const mapStateToProps = ({ Login }) => {
+const mapStateToProps = ({ Login, questionnaireManagement }) => {
+    console.log(questionnaireManagement)
     return {
-        role: Login.role
+        role: Login.role,
+        questions: questionnaireManagement.questions
     }
 }
 

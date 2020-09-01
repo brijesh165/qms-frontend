@@ -61,7 +61,8 @@ class Questionnaire extends Component {
             children: [[],],
             reeditchildren:[[],],
             selectedQuestion: '',
-            searchQuestionnaire: ''
+            searchQuestionnaire: '',
+            questid: ''
         };
         // this.setState({
         //     children: this.props.questions    
@@ -70,16 +71,16 @@ class Questionnaire extends Component {
 
     toggleEditModal = (index) => {
         this.setState({ modal_edit: true })
-        let question = this.props.questions[index]
-        console.log(question);
-        question.name = this.props.questions[index].questname
-        question.date = this.props.questions[index].createdAt
-        // console.log('Questions : ', question);
-        // console.log('Children : ', this.state.children);
+        let question = this.props.questions[index];
+        let questionName = this.props.questions[index].questname
+        this.setState({
+            questid: this.props.questions[index].id
+        });
         this.setState({ children: question.questions }, () => {
+            this.setState({ form_name: questionName})
+        }, () => {
             this.setState({ toggleEditModal: !this.state.toggleEditModal })
-        })
-        console.log('Toggle Edit Modal : ', this.state.selectedQuestion);
+        }, )
     }
 
     questionTypeHandler = (type, options, parentIndex, childIndex) => {
@@ -330,13 +331,14 @@ class Questionnaire extends Component {
 
     onReEditSubmit = () => {
         const question_data = {
-            "create": "True",
+            "reedit": "True",
+            "questid": this.state.questid,
             "questname": this.state.form_name,
             "questdata": this.state.children
         }
 
         this.props.reeditquestionnairestart(question_data);
-
+        this.setState({ modal_edit: true })
         if (this.props.success) {
             this.setState(prevState => ({
                 questions: [...prevState.questions, {
@@ -942,7 +944,6 @@ class Questionnaire extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state.questionnaireManagement.questions);
     return {
         addQuestionSuccess: state.questionnaireManagement.addQuestionSuccess,
         questions: state.questionnaireManagement.questions

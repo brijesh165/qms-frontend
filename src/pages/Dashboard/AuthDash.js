@@ -13,12 +13,13 @@ import { activateAuthLayout } from '../../store/actions';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import { getSurveyStart } from './../../store/actions';
+
 import { Scrollbars } from 'react-custom-scrollbars';
 import Toggler from '../../components/dashToggler'
 import DataTable from 'react-data-table-component';
 import data from '../../data/questions.json'
 import questions from '../../data/sample.json'
-import Select from 'react-select';
 import QuestionModal from '../../components/questionModal'
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
@@ -52,7 +53,7 @@ class AuthDash extends Component {
 
     componentDidMount() {
         this.props.activateAuthLayout();
-
+        this.props.getSurveyStart();
     }
 
     copyQuestion = (item) => {
@@ -163,21 +164,21 @@ class AuthDash extends Component {
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
                                 {
-                                    this.state.questions.map((item, index) =>
+                                    this.props.survey.map((item, index) =>
                                         <Card className='card-4 mt-3' key={index}>
                                             <Row>
                                                 <Col xl='5 text-center mt-3' >
                                                     {
                                                         this.state.changeName == index ?
-                                                            <Input style={{ marginBottom: 10, marginLeft: 5 }} type='text' value={item.name} onKeyDown={this.keyPress} onChange={(event) => this.rename(index, event)} />
+                                                            <Input style={{ marginBottom: 10, marginLeft: 5 }} type='text' value={item.questname} onKeyDown={this.keyPress} onChange={(event) => this.rename(index, event)} />
                                                             :
-                                                            <>{item.name}</>
+                                                            <>{item.questname}</>
 
                                                     }
                                                     {/* {item.name} */}
                                                 </Col>
-                                                <Col xl='2 text-center mt-3' >{item.date}</Col>
-                                                <Col xl='2 text-center mt-3' >締切日: 12/06/2020</Col>
+                                                <Col xl='2 text-center mt-3' >{new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(Date.now())}</Col>
+                                                {/* <Col xl='2 text-center mt-3' >{new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(item.createdAt)}</Col> */}
                                                 <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
                                                 <Col xl='1  text-center' >
                                                     <Toggler
@@ -265,11 +266,13 @@ class AuthDash extends Component {
     }
 }
 
-const mapStateToProps = ({ Login }) => {
+const mapStateToProps = ({ Login, dashboardManagement }) => {
+    console.log(dashboardManagement);
     return {
-        role: Login.role
+        role: Login.role,
+        survey: dashboardManagement.surveyData
     }
 }
 
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout })(AuthDash));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getSurveyStart })(AuthDash));

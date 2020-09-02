@@ -1,7 +1,7 @@
 import userManagementTypes from './actionTypes';
 
 const initialState = {
-    userManagementError: null, loading: null, userData: null
+    userManagementError: null, loading: null, userData: null,
 }
 
 const userManagement = (state = initialState, action) => {
@@ -16,6 +16,13 @@ const userManagement = (state = initialState, action) => {
             }
             break;
         case userManagementTypes.DELETE_USER_SUCCESSFUL: 
+            state = {
+                ...state, 
+                loading: false,
+                userManagementError: null
+            }
+            break;
+        case userManagementTypes.CHANGE_USER_ROLE_START: 
             state = {
                 ...state, 
                 loading: false,

@@ -47,7 +47,9 @@ function* changeUserRoleSuccesss({ payload: { user_data, history } }) {
     try {
         console.log('Saga', user_data);
         const response = yield call(changeUserRoleSuccess, { user_data });
-        console.log(response);
+        console.log('SAGA RESPONSE : ', response);
+        // yield put({type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL, 
+        //             payload: response})
         history.push('/user-management');
     } catch (error) {
         yield put(apiError(error));
@@ -55,7 +57,7 @@ function* changeUserRoleSuccesss({ payload: { user_data, history } }) {
 }
 
 export function* watchChangeUserRole() {
-    yield takeEvery(userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL, changeUserRoleSuccesss)
+    yield takeEvery(userManagementTypes.CHANGE_USER_ROLE_START, changeUserRoleSuccesss)
 }
 
 function* sendEmailSuccesss({ payload: { email_data, history } }) {

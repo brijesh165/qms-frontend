@@ -40,7 +40,7 @@ const deleteUserSuccess = async data => {
 const changeUserRoleSuccess = async data => {
     try {
         const newData = {
-                        "userid": data.user_data._id,
+                        "id": data.user_data._id,
                         "role": data.user_data.role,
                         "clearance": "True"
                         };

@@ -211,7 +211,7 @@ class UserManagement extends Component {
                                     </Col>
                                     <Col sm="6" className="text-right">
                                         <Button type="button" color="secondary" onClick={() => this.setState({ toggleEditModal: false })} className="waves-effect mr-3">閉じる</Button>
-                                        <Button type="submit" color="primary" className="waves-effect waves-light">追加</Button>
+                                        <Button type="submit" color="primary" onClick={() => this.setState({ toggleEditModal: false })} className="waves-effect waves-light">追加</Button>
                                     </Col>
                                 </Row>
                             </AvForm>
@@ -402,7 +402,7 @@ class UserManagement extends Component {
     }
 }
 const mapStateToProps = ({ Login, questionnaireManagement }) => {
-    console.log(questionnaireManagement)
+    console.log(Login.role)
     return {
         role: Login.role,
         questions: questionnaireManagement.questions

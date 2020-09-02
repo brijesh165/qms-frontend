@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { deleteUserSuccessful, changeUserRoleSuccessful } from '../store/actions';
+import { deleteUserSuccessful, changeUserRoleStart } from '../store/actions';
 import { DropdownMenu,DropdownItem, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 
 const EditToggler = (props) => {
@@ -13,7 +13,7 @@ const EditToggler = (props) => {
     }
     const onChangeRoleHandler = (event) => {
         event.preventDefault();
-        dispatch(changeUserRoleSuccessful(props.user, history));
+        dispatch(changeUserRoleStart(props.user, history));
     }
     return (
         <UncontrolledDropdown >

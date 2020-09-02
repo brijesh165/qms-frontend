@@ -338,7 +338,7 @@ class Questionnaire extends Component {
         }
 
         this.props.reeditquestionnairestart(question_data);
-        this.setState({ modal_edit: true })
+        this.setState({ modal_edit: false })
         if (this.props.success) {
             this.setState(prevState => ({
                 questions: [...prevState.questions, {

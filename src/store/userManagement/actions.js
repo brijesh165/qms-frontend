@@ -14,10 +14,10 @@ export const deleteUserSuccessful = (user_data, history) => (
         payload: {user_data, history}
 })
 
-export const changeUserRoleSuccessful = (user_data, history) => (
+export const changeUserRoleStart = (user_data, history) => (
     console.log('Action Change: ', user_data),
     {
-        type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL,
+        type: userManagementTypes.CHANGE_USER_ROLE_START,
         payload: {user_data, history}
 })
 

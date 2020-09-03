@@ -6,22 +6,44 @@ import { apiError } from './actions';
 
 // AUTH related methods
 // import { setLoggeedInUser,postLogin } from '../../../helpers/authUtils';
-import { addUserSuccess, deleteUserSuccess, changeUserRoleSuccess, sendEmailSuccess } from '../.././helpers/userManagementUtil';
+import { getUserListStart, addUserUtil, deleteUserSuccess, changeUserRoleSuccess, sendEmailSuccess } from '../.././helpers/userManagementUtil';
 
 //If user is login then dispatch redux action's are directly from here.
-function* addUserSuccesss({ payload: { user_data, history } }) {
+
+function* getUserStart() {
+    try {
+        console.log('GET USER START');
+        const response = yield call(getUserListStart);
+        console.log(response);
+        yield put({
+            type: userManagementTypes.GET_USER_LIST_SUCCESS,
+            payload: response
+        })
+    } catch(error) {
+        yield put(apiError(error));
+    }
+}
+
+export function* watchGetUser() {
+    yield takeEvery(userManagementTypes.GET_USER_LIST_START, getUserStart)
+}
+
+function* addUserStart({ payload: { user_data } }) {
     try {
         console.log('Saga', user_data);
-        const response = yield call(addUserSuccess, { user_data });
+        const response = yield call(addUserUtil, { user_data });
         console.log(response);
-        history.push('/user-management');
+        yield put({
+            type: userManagementTypes.ADD_USER_SUCCESSFUL,
+            payload: response
+        })
     } catch (error) {
         yield put(apiError(error));
     }
 }
 
 export function* watchAddUser() {
-    yield takeEvery(userManagementTypes.ADD_USER_SUCCESSFUL, addUserSuccesss)
+    yield takeEvery(userManagementTypes.ADD_USER_START, addUserStart)
 }
 
 // function* addUserSaga() {
@@ -48,8 +70,8 @@ function* changeUserRoleSuccesss({ payload: { user_data, history } }) {
         console.log('Saga', user_data);
         const response = yield call(changeUserRoleSuccess, { user_data });
         console.log('SAGA RESPONSE : ', response);
-        // yield put({type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL, 
-        //             payload: response})
+        yield put({type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL, 
+                    payload: response})
         history.push('/user-management');
     } catch (error) {
         yield put(apiError(error));
@@ -81,6 +103,7 @@ export function* watchSendEmail() {
 
 function* userManagementSagas() {
     yield all([call(watchAddUser),
+                call(watchGetUser),
                 call(watchDeleteUser),
                 call(watchChangeUserRole),
                 call(watchSendEmail)]);

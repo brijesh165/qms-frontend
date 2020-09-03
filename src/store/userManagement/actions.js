@@ -1,9 +1,15 @@
 import userManagementTypes from './actionTypes';
 
-export const addUserSuccessful = (user_data, history) => (
+export const getUserListStart = () => (
+    {
+        type: userManagementTypes.GET_USER_LIST_START
+    }
+)
+
+export const addUserStart = (user_data, history) => (
     console.log('Action Add', user_data),
     {
-        type: userManagementTypes.ADD_USER_SUCCESSFUL,
+        type: userManagementTypes.ADD_USER_START,
         payload: {user_data, history}
 })
 

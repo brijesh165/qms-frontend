@@ -17,7 +17,7 @@ import {
     ModalBody,
 } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { activateAuthLayout, addUserSuccessful, sendemailsuccessful } from '../../store/actions';
+import { activateAuthLayout, addUserStart, sendemailsuccessful, getUserListStart } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -47,7 +47,7 @@ class UserManagement extends Component {
             success_dlg: '',
             error_dlg: '',
             selectedEmail: [],
-            users: [],
+            users: this.props.superUser,
             username: '',
             useremail: '',
             userdelg: '',
@@ -63,7 +63,7 @@ class UserManagement extends Component {
     }
 
     handleSubmit(event, values) {
-        this.props.addUserSuccessful({
+        this.props.addUserStart({
             "username": values.username,
             "useremail": values.useremail,
             "userdesig": values.userdesig,
@@ -74,7 +74,6 @@ class UserManagement extends Component {
     }
 
     handleEditorChange = (event) => {
-        // console.log('Handle Editor Change', event.blocks[0].text);
         this.setState({
             sendbody: event.blocks[0].text
         })
@@ -107,18 +106,9 @@ class UserManagement extends Component {
         this.setState({ selectedGroup });
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         this.props.activateAuthLayout();
-        await axios.get('http://localhost:5000/user-management', { params: { token: localStorageData.token } })
-            .then((response) => {
-                console.log(response.data.SuperUser);
-                this.setState({
-                    users: response.data.SuperUser
-                })
-            })
-            .catch((error) => {
-                console.log('User Management Error : ', error);
-            })
+        this.props.getUserListStart();
     }
 
     componentWillUnmount() {
@@ -243,7 +233,8 @@ class UserManagement extends Component {
                                             </thead>
                                             <tbody>
                                                 {
-                                                    this.state.users.map((item, index) => (
+                                                    this.props.superUser ?
+                                                    this.props.superUser.map((item, index) => (
                                                         <tr key={index}>
                                                             <td><Input type='checkbox' onClick={(event) => this.addEmail(item, event)} /></td>
                                                             <th scope="row">{item.username}</th>
@@ -260,12 +251,13 @@ class UserManagement extends Component {
                                                             } */}
                                                             {/* <th>{item._id}</th> */}
                                                             <td colSpan="2"><span className="badge badge-success">
-                                                                {
+                                                                {item.role}
+                                                                {/* {
                                                                     this.props.role === '管理者' ?
                                                                         item.role === 'ユーザー管理' ? 'end user' : '管理者'
                                                                         :
                                                                         '管理者'
-                                                                }
+                                                                } */}
                                                             </span></td>
                                                             <td>
                                                                 <div>
@@ -277,7 +269,7 @@ class UserManagement extends Component {
                                                                 </div>
                                                             </td>
                                                         </tr>
-                                                    ))
+                                                    )) : null
                                                 }
 
                                             </tbody>
@@ -401,13 +393,16 @@ class UserManagement extends Component {
         );
     }
 }
-const mapStateToProps = ({ Login, questionnaireManagement }) => {
-    console.log(Login.role)
+const mapStateToProps = ({ Login, questionnaireManagement, userManagement }) => {
+    console.log(Login.role);
+    console.log(userManagement)
+    console.log(questionnaireManagement)
     return {
         role: Login.role,
-        questions: questionnaireManagement.questions
+        questions: questionnaireManagement.questions,
+        superUser: userManagement.userData
     }
 }
 
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout, addUserSuccessful, sendemailsuccessful })(UserManagement));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserListStart, addUserStart, sendemailsuccessful })(UserManagement));

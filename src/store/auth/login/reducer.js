@@ -1,11 +1,11 @@
 import { CHECK_LOGIN, LOGIN_USER_SUCCESSFUL, API_FAILED, CHECK_OTP, VALIDATE_OTP_SUCCESS, VALIDATE_OTP_ERROR } from './actionTypes';
 
 const initialState = {
-    loginError: null, message: null, loading: null,
-    role:'admin'
+    loginError: null, message: null, loading: null, role:'Super-Admin'
 }
 
 const login = (state = initialState, action) => {
+    console.log('Reducer Payload LOGIN : ', action.payload);
     switch (action.type) {
         case CHECK_LOGIN:
             state = {

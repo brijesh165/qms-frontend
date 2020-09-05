@@ -13,8 +13,8 @@ export const addUserStart = (user_data, history) => (
         payload: {user_data, history}
 })
 
-export const deleteUserSuccessful = (user_data, history) => (
-    console.log('Action Add: ', user_data),
+export const deleteUserStart = (user_data, history) => (
+    console.log('Action DELETE: ', user_data),
     {
         type: userManagementTypes.DELETE_USER_SUCCESSFUL,
         payload: {user_data, history}

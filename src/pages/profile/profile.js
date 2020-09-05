@@ -81,6 +81,8 @@ class Profile extends Component {
 				useremail: response.data.useremail,
 				userdelg: response.data.userdelg,
 				usercompany: response.data.usercompany
+			}, () => {
+				localStorage.setItem('role', response.data.role)
 			});
 		}).catch(error => {
 			console.log(error);
@@ -169,7 +171,7 @@ class Profile extends Component {
 																		placeholder="田中_12" 
 																		value={this.state.username} 
 																		onChange={this.handleChange}
-																		disabled={this.props.role === 'superadmin' ? false : true} />
+																		disabled={this.props.role === 'Super-Admin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-email-input">メール</label>
@@ -178,7 +180,7 @@ class Profile extends Component {
 																			name="useremail"
 																			value={this.state.useremail}
 																			onChange={this.handleChange}
-																			disabled={this.props.role === 'superadmin' ? false : true} />
+																			disabled={this.props.role === 'Super-Admin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-designation-input">指定</label>
@@ -187,7 +189,7 @@ class Profile extends Component {
 																			name="userdelg"
 																			value={this.state.userdelg}
 																			onChange={this.handleChange}
-																			disabled={this.props.role === 'superadmin' ? false : true} />
+																			disabled={this.props.role === 'Super-Admin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-company-input">会社</label>
@@ -196,7 +198,7 @@ class Profile extends Component {
 																			name="usercompany"
 																			value={this.state.usercompany} 
 																			onChange={this.handleChange}
-																			disabled={this.props.role === 'superadmin' ? false : true} />
+																			disabled={this.props.role === 'Super-Admin' ? false : true} />
 																</div>
 															</div>
 															{/* <div class="col-md-4">
@@ -212,7 +214,7 @@ class Profile extends Component {
 
 														<button type="submit" 
 															className="btn btn-primary"
-															hidden={this.props.role === 'superadmin' ? false : true}>変更を保存</button>
+															hidden={this.props.role === 'Super-Admin' ? false : true}>変更を保存</button>
 													</form>
 
 												</div>

@@ -50,12 +50,15 @@ export function* watchAddUser() {
 //     yield all([fork(watchAddUser)]);
 // }
 
-function* deleteUserSuccesss({ payload: { user_data, history } }) {
+function* deleteUserSuccesss({ payload: { user_data } }) {
     try {
         console.log('Saga', user_data);
         const response = yield call(deleteUserSuccess, { user_data });
         console.log(response);
-        history.push('/user-management');
+        yield put({
+            type: userManagementTypes.DELETE_USER_SUCCESSFUL,
+            payload: response.id
+        })
     } catch (error) {
         yield put(apiError(error));
     }

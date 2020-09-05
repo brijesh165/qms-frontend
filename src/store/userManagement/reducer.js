@@ -35,17 +35,16 @@ const userManagement = (state = initialState, action) => {
             break;
         case userManagementTypes.ADD_USER_SUCCESSFUL:
             const newAddUser = {
-                "id": action.payload.id,
-                "qmsid": action.payload.qmsid,
-                "role": action.payload.role,
-                "usercompany": action.payload.usercompany,
-                "userdelg": action.payload.userdelg,
-                "useremail": action.payload.useremail,
-                "username": action.payload.username,
+                "id": action.payload.data.id,
+                "qmsid": action.payload.data.qmsid,
+                "role": action.payload.data.role,
+                "usercompany": action.payload.data.usercompany,
+                "userdelg": action.payload.data.userdelg,
+                "useremail": action.payload.data.useremail,
+                "username": action.payload.data.username,
             };
             const prevUser = [...state.userData];
-            console.log('Prev USER : ', prevUser);
-            const addedUser = prevUser.push(newAddUser);
+            const addedUser = [...prevUser, newAddUser];
             state = {
                 ...state,
                 loading: false,
@@ -53,11 +52,23 @@ const userManagement = (state = initialState, action) => {
                 userData: addedUser
             }
             break;
+        case userManagementTypes.DELETE_USER_START: 
+            state = {
+                ...state,
+                loading: false,
+                userManagementError: null
+            }
+            break;
         case userManagementTypes.DELETE_USER_SUCCESSFUL: 
+            const prevDeleteUser = [...state.userData];
+            const userAfterDelete = prevDeleteUser.filter((item) => {
+                return item.id !== action.payload
+            });
             state = {
                 ...state, 
                 loading: false,
-                userManagementError: null
+                userManagementError: null,
+                userData: userAfterDelete
             }
             break;
         case userManagementTypes.CHANGE_USER_ROLE_START: 
@@ -69,16 +80,13 @@ const userManagement = (state = initialState, action) => {
             break;
         case userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL: 
             let changeRole = [...state.userData];
-            const changeRoleStart = changeRole.filter((item, index) => {
-                return (item.id === action.payload.id) ? index : null
-            });
-            changeRole[changeRoleStart].role = action.payload.userrole;
-            console.log('CHANGE ROLE START : ', changeRole);
+            let userAfterChangeRole = [...changeRole, action.payload.role];
+            console.log('CHANGE ROLE START : ', userAfterChangeRole);
             state = {
                 ...state, 
                 loading: false,
                 userManagementError: null,
-                userData: changeRole
+                // userData: changeRole
             }
             break;
         case userManagementTypes.SEND_EMAIL_SUCCESSFUL: 

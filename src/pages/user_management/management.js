@@ -27,17 +27,7 @@ import { Editor } from 'react-draft-wysiwyg';
 import Select from 'react-select';
 
 import EditToggler from '../../components/userEditToggler';
-// import axios from 'axios';
 // import data from '../../data/questions.json'
-
-
-// const optionGroup = [
-//     { label: "アンケート1", value: "Tent" },
-//     { label: "アンケート2", value: "Flashlight" },
-//     { label: "アンケート3", value: "Toilet Paper" }
-// ];
-
-const localStorageData = JSON.parse(localStorage.getItem('user'));
 
 class UserManagement extends Component {
     constructor(props) {
@@ -47,7 +37,6 @@ class UserManagement extends Component {
             success_dlg: '',
             error_dlg: '',
             selectedEmail: [],
-            users: this.props.superUser,
             username: '',
             useremail: '',
             userdelg: '',
@@ -104,7 +93,6 @@ class UserManagement extends Component {
     }
 
     handleSelectGroup = (selectedGroup) => {
-        console.log('SELECTED GROUP');
         this.setState({ selectedGroup });
     }
 
@@ -113,25 +101,39 @@ class UserManagement extends Component {
         this.props.getUserListStart();
     }
 
-    componentWillReceiveProps(nextProps) {
-        let newOptionGroup = [];
-        if (this.props.questions) {
-            let newOptions;
-            for (let i=0; i<nextProps.questions.length; i++) {
-                newOptions = {
-                    label: this.props.questions[i].questname,
-                    value: this.props.questions[i].questions
-                }
+    componentWillMount() {
+        if (this.props.users) {
+            this.setState({
+                users: this.props.users
+            });            
+        }
 
-                newOptionGroup.push(newOptions);
+        if (this.props.questions) {
+            this.setOptionGroup(this.props.questions)
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setOptionGroup(nextProps.questions);
+    }
+
+    setOptionGroup(nextProps) {
+        let newOptionGroup = [];
+        let newOptions;
+        for (let i = 0; i < nextProps.length; i++) {
+            newOptions = {
+                label: nextProps[i].questname,
+                value: nextProps[i].questions
             }
 
-            this.setState({
-                optionGroup: newOptionGroup
-            }, () => {
-                localStorage.setItem('optionGroup', JSON.stringify(newOptionGroup))
-            })
+            newOptionGroup.push(newOptions);
         }
+
+        this.setState({
+            optionGroup: newOptionGroup
+        }, () => {
+            localStorage.setItem('optionGroup', JSON.stringify(newOptionGroup))
+        })
     }
 
     componentWillUnmount() {
@@ -158,13 +160,15 @@ class UserManagement extends Component {
     }
 
     searchUser = (event) => {
-        console.log(event.target.value, 'vvvv')
-        let new_data = this.state.users.filter(item => {
-            return item.username.toLowerCase().includes(event.target.value.toLowerCase())
-        })
-        console.log(new_data, 'vvvv')
-
-        this.setState({ users: new_data })
+        if (this.props.users) {
+            let new_data = this.props.users.filter(item => {
+                console.log('From State : ', item.username.toLowerCase());
+                console.log('From Input : ', event.target.value.toLowerCase());
+                return item.username.toLowerCase().includes(event.target.value.toLowerCase())
+            })
+            console.log(new_data, 'vvvv')
+            this.setState({ users: new_data })        
+        }
     }
 
     toggleEditModal = () => {
@@ -237,8 +241,11 @@ class UserManagement extends Component {
                             <Card>
                                 <CardBody>
                                     {/* <h4 className="mt-0 header-title mb-4">株式会社 島根情報処理センターのユーザーリスト</h4> */}
-                                    <div className="table-responsive">
-                                        <Table className="table table-hover">
+                                    <div className="table-responsive" style={{
+                                        maxHeight: '400px',
+                                        overflowY: 'auto'
+                                    }}>
+                                        <Table className="table table-hover" striped responsive height="200">
                                             <thead>
                                                 <tr>
                                                     <th scope="col">選択</th>
@@ -256,43 +263,43 @@ class UserManagement extends Component {
                                             </thead>
                                             <tbody>
                                                 {
-                                                    this.props.superUser ?
-                                                    this.props.superUser.map((item, index) => (
-                                                        <tr key={index}>
-                                                            <td><Input type='checkbox' onClick={(event) => this.addEmail(item, event)} /></td>
-                                                            <th scope="row">{item.username}</th>
-                                                            <td>
-                                                                {item.usercompany}
-                                                                {/* <div>
+                                                    this.props.users ?
+                                                        this.props.users.map((item, index) => (
+                                                            <tr key={index}>
+                                                                <td><div><Input type='checkbox' style={{ position: "relative" }} onClick={(event) => this.addEmail(item, event)} /></div></td>
+                                                                <th scope="row">{item.username}</th>
+                                                                <td>
+                                                                    {item.usercompany}
+                                                                    {/* <div>
                                                                     <img src={require(`./../../images/users/${item.image}`)} alt="" className="thumb-md rounded-circle mr-2" /> 
                                                                 </div> */}
-                                                            </td>
-                                                            <td>{item.userdelg}</td>
-                                                            {/* {
+                                                                </td>
+                                                                <td>{item.userdelg}</td>
+                                                                {/* {
                                                                 this.props.role == 'superadmin' &&
                                                                 <th scope="col">{item.userdelg}</th>
                                                             } */}
-                                                            {/* <th>{item._id}</th> */}
-                                                            <td colSpan="2"><span className="badge badge-success">
-                                                                {item.role}
-                                                                {/* {
+                                                                {/* <th>{item._id}</th> */}
+                                                                <td colSpan="2"><span className="badge badge-success">
+                                                                    {item.role}
+                                                                    {/* {
                                                                     this.props.role === '管理者' ?
                                                                         item.role === 'ユーザー管理' ? 'end user' : '管理者'
                                                                         :
                                                                         '管理者'
                                                                 } */}
-                                                            </span></td>
-                                                            <td>
-                                                                <div>
-                                                                    <EditToggler
-                                                                        user={item}
-                                                                        role={this.props.role}
-                                                                    />
-                                                                    {/* <Link to="#" className="btn btn-primary btn-sm">編集</Link> */}
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    )) : null
+                                                                </span></td>
+                                                                <td>
+                                                                    <div>
+                                                                        <EditToggler
+                                                                            user={item}
+                                                                            role={this.props.role}
+                                                                        />
+                                                                        {/* <Link to="#" className="btn btn-primary btn-sm">編集</Link> */}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        )) : null
                                                 }
 
                                             </tbody>
@@ -322,8 +329,6 @@ class UserManagement extends Component {
                                 <Col md={6}>
                                     <FormGroup>
                                         <Label htmlFor="example-email-input">アンケートを選択</Label>
-                                        {console.log('In SIDE: ', this.state.surveyList),
-                                        console.log('IN SIDE : ', this.state.optionGroup)}
                                         <Select
                                             placeholder="検索"
                                             value={selectedGroup}
@@ -343,30 +348,30 @@ class UserManagement extends Component {
                                 <Col md={6}>
                                     <FormGroup>
                                         <Label htmlFor="example-text-input">件名</Label>
-                                        
-                                            <Input type="text"
-                                                name="emailsubject"
-                                                onChange={this.handleChange}
-                                                value={this.state.emailsubject}
-                                                id="example-text-input" />
+
+                                        <Input type="text"
+                                            name="emailsubject"
+                                            onChange={this.handleChange}
+                                            value={this.state.emailsubject}
+                                            id="example-text-input" />
                                     </FormGroup>
                                 </Col>
                                 <Col md={6}>
                                     <FormGroup>
                                         <Label htmlFor="exampleDatetime">期限切れ</Label>
-                                            <Input
-                                                type="date"
-                                                name="expiresat"
-                                                onChange={this.handleChange}
-                                                value={this.state.expiresat}
-                                                id="exampleDatetime"
-                                                placeholder="期限切れ"
-                                            />
+                                        <Input
+                                            type="date"
+                                            name="expiresat"
+                                            onChange={this.handleChange}
+                                            value={this.state.expiresat}
+                                            id="exampleDatetime"
+                                            placeholder="期限切れ"
+                                        />
                                     </FormGroup>
                                 </Col>
                             </Row>
 
-                                {/* </Form> */}
+                            {/* </Form> */}
                             {/* <Col xl="6">
                                 <FormGroup row>
                                     <Label htmlFor="example-email-input" sm="3.5">アンケートを選択</Label>
@@ -424,16 +429,12 @@ class UserManagement extends Component {
         );
     }
 }
-const mapStateToProps = ({ Login, questionnaireManagement, userManagement }) => {
-    console.log(Login);
-    console.log(userManagement)
-    console.log(questionnaireManagement)
+const mapStateToProps = ({ Login, userManagement }) => {
     return {
         role: Login.role,
         questions: userManagement.questions,
-        superUser: userManagement.userData
+        users: userManagement.userData
     }
 }
-
 
 export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserListStart, addUserStart, sendemailsuccessful })(UserManagement));

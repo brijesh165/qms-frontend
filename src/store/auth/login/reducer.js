@@ -1,7 +1,10 @@
 import { CHECK_LOGIN, LOGIN_USER_SUCCESSFUL, API_FAILED, CHECK_OTP, VALIDATE_OTP_SUCCESS, VALIDATE_OTP_ERROR } from './actionTypes';
 
 const initialState = {
-    loginError: null, message: null, loading: null, role:''
+    loginError: null, 
+    message: null, 
+    loading: null, 
+    role: localStorage.getItem('role') || '',
 }
 
 const login = (state = initialState, action) => {

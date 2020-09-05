@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem, Input, Table,Dropdown,DropdownMenu,DropdownItem, DropdownToggle } from 'reactstrap';
+import { Container, Row, Col, Button, Breadcrumb } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { Scrollbars } from 'react-custom-scrollbars';
-import Toggler from '../../components/dashToggler'
 import DataTable from 'react-data-table-component';
-import data from  '../../data/questions.json'
 import Select from 'react-select';
 
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
+import { getSurveyStart } from './../../store/actions';
 
 const optionGroup = [
 
@@ -20,9 +18,6 @@ const optionGroup = [
     { label: "アンケート3", value: "Toilet Paper" }
 
 ];
-
-
-
 
 class Responses extends Component {
     constructor(props) {
@@ -36,64 +31,59 @@ class Responses extends Component {
 
     componentDidMount() {
         this.props.activateAuthLayout();
+        this.props.getSurveyStart();
     }
 
     
     render() {
         const columns = [
             {
-              name: 'アンケート名',
-              selector: 'name',
-              // sortable: true,
+                name: 'アンケート名',
+                selector: 'name',
+                cell: row => <p>{row.questname}</p>
+                // sortable: true,
             },
             {
-              name: 'アンケート状況',
-              selector: 'name',
-              cell: row => <select id="cars">
-              <option value="回答受諾">回答受諾</option>
-              <option value="回答終了">回答終了</option>
-            </select>,
-                          // grow: 2,
-                         
-              // sortable: true,
-              // right: true,
+                name: 'アンケート状況',
+                selector: 'name',
+                cell: row => <select id="cars">
+                    <option value="回答受諾" disabled={row.accept === false}>回答受諾</option>
+                    <option value="回答終了">回答終了</option>
+                </select>,
+                // grow: 2,
+
+                // sortable: true,
+                // right: true,
             },
             {
-              name: '回答数',
-              selector: 'action',
-              cell: row => <p>{row.status}</p>,
-              // sortable: true,
-              // right: true,
+                name: '回答数',
+                selector: 'action',
+                cell: row => <p>{row.submitCount}/{row.totalCount}</p>,
+                // sortable: true,
+                // right: true,
             },
             {
-              name: '作成日',
-              selector: 'action',
-              cell: row => <p>{row.created}</p>,
-              // sortable: true,
-              // right: true,
+                name: '作成日',
+                selector: 'action',
+                cell: row => <p>{row.createdAt.slice(0,10).replace(/-/g, "/")}</p>,
+                // sortable: true,
+                // right: true,
             },
             {
-              name: '最終更新日' ,
-              selector: 'action',
-              cell: row => <p>{row.updated}</p>
-              // sortable: true,
-              // right: true,
+                name: '最終更新日',
+                selector: 'action',
+                cell: row => <p>{row.updatedAt.slice(0,10).replace(/-/g, "/")}</p>
+                // sortable: true,
+                // right: true,
             },
             {
-              name: '最終提出日' ,
-              selector: 'action',
-              cell: row => <p>{row.submission}</p>
-              // sortable: true,
-              // right: true,
+                name: 'ダウンロード',
+                selector: 'action',
+                cell: row => <Button onClick={() => this.setState({ confirm_both: true })} style={{ backgroundColor: 'transparent', border: 0 }}><i className="mdi mdi-cloud-download-outline cloud-download" style={{ color: 'grey' }}></i></Button>,
+                // sortable: true,
+                // right: true,
             },
-            {
-              name: 'ダウンロード',
-              selector: 'action',
-              cell: row => <Button onClick={() => this.setState({ confirm_both: true })} style={{backgroundColor:'transparent',border:0}}><i  class="mdi mdi-cloud-download-outline cloud-download" style={{color:'grey'}}></i></Button>,
-              // sortable: true,
-              // right: true,
-            },
-          ];
+        ];
     return (
             <React.Fragment>
                 <Container fluid>
@@ -121,17 +111,19 @@ class Responses extends Component {
                   
 
 
-                    <Row style={{marginTop:30}}>
-                        <Col xl='12'>
-                        <DataTable
-                            // title="Table List"
-                            columns={columns}
-                            data={data}
-                        />
-                        </Col>
-                    </Row>
+                    {
+                        this.props.survey ?
+                            <Row style={{ marginTop: 30 }}>
+                                <Col xl='12'>
+                                    <DataTable
+                                        // title="Table List"
+                                        columns={columns}
+                                        data={this.props.survey}
+                                    />
+                                </Col>
+                            </Row> : null
 
-                
+                    } 
                     {
                         this.state.confirm_both &&
                         <SweetAlert
@@ -144,6 +136,7 @@ class Responses extends Component {
                             You won't be able to revert this!
                         </SweetAlert>
                     }
+
                    
 
                 </Container>
@@ -153,4 +146,12 @@ class Responses extends Component {
     }
 }
 
-export default withRouter(connect(null, { activateAuthLayout })(Responses));
+const mapStateToProps = ({ Login, dashboardManagement }) => {
+    console.log(dashboardManagement);
+    return {
+        role: Login.role,
+        survey: dashboardManagement.surveyData
+    }
+}
+
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getSurveyStart })(Responses));

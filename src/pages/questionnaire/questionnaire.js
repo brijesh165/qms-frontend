@@ -609,7 +609,7 @@ class Questionnaire extends Component {
                                                 </p> */}
                                                 <span>{item.questname.slice(0,20)}</span>
                                                 <br />
-                                                <span>{item.createdAt}</span>
+                                                <span>{item.createdAt.slice(0,10).replace(/-/g, "/")}</span>
                                             </Col>
                                             <Col md='4 p-0 mt-3'>
                                                 {/* <Switch

@@ -9,13 +9,10 @@ import { Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem
 
 } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { Scrollbars } from 'react-custom-scrollbars';
-import Toggler from '../../components/dashToggler'
-import DataTable from 'react-data-table-component';
-import data from  '../../data/questions.json'
 import Select from 'react-select';
 
 import 'chartist/dist/scss/chartist.scss';

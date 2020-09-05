@@ -87,18 +87,20 @@ class AuthDash extends Component {
         console.log('Toggle Edit Modal : ', this.state.selectedQuestion);
     }
 
+
     render() {
         const columns = [
             {
                 name: 'アンケート名',
                 selector: 'name',
+                cell: row => <p>{row.questname}</p>
                 // sortable: true,
             },
             {
                 name: 'アンケート状況',
                 selector: 'name',
                 cell: row => <select id="cars">
-                    <option value="回答受諾">回答受諾</option>
+                    <option value="回答受諾" disabled={row.accept === false}>回答受諾</option>
                     <option value="回答終了">回答終了</option>
                 </select>,
                 // grow: 2,
@@ -109,35 +111,28 @@ class AuthDash extends Component {
             {
                 name: '回答数',
                 selector: 'action',
-                cell: row => <p>{row.status}</p>,
+                cell: row => <p>{row.submitCount}/{row.totalCount}</p>,
                 // sortable: true,
                 // right: true,
             },
             {
                 name: '作成日',
                 selector: 'action',
-                cell: row => <p>{row.created}</p>,
+                cell: row => <p>{row.createdAt.slice(0,10).replace(/-/g, "/")}</p>,
                 // sortable: true,
                 // right: true,
             },
             {
                 name: '最終更新日',
                 selector: 'action',
-                cell: row => <p>{row.updated}</p>
-                // sortable: true,
-                // right: true,
-            },
-            {
-                name: '最終提出日',
-                selector: 'action',
-                cell: row => <p>{row.submission}</p>
+                cell: row => <p>{row.updatedAt.slice(0,10).replace(/-/g, "/")}</p>
                 // sortable: true,
                 // right: true,
             },
             {
                 name: 'ダウンロード',
                 selector: 'action',
-                cell: row => <Button onClick={() => this.setState({ confirm_both: true })} style={{ backgroundColor: 'transparent', border: 0 }}><i class="mdi mdi-cloud-download-outline cloud-download" style={{ color: 'grey' }}></i></Button>,
+                cell: row => <Button onClick={() => this.setState({ confirm_both: true })} style={{ backgroundColor: 'transparent', border: 0 }}><i className="mdi mdi-cloud-download-outline cloud-download" style={{ color: 'grey' }}></i></Button>,
                 // sortable: true,
                 // right: true,
             },
@@ -167,26 +162,27 @@ class AuthDash extends Component {
                                     this.props.survey.map((item, index) =>
                                         <Card className='card-4 mt-3' key={index}>
                                             <Row>
-                                                <Col xl='5 text-center mt-3' >
+                                                <Col xl='6 text-center mt-2' >
                                                     {
-                                                        this.state.changeName == index ?
-                                                            <Input style={{ marginBottom: 10, marginLeft: 5 }} type='text' value={item.questname} onKeyDown={this.keyPress} onChange={(event) => this.rename(index, event)} />
-                                                            :
-                                                            <>{item.questname}</>
+                                                        // this.state.changeName == index ?
+                                                        //     <Input style={{ marginBottom: 10, marginLeft: 5 }} type='text' value={item.questname} onKeyDown={this.keyPress} onChange={(event) => this.rename(index, event)} />
+                                                        //     :
+                                                        <h5>{item.questname}</h5>
 
                                                     }
                                                     {/* {item.name} */}
                                                 </Col>
-                                                <Col xl='2 text-center mt-3' >{new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit'}).format(Date.now())}</Col>
+                                                <Col xl='2 text-center mt-2' ><h5>{item.createdAt.slice(0,10).replace(/-/g, "/")}</h5></Col>
                                                 {/* <Col xl='2 text-center mt-3' >{new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(item.createdAt)}</Col> */}
-                                                <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
-                                                <Col xl='1  text-center' >
-                                                    <Toggler
+                                                {/* <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col> */}
+                                                <Col xl='4  text-center mt-2' >
+                                                    <Button type="button" color="danger" className="waves-effect waves-light">Delete</Button>
+                                                    {/* <Toggler
                                                         copyQuestion={() => this.copyQuestion(item)}
                                                         deleteQuestion={() => this.deleteQuestion(index)}
                                                         rename={() => this.setState({ changeName: index })}
                                                         editQuestion={() => this.toggleEditModal(index)}
-                                                    />
+                                                    /> */}
                                                 </Col>
                                             </Row>
                                         </Card>
@@ -205,16 +201,19 @@ class AuthDash extends Component {
                         {/* </Scrollbars> */}
                     </Row>
 
-                    <Row style={{ marginTop: 30 }}>
-                        <Col xl='12'>
-                            <DataTable
-                                // title="Table List"
-                                columns={columns}
-                                data={data}
-                            />
-                        </Col>
-                    </Row>
+                    {
+                        this.props.survey ?
+                            <Row style={{ marginTop: 30 }}>
+                                <Col xl='12'>
+                                    <DataTable
+                                        // title="Table List"
+                                        columns={columns}
+                                        data={this.props.survey}
+                                    />
+                                </Col>
+                            </Row> : null
 
+                    } 
                     {
                         this.state.confirm_both &&
                         <SweetAlert

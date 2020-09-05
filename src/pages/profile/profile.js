@@ -169,7 +169,7 @@ class Profile extends Component {
 																		placeholder="田中_12" 
 																		value={this.state.username} 
 																		onChange={this.handleChange}
-																		disabled={this.state.role === 'Super-Admin' ? false : true} />
+																		disabled={this.props.role === 'superadmin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-email-input">メール</label>
@@ -178,7 +178,7 @@ class Profile extends Component {
 																			name="useremail"
 																			value={this.state.useremail}
 																			onChange={this.handleChange}
-																			disabled={this.state.role === 'Super-Admin' ? false : true} />
+																			disabled={this.props.role === 'superadmin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-designation-input">指定</label>
@@ -187,7 +187,7 @@ class Profile extends Component {
 																			name="userdelg"
 																			value={this.state.userdelg}
 																			onChange={this.handleChange}
-																			disabled={this.state.role === 'Super-Admin' ? false : true} />
+																			disabled={this.props.role === 'superadmin' ? false : true} />
 																</div>
 																<div class="form-group">
 																	<label htmlFor="example-company-input">会社</label>
@@ -196,7 +196,7 @@ class Profile extends Component {
 																			name="usercompany"
 																			value={this.state.usercompany} 
 																			onChange={this.handleChange}
-																			disabled={this.state.role === 'Super-Admin' ? false : true} />
+																			disabled={this.props.role === 'superadmin' ? false : true} />
 																</div>
 															</div>
 															{/* <div class="col-md-4">
@@ -212,7 +212,7 @@ class Profile extends Component {
 
 														<button type="submit" 
 															className="btn btn-primary"
-															hidden={this.state.role === 'Super-Admin' ? false : true}>変更を保存</button>
+															hidden={this.props.role === 'superadmin' ? false : true}>変更を保存</button>
 													</form>
 
 												</div>
@@ -273,9 +273,11 @@ class Profile extends Component {
 	}
 }
 
-const mapStatetoProps = state => {
-    const { user, loginError, loading } = state.Profile;
-    return { user, loginError, loading };
+const mapStatetoProps = ({Login, Profile}) => {
+	console.log('ROLE : ', Login);
+	const {role} = Login;
+    const { user, loginError, loading } = Profile;
+    return { user, loginError, loading, role };
 }
 
 export default withRouter(connect(mapStatetoProps, { activateAuthLayout, profileUpdateSuccessful })(Profile));

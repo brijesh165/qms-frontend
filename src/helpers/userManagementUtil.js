@@ -9,7 +9,18 @@ const getUserListStart = () => {
                 console.log('User Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
-                return response.data.Admin;
+                if (response.data.Role === 'SuperAdmin') {
+                    return {
+                        'users': [...response.data.SuperUser, ...response.data.Admins],
+                        'questions': response.data.Questions
+                    }
+                } else {
+                    return {
+                        'users': response.data.Admins,
+                        'questions': response.data.questions
+                    }
+                }
+                // return response.data;
             })
             .catch((error) => {
                 console.log('User Management Error : ', error);

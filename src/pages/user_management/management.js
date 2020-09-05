@@ -27,15 +27,15 @@ import { Editor } from 'react-draft-wysiwyg';
 import Select from 'react-select';
 
 import EditToggler from '../../components/userEditToggler';
-import axios from 'axios';
+// import axios from 'axios';
 // import data from '../../data/questions.json'
 
 
-const optionGroup = [
-    { label: "アンケート1", value: "Tent" },
-    { label: "アンケート2", value: "Flashlight" },
-    { label: "アンケート3", value: "Toilet Paper" }
-];
+// const optionGroup = [
+//     { label: "アンケート1", value: "Tent" },
+//     { label: "アンケート2", value: "Flashlight" },
+//     { label: "アンケート3", value: "Toilet Paper" }
+// ];
 
 const localStorageData = JSON.parse(localStorage.getItem('user'));
 
@@ -55,7 +55,8 @@ class UserManagement extends Component {
             userrole: '',
             emailsubject: '',
             expiresat: '',
-            sendbody: ''
+            sendbody: '',
+            optionGroup: JSON.parse(localStorage.getItem('optionGroup')) || []
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleEmailSubmit = this.handleEmailSubmit.bind(this);
@@ -90,12 +91,12 @@ class UserManagement extends Component {
         event.preventDefault();
         console.log('Handle Email Submit: ',
             this.state.emailsubject, this.state.expiresat,
-            this.state.selectedGroup.label, this.state.selectedEmail,
+            this.state.selectedGroup, this.state.selectedEmail,
             this.state.sendbody);
         this.props.sendemailsuccessful({
             "sendsubject": this.state.emailsubject,
             "sendusers": this.state.selectedEmail,
-            "sendsurvey": this.state.selectedGroup.label,
+            "sendsurvey": this.state.selectedGroup,
             "expirydate": this.state.expiresat,
             "sendbody": this.state.sendbody,
             "send": "True",
@@ -103,12 +104,34 @@ class UserManagement extends Component {
     }
 
     handleSelectGroup = (selectedGroup) => {
+        console.log('SELECTED GROUP');
         this.setState({ selectedGroup });
     }
 
     componentDidMount() {
         this.props.activateAuthLayout();
         this.props.getUserListStart();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let newOptionGroup = [];
+        if (this.props.questions) {
+            let newOptions;
+            for (let i=0; i<nextProps.questions.length; i++) {
+                newOptions = {
+                    label: this.props.questions[i].questname,
+                    value: this.props.questions[i].questions
+                }
+
+                newOptionGroup.push(newOptions);
+            }
+
+            this.setState({
+                optionGroup: newOptionGroup
+            }, () => {
+                localStorage.setItem('optionGroup', JSON.stringify(newOptionGroup))
+            })
+        }
     }
 
     componentWillUnmount() {
@@ -213,7 +236,7 @@ class UserManagement extends Component {
                         <Col xl="12 text-center">
                             <Card>
                                 <CardBody>
-                                    <h4 className="mt-0 header-title mb-4">株式会社 島根情報処理センターのユーザーリスト</h4>
+                                    {/* <h4 className="mt-0 header-title mb-4">株式会社 島根情報処理センターのユーザーリスト</h4> */}
                                     <div className="table-responsive">
                                         <Table className="table table-hover">
                                             <thead>
@@ -299,12 +322,20 @@ class UserManagement extends Component {
                                 <Col md={6}>
                                     <FormGroup>
                                         <Label htmlFor="example-email-input">アンケートを選択</Label>
+                                        {console.log('In SIDE: ', this.state.surveyList),
+                                        console.log('IN SIDE : ', this.state.optionGroup)}
                                         <Select
                                             placeholder="検索"
-                                            value={this.props.questions.questname}
+                                            value={selectedGroup}
                                             onChange={this.handleSelectGroup}
-                                            options={optionGroup}
-                                        />
+                                            options={this.state.optionGroup}
+                                        >
+                                            {/* {
+                                                this.state.optionGroup.map((item) => {
+                                                    return <options>item</options>
+                                                })
+                                            } */}
+                                        </Select>
                                     </FormGroup>
                                 </Col>
                             </Row>
@@ -394,12 +425,12 @@ class UserManagement extends Component {
     }
 }
 const mapStateToProps = ({ Login, questionnaireManagement, userManagement }) => {
-    console.log(Login.role);
+    console.log(Login);
     console.log(userManagement)
     console.log(questionnaireManagement)
     return {
         role: Login.role,
-        questions: questionnaireManagement.questions,
+        questions: userManagement.questions,
         superUser: userManagement.userData
     }
 }

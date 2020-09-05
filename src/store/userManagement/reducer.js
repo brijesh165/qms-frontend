@@ -1,7 +1,7 @@
 import userManagementTypes from './actionTypes';
 
 const initialState = {
-    userManagementError: null, loading: null, userData: null,
+    userManagementError: null, loading: null, userData: null, questions: null
 }
 
 const userManagement = (state = initialState, action) => {
@@ -16,24 +16,14 @@ const userManagement = (state = initialState, action) => {
             }
             break;
         case userManagementTypes.GET_USER_LIST_SUCCESS:
-            const allUser = [];
-            for (let i=0; i<action.payload.length; i++) {
-                const newUser = {
-                    "id": action.payload[i].id,
-                    "qmsid": action.payload[i].qmsid,
-                    "role": action.payload[i].role,
-                    "usercompany": action.payload[i].usercompany,
-                    "userdelg": action.payload[i].userdelg,
-                    "useremail": action.payload[i].useremail,
-                    "username": action.payload[i].username,
-                }
-                allUser.push(newUser);
-            }
+            const allUser = [...action.payload.users];
+            const allQuestions = [...action.payload.questions];
             state = {
                 ...state,
                 loading: false,
                 userManagementError: null,
-                userData: allUser
+                userData: allUser,
+                questions: allQuestions
             }
             break;
         case userManagementTypes.ADD_USER_START: 

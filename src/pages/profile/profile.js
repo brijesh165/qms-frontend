@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem, Input, Table, Dropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
+import { Container, Row, Col, Breadcrumb, Input } from 'reactstrap';
 import { activateAuthLayout, profileUpdateSuccessful } from '../../store/actions';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import axios from 'axios';
 // import { Scrollbars } from 'react-custom-scrollbars';

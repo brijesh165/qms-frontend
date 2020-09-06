@@ -6,6 +6,20 @@ export const getSurveyStart = () => (
     }
 )
 
+export const endSurveyStart = (questid) => (
+    {
+        type: dashboardTypes.END_SURVEY_START,
+        payload: questid
+    }
+)
+
+export const downloadSurveyStart = (questid) => (
+    {
+        type: dashboardTypes.DOWNLOAD_SURVEY_START,
+        payload: questid
+    }
+)
+
 export const apiError = (error) => (
     {
         type: dashboardTypes.API_FAILED,

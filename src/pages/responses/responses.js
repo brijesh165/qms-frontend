@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Button, Breadcrumb } from 'reactstrap';
+import { Container, Row, Col, Button, Breadcrumb, Spinner } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
-
+import { CSVLink } from 'react-csv';
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import { getSurveyStart } from './../../store/actions';
+import { getSurveyStart, endSurveyStart, downloadSurveyStart } from './../../store/actions';
 
 const optionGroup = [
 
@@ -24,8 +24,9 @@ class Responses extends Component {
         super(props);
         this.state = {
             confirm_both: false,
-            success_dlg:'',
-            error_dlg:''
+            success_dlg: '',
+            error_dlg: '',
+            downloadSurveyData: []
         };
     }
 
@@ -34,7 +35,21 @@ class Responses extends Component {
         this.props.getSurveyStart();
     }
 
-    
+    onEndSurveyHandler = (questid) => {
+        console.log('QUEST ID : ', questid);
+        this.props.endSurveyStart(questid)
+    }
+
+    onDownloadSurveyHandler = (questname) => {
+        console.log('QUEST NAME : ', questname);
+        this.props.downloadSurveyStart(questname);
+        if (!this.props.loading && this.props.downloadSurvey.length > 0) {
+            this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
+                this.surveyLink.link.click()
+            });
+        }
+    }
+
     render() {
         const columns = [
             {
@@ -46,7 +61,7 @@ class Responses extends Component {
             {
                 name: 'アンケート状況',
                 selector: 'name',
-                cell: row => <select id="cars">
+                cell: row => <select id="cars" onChange={() => this.onEndSurveyHandler(row.id)}>
                     <option value="回答受諾" disabled={row.accept === false}>回答受諾</option>
                     <option value="回答終了">回答終了</option>
                 </select>,
@@ -65,26 +80,40 @@ class Responses extends Component {
             {
                 name: '作成日',
                 selector: 'action',
-                cell: row => <p>{row.createdAt.slice(0,10).replace(/-/g, "/")}</p>,
+                cell: row => <p>{row.createdAt.slice(0, 10).replace(/-/g, "/")}</p>,
                 // sortable: true,
                 // right: true,
             },
             {
                 name: '最終更新日',
                 selector: 'action',
-                cell: row => <p>{row.updatedAt.slice(0,10).replace(/-/g, "/")}</p>
+                cell: row => <p>{row.updatedAt.slice(0, 10).replace(/-/g, "/")}</p>
                 // sortable: true,
                 // right: true,
             },
             {
                 name: 'ダウンロード',
                 selector: 'action',
-                cell: row => <Button onClick={() => this.setState({ confirm_both: true })} style={{ backgroundColor: 'transparent', border: 0 }}><i className="mdi mdi-cloud-download-outline cloud-download" style={{ color: 'grey' }}></i></Button>,
+                cell: row => <Button onClick={() => this.onDownloadSurveyHandler(row.questname)} style={{ backgroundColor: 'transparent', border: 0 }}><i className="mdi mdi-cloud-download-outline cloud-download" style={{ color: 'grey' }}></i></Button>,
                 // sortable: true,
                 // right: true,
             },
         ];
-    return (
+
+        let surveyTable = <Spinner />
+        if (this.props.loading) {
+            surveyTable = this.props.survey ?
+                <Row style={{ marginTop: 30 }}>
+                    <Col xl='12'>
+                        <DataTable
+                            // title="Table List"
+                            columns={columns}
+                            data={this.props.survey}
+                        />
+                    </Col>
+                </Row> : null
+        }
+        return (
             <React.Fragment>
                 <Container fluid>
                     <div className="page-title-box">
@@ -92,38 +121,31 @@ class Responses extends Component {
                             <Col lg="6">
                                 <h4 className="page-title">アンケートを選択して回答を確認してください。</h4>
                                 <Breadcrumb>
-                               
+
                                 </Breadcrumb>
                             </Col>
-                        
+
                         </Row>
                         <Col md='4 p-0 m-0'>
-                        <Select
-                                
+                            <Select
+
                                 // value={selectedGroup}
                                 onChange={this.handleSelectGroup}
                                 options={optionGroup}
                                 placeholder='検索。。'
                             />
                         </Col>
-                        
+
                     </div>
-                  
+
+                    <CSVLink style={{ textDecoration: 'none' }}
+                        data={this.state.downloadSurveyData}
+                        ref={(r) => this.surveyLink = r}
+                        filename={'questions.csv'}
+                        target="_blank" />
 
 
-                    {
-                        this.props.survey ?
-                            <Row style={{ marginTop: 30 }}>
-                                <Col xl='12'>
-                                    <DataTable
-                                        // title="Table List"
-                                        columns={columns}
-                                        data={this.props.survey}
-                                    />
-                                </Col>
-                            </Row> : null
-
-                    } 
+                    {surveyTable}
                     {
                         this.state.confirm_both &&
                         <SweetAlert
@@ -137,7 +159,7 @@ class Responses extends Component {
                         </SweetAlert>
                     }
 
-                   
+
 
                 </Container>
 
@@ -150,8 +172,10 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
     console.log(dashboardManagement);
     return {
         role: Login.role,
-        survey: dashboardManagement.surveyData
+        survey: dashboardManagement.surveyData,
+        loading: dashboardManagement.loading,
+        downloadSurvey: dashboardManagement.downloadSurvey
     }
 }
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout, getSurveyStart })(Responses));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getSurveyStart, endSurveyStart, downloadSurveyStart })(Responses));

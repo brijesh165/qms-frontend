@@ -62,7 +62,8 @@ class Questionnaire extends Component {
             reeditchildren:[[],],
             selectedQuestion: '',
             searchQuestionnaire: '',
-            questid: ''
+            questid: '',
+            allquestions: []
         };
         // this.setState({
         //     children: this.props.questions    
@@ -323,6 +324,14 @@ class Questionnaire extends Component {
         this.props.getquestionnairestart();
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.questions) {
+            this.setState({
+                allquestions: nextProps.questions
+            })
+        }
+    }
+
     onChangeText = (event) => {
         this.setState({
             [event.target.name]: event.target.value
@@ -476,18 +485,17 @@ class Questionnaire extends Component {
         this.props.copyquestionnairestart(item);
     }
 
-    searchQuestion = () => {
-        this.props.searchquestionnairestrart(this.state.searchQuestionnaire);
+    searchQuestion = (event) => {
+        if (this.props.questions) {
+            let new_data = this.props.questions.filter(item => {
+                console.log('From State : ', item.questname.toLowerCase());
+                console.log('From Input : ', event.target.value.toLowerCase());
+                return item.questname.toLowerCase().includes(event.target.value.toLowerCase())
+            })
+            console.log(new_data, 'vvvv')
+            this.setState({ allquestions: new_data })
+        }
     }
-
-    handleInputChange = (event) => {
-        const {name, value} = event.target;
-        this.setState({
-            [name]: value
-        });
-        this.searchQuestion();
-    }
-
 
     //   selectNextQ = (item, child) => {
     //     let items = []
@@ -545,8 +553,7 @@ class Questionnaire extends Component {
                                                     className="form-control" 
                                                     placeholder="アンケート検索"
                                                     name="searchQuestionnaire"
-                                                    value={this.state.searchQuestionnaire}
-                                                    onChange={this.handleInputChange} />
+                                                    onChange={this.searchQuestion} />
                                             <button type="submit"><i className="fa fa-search"></i></button>
                                         </div>
                                     </form>
@@ -571,7 +578,8 @@ class Questionnaire extends Component {
                         </Card>
 
                         {
-                            this.props.questions.map((item, ind) => (
+                            console.log(this.state.allquestions),
+                            this.state.allquestions.map((item, ind) => (
                                 console.log('INSIDE MAP : ', item._id),
                                 <Card className='card-4' style={{ height: 230, width: 230, borderRadius: 8, margin: 8 }}>
                                     <UncontrolledDropdown style={{ position: 'absolute', top: 5, right: 5, border: 0, backgroundColor: 'white', borderRadius: '50%' }} >

@@ -15,6 +15,7 @@ import {
     Button,
     Modal,
     ModalBody,
+    Spinner,
 } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { activateAuthLayout, addUserStart, sendemailsuccessful, getUserListStart } from '../../store/actions';
@@ -37,6 +38,7 @@ class UserManagement extends Component {
             success_dlg: '',
             error_dlg: '',
             selectedEmail: [],
+            users: [],
             username: '',
             useremail: '',
             userdelg: '',
@@ -45,7 +47,8 @@ class UserManagement extends Component {
             emailsubject: '',
             expiresat: '',
             sendbody: '',
-            optionGroup: JSON.parse(localStorage.getItem('optionGroup')) || []
+            optionGroup: JSON.parse(localStorage.getItem('optionGroup')) || [],
+            loading: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleEmailSubmit = this.handleEmailSubmit.bind(this);
@@ -78,10 +81,10 @@ class UserManagement extends Component {
 
     handleEmailSubmit(event, values) {
         event.preventDefault();
-        console.log('Handle Email Submit: ',
-            this.state.emailsubject, this.state.expiresat,
-            this.state.selectedGroup, this.state.selectedEmail,
-            this.state.sendbody);
+        // console.log('Handle Email Submit: ',
+        //     this.state.emailsubject, this.state.expiresat,
+        //     this.state.selectedGroup, this.state.selectedEmail,
+        //     this.state.sendbody);
         this.props.sendemailsuccessful({
             "sendsubject": this.state.emailsubject,
             "sendusers": this.state.selectedEmail,
@@ -105,16 +108,33 @@ class UserManagement extends Component {
         if (this.props.users) {
             this.setState({
                 users: this.props.users
-            });            
+            });
         }
-
-        if (this.props.questions) {
-            this.setOptionGroup(this.props.questions)
+        if (this.props.loading) {
+            this.setState({
+                loading: this.props.loading
+            })
         }
+        // console.log('COMPONENT WILL MOUNT : ', this.props.questions);
+        // if (this.props.questions.length > 0) {
+        //     this.setOptionGroup(this.props.questions)
+        // }
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setOptionGroup(nextProps.questions);
+        if (nextProps.users) {
+            this.setState({
+                users: nextProps.users
+            })
+        }
+        if (nextProps.loading) {
+            this.setState({
+                loading: nextProps.loading
+            })
+        }
+        if (this.props.questions) {
+            this.setOptionGroup(nextProps.questions);
+        }
     }
 
     setOptionGroup(nextProps) {
@@ -162,12 +182,10 @@ class UserManagement extends Component {
     searchUser = (event) => {
         if (this.props.users) {
             let new_data = this.props.users.filter(item => {
-                console.log('From State : ', item.username.toLowerCase());
-                console.log('From Input : ', event.target.value.toLowerCase());
                 return item.username.toLowerCase().includes(event.target.value.toLowerCase())
             })
             console.log(new_data, 'vvvv')
-            this.setState({ users: new_data })        
+            this.setState({ users: new_data })
         }
     }
 
@@ -177,6 +195,47 @@ class UserManagement extends Component {
 
     render() {
         const { selectedGroup } = this.state;
+        let userTable = <Spinner />;
+        if (this.props.loading) {
+            userTable =
+                this.state.users ?
+                    this.state.users.map((item, index) => (
+                        <tr key={index}>
+                            <td><div><Input type='checkbox' style={{ position: "relative" }} onClick={(event) => this.addEmail(item, event)} /></div></td>
+                            <th scope="row">{item.username}</th>
+                            <td>
+                                {item.usercompany}
+                                {/* <div>
+                                <img src={require(`./../../images/users/${item.image}`)} alt="" className="thumb-md rounded-circle mr-2" /> 
+                            </div> */}
+                            </td>
+                            <td>{item.userdelg}</td>
+                            {/* {
+                            this.props.role == 'superadmin' &&
+                            <th scope="col">{item.userdelg}</th>
+                        } */}
+                            {/* <th>{item._id}</th> */}
+                            <td colSpan="2"><span className="badge badge-success">
+                                {item.role}
+                                {/* {
+                                this.props.role === '管理者' ?
+                                    item.role === 'ユーザー管理' ? 'end user' : '管理者'
+                                    :
+                                    '管理者'
+                            } */}
+                            </span></td>
+                            <td>
+                                <div>
+                                    <EditToggler
+                                        user={item}
+                                        role={this.props.role}
+                                    />
+                                    {/* <Link to="#" className="btn btn-primary btn-sm">編集</Link> */}
+                                </div>
+                            </td>
+                        </tr>
+                    )) : null
+        }
 
         return (
             <React.Fragment>
@@ -262,46 +321,7 @@ class UserManagement extends Component {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {
-                                                    this.props.users ?
-                                                        this.props.users.map((item, index) => (
-                                                            <tr key={index}>
-                                                                <td><div><Input type='checkbox' style={{ position: "relative" }} onClick={(event) => this.addEmail(item, event)} /></div></td>
-                                                                <th scope="row">{item.username}</th>
-                                                                <td>
-                                                                    {item.usercompany}
-                                                                    {/* <div>
-                                                                    <img src={require(`./../../images/users/${item.image}`)} alt="" className="thumb-md rounded-circle mr-2" /> 
-                                                                </div> */}
-                                                                </td>
-                                                                <td>{item.userdelg}</td>
-                                                                {/* {
-                                                                this.props.role == 'superadmin' &&
-                                                                <th scope="col">{item.userdelg}</th>
-                                                            } */}
-                                                                {/* <th>{item._id}</th> */}
-                                                                <td colSpan="2"><span className="badge badge-success">
-                                                                    {item.role}
-                                                                    {/* {
-                                                                    this.props.role === '管理者' ?
-                                                                        item.role === 'ユーザー管理' ? 'end user' : '管理者'
-                                                                        :
-                                                                        '管理者'
-                                                                } */}
-                                                                </span></td>
-                                                                <td>
-                                                                    <div>
-                                                                        <EditToggler
-                                                                            user={item}
-                                                                            role={this.props.role}
-                                                                        />
-                                                                        {/* <Link to="#" className="btn btn-primary btn-sm">編集</Link> */}
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        )) : null
-                                                }
-
+                                                {userTable}
                                             </tbody>
                                         </Table>
                                     </div>
@@ -432,6 +452,7 @@ class UserManagement extends Component {
 const mapStateToProps = ({ Login, userManagement }) => {
     return {
         role: Login.role,
+        loading: userManagement.loading,
         questions: userManagement.questions,
         users: userManagement.userData
     }

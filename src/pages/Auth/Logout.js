@@ -16,6 +16,7 @@ class Logout extends Component {
 
         // Remove all Item from localstorage and redirect to login page
         localStorage.removeItem('user');
+        localStorage.clear();
         this.props.history.push('/login');
     }
 

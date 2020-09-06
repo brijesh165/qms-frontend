@@ -20,7 +20,7 @@ const userManagement = (state = initialState, action) => {
             const allQuestions = [...action.payload.questions];
             state = {
                 ...state,
-                loading: false,
+                loading: true,
                 userManagementError: null,
                 userData: allUser,
                 questions: allQuestions
@@ -47,7 +47,7 @@ const userManagement = (state = initialState, action) => {
             const addedUser = [...prevUser, newAddUser];
             state = {
                 ...state,
-                loading: false,
+                loading: true,
                 userManagementError: null,
                 userData: addedUser
             }
@@ -66,7 +66,7 @@ const userManagement = (state = initialState, action) => {
             });
             state = {
                 ...state, 
-                loading: false,
+                loading: true,
                 userManagementError: null,
                 userData: userAfterDelete
             }
@@ -79,14 +79,20 @@ const userManagement = (state = initialState, action) => {
             }
             break;
         case userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL: 
-            let changeRole = [...state.userData];
-            let userAfterChangeRole = [...changeRole, action.payload.role];
-            console.log('CHANGE ROLE START : ', userAfterChangeRole);
+            let changeUserRole = [...state.userData];
+            let changeRoleFilter = changeUserRole.find((item)=> {
+                return item.id === action.payload.id
+            });
+            let index = changeUserRole.findIndex(item => item.id === action.payload.id);
+            let userAfterChangeRole = {...changeRoleFilter, ...{role:action.payload.userrole}};
+            changeUserRole[index] = userAfterChangeRole;
+
+            console.log('AFTER CHANGE ROLE : ', changeUserRole);
             state = {
                 ...state, 
-                loading: false,
+                loading: true,
                 userManagementError: null,
-                // userData: changeRole
+                userData: changeUserRole,
             }
             break;
         case userManagementTypes.SEND_EMAIL_SUCCESSFUL: 

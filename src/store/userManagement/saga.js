@@ -68,14 +68,13 @@ export function* watchDeleteUser() {
     yield takeEvery(userManagementTypes.DELETE_USER_SUCCESSFUL, deleteUserSuccesss)
 }
 
-function* changeUserRoleSuccesss({ payload: { user_data, history } }) {
+function* changeUserRoleSuccesss({ payload: { user_data } }) {
     try {
         console.log('Saga', user_data);
         const response = yield call(changeUserRoleSuccess, { user_data });
         console.log('SAGA RESPONSE : ', response);
         yield put({type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL, 
                     payload: response})
-        history.push('/user-management');
     } catch (error) {
         yield put(apiError(error));
     }

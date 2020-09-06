@@ -6,6 +6,18 @@ export const getSurveyStart = () => (
     }
 )
 
+export const getAdminSurveyStart = () => (
+    {
+        type: dashboardTypes.GET_ADMIN_SURVEY_DATA_START
+    }
+)
+
+export const getUserSurveyStart = () => (
+    {
+        type: dashboardTypes.GET_USER_SURVEY_DATA_START
+    }
+)
+
 export const endSurveyStart = (questid) => (
     {
         type: dashboardTypes.END_SURVEY_START,

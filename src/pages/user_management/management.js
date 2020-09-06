@@ -83,12 +83,13 @@ class UserManagement extends Component {
         event.preventDefault();
         // console.log('Handle Email Submit: ',
         //     this.state.emailsubject, this.state.expiresat,
-        //     this.state.selectedGroup, this.state.selectedEmail,
+        //     this.state.selectedGroup.label, this.state.selectedGroup.id, this.state.selectedEmail,
         //     this.state.sendbody);
         this.props.sendemailsuccessful({
             "sendsubject": this.state.emailsubject,
             "sendusers": this.state.selectedEmail,
-            "sendsurvey": this.state.selectedGroup,
+            "questname": this.state.selectedGroup.label,
+            "questid": this.state.selectedGroup.id,
             "expirydate": this.state.expiresat,
             "sendbody": this.state.sendbody,
             "send": "True",
@@ -142,6 +143,7 @@ class UserManagement extends Component {
         let newOptions;
         for (let i = 0; i < nextProps.length; i++) {
             newOptions = {
+                id: nextProps[i].id,
                 label: nextProps[i].questname,
                 value: nextProps[i].questions
             }

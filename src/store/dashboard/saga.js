@@ -4,7 +4,8 @@ import { takeEvery, put, all, call } from 'redux-saga/effects';
 import dashboardTypes from './actionTypes';
 import { apiError } from './actions';
 
-import { getSurveySuccess, endSurveySuccess, downloadSurvetSuccess } from './../../helpers/dashboardManagementUtil';
+import { getSurveySuccess, endSurveySuccess, downloadSurvetSuccess, 
+        getUserSurveyUtil, getAdminSurveyUtil } from './../../helpers/dashboardManagementUtil';
 
 function* getSurveySuccesss() {
     try {
@@ -21,6 +22,41 @@ function* getSurveySuccesss() {
 
 export function* watchGetSurvey() {
     yield takeEvery(dashboardTypes.GET_SURVEY_DATA_START, getSurveySuccesss)
+}
+
+function* getUserSurveyStart() {
+    try {
+        console.log('GET USER SURVEY START');
+        const response = yield call(getUserSurveyUtil);
+        console.log(response);
+        if (response) {
+            yield put({type: dashboardTypes.GET_USER_SURVEY_DATA_SUCCESS,
+                        payload: response})
+        }
+    } catch (error) {
+        yield put(apiError(error));
+    }
+}
+
+export function* watchGetUserSurvey() {
+    yield takeEvery(dashboardTypes.GET_USER_SURVEY_DATA_START, getUserSurveyStart);
+}
+
+function* getAdminSurveyStart() {
+    try {
+        const response = yield call(getAdminSurveyUtil);
+        console.log(response);
+        if (response) {
+            yield put({type: dashboardTypes.GET_ADMIN_SURVEY_DATA_SUCCESS,
+                        payload: response})
+        }
+    } catch (error) {
+        yield put(apiError(error));
+    }
+}
+
+export function* watchGetAdminSurvey() {
+    yield takeEvery(dashboardTypes.GET_ADMIN_SURVEY_DATA_START, getAdminSurveyStart);
 }
 
 function* endSurveyStart({payload: questid}) {

@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem, Input, Table,Dropdown,DropdownMenu,DropdownItem, DropdownToggle, UncontrolledDropdown ,
+import {
+    Container, Row, Col, Card, CardBody, Button, Breadcrumb, BreadcrumbItem, Input, Table, Dropdown, DropdownMenu, DropdownItem, DropdownToggle, UncontrolledDropdown,
     Modal,
     ModalBody,
     ModalFooter,
     Form,
     FormGroup,
     Label,
+    Spinner,
 
 } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
@@ -15,10 +17,12 @@ import { connect } from 'react-redux';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Select from 'react-select';
 
+import { getUserSurveyStart } from '../../store/actions';
+
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import questions from '../../data/sample.json'
-import questions2 from '../../data/sample2.json'
+// import questions from '../../data/sample.json'
+// import questions2 from '../../data/sample2.json'
 
 import QuestionModal from '../../components/questionModal'
 
@@ -45,30 +49,85 @@ class EndUserDash extends Component {
         super(props);
         this.state = {
             confirm_both: false,
-            success_dlg:'',
-            error_dlg:'',
-            questions:questions,
-            questions2:questions2,
+            success_dlg: '',
+            error_dlg: '',
+            questions: [],
+            questions2: [],
 
             fillFormToggle: false,
-            selectedQuestion:''
+            selectedQuestion: ''
         };
     }
 
     componentDidMount() {
         this.props.activateAuthLayout();
+        this.props.getUserSurveyStart();
+    }
 
+    componentWillReceiveProps(nextProps) {
+        if (this.props.questions) {
+            this.setState({
+                questions: nextProps.questions
+            })
+        }
     }
 
     fillFormToggle = (index) => {
         let question = this.state.questions[index]
-        this.setState({selectedQuestion: question}, () => {
-            this.setState({fillFormToggle: !this.state.fillFormToggle})
+        this.setState({ selectedQuestion: question }, () => {
+            this.setState({ fillFormToggle: !this.state.fillFormToggle })
         })
     }
 
     render() {
+        let table1 = <Spinner />
+        if (this.props.loading) {
+            table1 = this.state.questions.map((item, index) =>
+                <Card className='card-4 mt-3'>
+                    <Row>
+                        <Col xl='5 text-center mt-3' >{item.name}</Col>
+                        <Col xl='2 text-center mt-3' >{item.date}</Col>
+                        <Col xl='2 text-center mt-3' >締切日：2020年6月11日</Col>
+                        <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
+                        <Col xl='1  text-center' >
+                            <UncontrolledDropdown  >
+                                <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
+                                    <i className="mdi mdi-dots-vertical-circle" style={{ color: 'grey', fontSize: 25 }}></i>
+                                </DropdownToggle>
+                                <DropdownMenu right>
+                                    <DropdownItem onClick={() => this.fillFormToggle(index)}>アンケート記入</DropdownItem>
+                                    <DropdownItem tag="a" href="#">アンケートを提出</DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                        </Col>
+                    </Row>
+                </Card>
+            )
+        };
 
+        let table2 = <Spinner />
+        if (this.props.loading) {
+            table2 = this.state.questions2.map((item, index) =>
+                <Card className='card-4 mt-3'>
+                    <Row>
+                        <Col xl='5 text-center mt-3' >{item.name}</Col>
+                        <Col xl='2 text-center mt-3' >{item.date}</Col>
+                        <Col xl='2 text-center mt-3' >締切日：2020年6月14日</Col>
+                        <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
+                        <Col xl='1  text-center' >
+                            <UncontrolledDropdown  >
+                                <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
+                                    <i className="mdi mdi-dots-vertical-circle" style={{ color: 'grey', fontSize: 25 }}></i>
+                                </DropdownToggle>
+                                <DropdownMenu right>
+                                    <DropdownItem onClick={() => this.fillFormToggle(index)}>アンケートを開く</DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                        </Col>
+                    </Row>
+                </Card>
+            )
+        }
         return (
             <React.Fragment>
                 <Container fluid>
@@ -80,7 +139,7 @@ class EndUserDash extends Component {
                                     <BreadcrumbItem active>QMSのダッシュボードにようこそ！</BreadcrumbItem>
                                 </Breadcrumb>
                                 <Col md='6 p-0 m-0'>
-                                <Select
+                                    <Select
 
                                         // value={selectedGroup}
                                         onChange={this.handleSelectGroup}
@@ -98,33 +157,11 @@ class EndUserDash extends Component {
                     </div>
 
                     <Row>
-                        <Scrollbars style={{ height: 300,display:'flex',alignItems:'center',border:'1px solid grey' }}>
+                        <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
                                 {
-                                    this.state.questions.map((item, index) =>
-                                        <Card className='card-4 mt-3'>
-                                            <Row>
-                                            <Col xl='5 text-center mt-3' >{item.name}</Col>
-                                                <Col xl='2 text-center mt-3' >{item.date}</Col>
-                                                <Col xl='2 text-center mt-3' >締切日：2020年6月11日</Col>
-                                                <Col xl='2  text-center mt-2' ><i  class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
-                                                <Col xl='1  text-center' >
-                                                    <UncontrolledDropdown  >
-                                                        <DropdownToggle className='toggler-custom' style={{backgroundColor:'transparent',width:40,height:40,display:'flex',alignItems:'center',justifyContent:'center',border:0}}>
-                                                            <i className="mdi mdi-dots-vertical-circle" style={{color:'grey',fontSize:25}}></i>
-                                                        </DropdownToggle>
-                                                        <DropdownMenu  right>
-                                                            <DropdownItem onClick={() => this.fillFormToggle(index)}>アンケート記入</DropdownItem>
-                                                            <DropdownItem tag="a" href="#">アンケートを提出</DropdownItem>
-                                                        </DropdownMenu>
-                                                    </UncontrolledDropdown>
-                                                </Col>
-                                            </Row>
-                                        </Card>
-                                        )
+                                    table1
                                 }
-
-
                             </Col>
                         </Scrollbars>
                     </Row>
@@ -135,7 +172,7 @@ class EndUserDash extends Component {
 
                                 <h4 className="page-title">以前に記入したアンケート。</h4>
                                 <Col md='6 p-0 m-0'>
-                                <Select
+                                    <Select
 
                                         // value={selectedGroup}
                                         onChange={this.handleSelectGroup}
@@ -143,7 +180,7 @@ class EndUserDash extends Component {
                                         placeholder='アンケートを検索'
                                     />
                                 </Col>
-                                    {/* <BreadcrumbItem active>Welcome to Qms Dashboard</BreadcrumbItem> */}
+                                {/* <BreadcrumbItem active>Welcome to Qms Dashboard</BreadcrumbItem> */}
                             </Col>
                             <Col sm="6">
                                 <div className="float-right d-none d-md-block">
@@ -153,29 +190,10 @@ class EndUserDash extends Component {
                         </Row>
                     </div>
                     <Row>
-                        <Scrollbars style={{ height: 300,display:'flex',alignItems:'center',border:'1px solid grey' }}>
+                        <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
                                 {
-                                    this.state.questions2.map((item, index) =>
-                                        <Card className='card-4 mt-3'>
-                                            <Row>
-                                                <Col xl='5 text-center mt-3' >{item.name}</Col>
-                                                <Col xl='2 text-center mt-3' >{item.date}</Col>
-                                                <Col xl='2 text-center mt-3' >締切日：2020年6月14日</Col>
-                                                <Col xl='2  text-center mt-2' ><i  class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
-                                                <Col xl='1  text-center' >
-                                                    <UncontrolledDropdown  >
-                                                        <DropdownToggle className='toggler-custom' style={{backgroundColor:'transparent',width:40,height:40,display:'flex',alignItems:'center',justifyContent:'center',border:0}}>
-                                                            <i className="mdi mdi-dots-vertical-circle" style={{color:'grey',fontSize:25}}></i>
-                                                        </DropdownToggle>
-                                                        <DropdownMenu  right>
-                                                            <DropdownItem onClick={() => this.fillFormToggle(index)}>アンケートを開く</DropdownItem>
-                                                        </DropdownMenu>
-                                                    </UncontrolledDropdown>
-                                                </Col>
-                                            </Row>
-                                        </Card>
-                                        )
+                                    table2
                                 }
 
 
@@ -198,7 +216,7 @@ class EndUserDash extends Component {
 
 
 
-                   <Modal className="modal-lg" isOpen={this.state.fillFormToggle} toggle={() => this.setState({fillFormToggle: false})} >
+                    <Modal className="modal-lg" isOpen={this.state.fillFormToggle} toggle={() => this.setState({ fillFormToggle: false })} >
                         <div className="modal-header">
                             <h5 className="modal-title mt-0" id="myLargeModalLabel">Fill questions here</h5>
                             <button onClick={() => this.setState({ fillFormToggle: false })} type="button" className="close" data-dismiss="modal" aria-label="Close">
@@ -210,29 +228,29 @@ class EndUserDash extends Component {
                                 <FormGroup row>
                                     <Label htmlFor="example-text-input" sm="2">Header</Label>
                                     <Col sm="10">
-                                        <Input type="text" name={'form_header'} value={this.state.selectedQuestion.name} id="example-text-input" onChange={this.onChangeText}/>
+                                        <Input type="text" name={'form_header'} value={this.state.selectedQuestion.name} id="example-text-input" onChange={this.onChangeText} />
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Label htmlFor="example-search-input" sm="2">Name</Label>
                                     <Col sm="10">
-                                        <Input type="search" name={'form_name'} value={this.state.selectedQuestion.header} id="example-search-input"onChange={this.onChangeText} />
+                                        <Input type="search" name={'form_name'} value={this.state.selectedQuestion.header} id="example-search-input" onChange={this.onChangeText} />
                                     </Col>
                                 </FormGroup>
                             </Form>
                             <Col xs='12 text-center'>
 
-                            <QuestionModal
-                            children = {this.state.selectedQuestion.children}
-                            fillForm={true}
-                            />
+                                <QuestionModal
+                                    children={this.state.selectedQuestion.children}
+                                    fillForm={true}
+                                />
                             </Col>
 
 
                         </ModalBody>
                         <ModalFooter>
-                            <Button  type="button" color="secondary" onClick={() => this.setState({fillFormToggle: false})} className="waves-effect">Close</Button>
-                            <Button diabled onClick={() => this.setState({fillFormToggle: false})} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
+                            <Button type="button" color="secondary" onClick={() => this.setState({ fillFormToggle: false })} className="waves-effect">Close</Button>
+                            <Button diabled onClick={() => this.setState({ fillFormToggle: false })} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
                         </ModalFooter>
                     </Modal>
 
@@ -244,11 +262,12 @@ class EndUserDash extends Component {
     }
 }
 
-const mapStateToProps = ({Login}) => {
-    return{
-        role: Login.role
+const mapStateToProps = ({ Login, dashboardManagement }) => {
+    return {
+        role: Login.role,
+        questions: dashboardManagement.userSurveyData
     }
 }
 
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout })(EndUserDash));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserSurveyStart })(EndUserDash));

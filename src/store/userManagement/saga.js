@@ -84,12 +84,12 @@ export function* watchChangeUserRole() {
     yield takeEvery(userManagementTypes.CHANGE_USER_ROLE_START, changeUserRoleSuccesss)
 }
 
-function* sendEmailSuccesss({ payload: { email_data, history } }) {
+function* sendEmailSuccesss({ payload: { email_data } }) {
     try {
         console.log('Saga', email_data);
         const response = yield call(sendEmailSuccess, { email_data });
-        console.log(response);
-        history.push('/user-management');
+        console.log(response.status);
+        console.log(response.status == 205 ? true : false);
     } catch (error) {
         yield put(apiError(error));
     }

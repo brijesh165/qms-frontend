@@ -26,12 +26,12 @@ export function* watchGetSurvey() {
 
 function* getUserSurveyStart() {
     try {
-        console.log('GET USER SURVEY START');
+        console.log('GET USER SURVEY START SAGA');
         const response = yield call(getUserSurveyUtil);
         console.log(response);
         if (response) {
             yield put({type: dashboardTypes.GET_USER_SURVEY_DATA_SUCCESS,
-                        payload: response})
+                        payload: response.questData})
         }
     } catch (error) {
         yield put(apiError(error));
@@ -96,6 +96,8 @@ export function* watchDownloadSurvey() {
 
 function* dashboardManagementSagas() {
     yield all([call(watchGetSurvey),
+                call(watchGetUserSurvey),
+                call(watchGetAdminSurvey),
                 call(watchEndSurvey),
                 call(watchDownloadSurvey)]);
 }

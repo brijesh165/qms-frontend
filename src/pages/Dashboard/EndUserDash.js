@@ -85,10 +85,10 @@ class EndUserDash extends Component {
             table1 = this.state.questions.map((item, index) =>
                 <Card className='card-4 mt-3'>
                     <Row>
-                        <Col xl='5 text-center mt-3' >{item.name}</Col>
-                        <Col xl='2 text-center mt-3' >{item.date}</Col>
-                        <Col xl='2 text-center mt-3' >締切日：2020年6月11日</Col>
-                        <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
+                        <Col xl='3 text-center mt-3' >{item.questname}</Col>
+                        <Col xl='4 text-center mt-3' >{'Created At : ' + item.createdAt.slice(0,10).replace(/-/g, "/")}</Col>
+                        <Col xl='4 text-center mt-3' >{'Expires At : ' + item.dateexpired.slice(0,10).replace(/-/g, "/")}</Col>
+                        {/* <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col> */}
                         <Col xl='1  text-center' >
                             <UncontrolledDropdown  >
                                 <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
@@ -241,7 +241,7 @@ class EndUserDash extends Component {
                             <Col xs='12 text-center'>
 
                                 <QuestionModal
-                                    children={this.state.selectedQuestion.children}
+                                    children={this.state.selectedQuestion}
                                     fillForm={true}
                                 />
                             </Col>
@@ -263,8 +263,10 @@ class EndUserDash extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
+    console.log(dashboardManagement.userSurveyData);
     return {
         role: Login.role,
+        loading: dashboardManagement.loading,
         questions: dashboardManagement.userSurveyData
     }
 }

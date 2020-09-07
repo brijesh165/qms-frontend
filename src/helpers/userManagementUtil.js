@@ -103,8 +103,8 @@ const sendEmailSuccess = async data => {
             .then((response) => {
                 console.log('User Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
-                    throw response.data;
-                return response.data;
+                    throw response.status;
+                return response;
             }).catch(err => {
                 console.log('User Management Util error : ', err);
                 throw err[1];

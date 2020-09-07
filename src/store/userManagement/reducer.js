@@ -1,7 +1,8 @@
 import userManagementTypes from './actionTypes';
 
 const initialState = {
-    userManagementError: null, loading: null, userData: null, questions: null
+    userManagementError: null, loading: null, userData: null, questions: null,
+    sendEmailSuccess: false
 }
 
 const userManagement = (state = initialState, action) => {
@@ -99,7 +100,8 @@ const userManagement = (state = initialState, action) => {
             state = {
                 ...state, 
                 loading: false,
-                userManagementError: null
+                userManagementError: null,
+                sendEmailSuccess: action.payload.send
             }
             break;
         case userManagementTypes.API_FAILED:

@@ -13,6 +13,7 @@ export const getAdminSurveyStart = () => (
 )
 
 export const getUserSurveyStart = () => (
+    console.log('GET USER ACTION'),
     {
         type: dashboardTypes.GET_USER_SURVEY_DATA_START
     }

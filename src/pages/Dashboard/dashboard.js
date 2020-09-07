@@ -35,6 +35,7 @@ class Dashboard extends Component {
     }
 
     render() {
+        console.log('RENDER ROLE : ', this.state.role);
         if (this.state.role === "enduser") {
             console.log('ENDUSER');
             return (<EndUserDash />)

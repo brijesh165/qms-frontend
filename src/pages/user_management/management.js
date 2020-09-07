@@ -55,6 +55,15 @@ class UserManagement extends Component {
         this.handleEditorChange = this.handleEditorChange.bind(this);
     }
 
+    resetState = () => {
+        this.setState({
+            selectedEmail: [],
+            sendsubject: '',
+            expirydate: '',
+            sendbody: ''
+        })
+    }
+
     handleSubmit(event, values) {
         this.props.addUserStart({
             "username": values.username,
@@ -94,6 +103,10 @@ class UserManagement extends Component {
             "sendbody": this.state.sendbody,
             "send": "True",
         }, this.props.history);
+
+        if (this.props.sendEmailStatus) {
+            this.resetState()
+        }
     }
 
     handleSelectGroup = (selectedGroup) => {
@@ -461,7 +474,8 @@ const mapStateToProps = ({ Login, userManagement }) => {
         role: Login.role,
         loading: userManagement.loading,
         questions: userManagement.questions,
-        users: userManagement.userData
+        users: userManagement.userData,
+        sendEmailStatus: userManagement.sendEmailSuccess
     }
 }
 

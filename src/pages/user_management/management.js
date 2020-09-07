@@ -172,12 +172,17 @@ class UserManagement extends Component {
             this.setState({ selectedEmail: selectedEmail })
 
         } else {
-            let new_mails = [...this.state.selectedEmail].map(itm => {
-                if (itm !== item.email) {
-                    return itm
-                }
-            })
-            this.setState({ selectedEmail: new_mails })
+            const prevState = [...this.state.selectedEmail];
+            let newEmail = prevState.indexOf(item.username);
+            prevState.splice(newEmail, 1);
+            console.log(prevState);
+            // let new_mails = [...this.state.selectedEmail].map(itm => {
+            //     if (itm !== item.useremail) {
+            //         return itm
+            //     }
+            // })
+            // console.log(new_mails);
+            this.setState({ selectedEmail: prevState })
         }
     }
 

@@ -1,14 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
     Row,
     Col,
     Card,
-
     Button,
     Input,
     Label,
-
-
 } from 'reactstrap';
 import Select from 'react-select';
 import Rating from 'react-rating';
@@ -24,8 +21,6 @@ let options = [
     { label: 'マトリックス（1つ選択）[横]', value: 6 },
     { label: 'マトリックス（複数選択）[横]', value: 7 },
     { label: '説明文', value: 8 },
-
-
 ]
 
 class QuestionModal extends React.Component {
@@ -45,6 +40,7 @@ class QuestionModal extends React.Component {
                                             name="username"
                                             dataType="text"
                                             mode="inline"
+                                            disabled={this.props.fillForm}
                                             value={item ? item : 'オプションを追加'}
                                         />
                                     </Label>
@@ -72,6 +68,7 @@ class QuestionModal extends React.Component {
                                             name="checkbox"
                                             dataType="text"
                                             mode="inline"
+                                            disabled={this.props.fillForm}
                                             value={item ? item : 'オプションを追加'}
                                         />
                                     </Label>
@@ -190,7 +187,7 @@ class QuestionModal extends React.Component {
                             options.length > 1 || !this.state.fillForm &&
                             <Row>
                                 <Button onClick={() => this.martixAddQuestionHandler(parentIndex, childIndex)} color='primary' size='sm  m-3'>質問を追加</Button>&nbsp;
-                                    <Button onClick={() => this.martixAddOptionHandler(parentIndex, childIndex)} color='primary' size='sm m-3'>オプションを追加</Button>
+                                <Button onClick={() => this.martixAddOptionHandler(parentIndex, childIndex)} color='primary' size='sm m-3'>オプションを追加</Button>
                             </Row>
                         }
 
@@ -247,7 +244,7 @@ class QuestionModal extends React.Component {
                             options.length > 1 || !this.props.fillForm &&
                             <Row>
                                 <Button onClick={() => this.martixAddQuestionHandler(parentIndex, childIndex)} color='primary' size='sm  m-3'>質問を追加</Button>&nbsp;
-                                    <Button onClick={() => this.martixAddOptionHandler(parentIndex, childIndex)} color='primary' size='sm m-3'>オプションを追加</Button>
+                                <Button onClick={() => this.martixAddOptionHandler(parentIndex, childIndex)} color='primary' size='sm m-3'>オプションを追加</Button>
                             </Row>
                         }
 
@@ -304,11 +301,12 @@ class QuestionModal extends React.Component {
         return (
             <>
                 {
-                    this.props.children.map((item, index) => (
+                    console.log(this.props.children.questions),
+                    this.props.children.questions.map((item, index) => (
                         <>
                             {
-                                this.props.children.length > 1 &&
-                                <h5 className='pull-left'>section {index + 1} of {this.props.children.length}</h5>
+                                this.props.children.questions.length > 1 &&
+                                <h5 className='pull-left'>section {index + 1} of {this.props.children.questions.length}</h5>
                             }
                             {
                                 item.map((child, childIndex) => (
@@ -327,7 +325,8 @@ class QuestionModal extends React.Component {
                                             <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }}>
                                                 <Input disabled={this.props.fillForm} placeholder='Type your question here' value={child.question} type="text" id="example-text-input" onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
                                                 {this.questionTypeHandler(child.type, child.options, index, childIndex)}
-                                                {/* <Input style={{marginTop:12}} disabled  type="text" name={'form_header'}  id="example-text-input" /> */}
+                                                <Input style={{marginTop:12}} disabled  type="text" name={'form_header'}  
+                                                        id="example-text-input" />
 
                                             </Col>
                                             {
@@ -362,11 +361,11 @@ class QuestionModal extends React.Component {
                                 ))}
                             <hr />
                             {
-                                this.props.children.length > 1 &&
+                                this.props.children.questions.length > 1 &&
                                 <Col md='6'>
                                     <Row>
                                         {
-                                            index + 1 != this.props.children.length &&
+                                            index + 1 != this.props.children.questions.length &&
                                             <>
                                                 <Col className='col-md-3' style={{ marginTop: 5, padding: 0 }}>
                                                     <p>After section {index + 1}</p>
@@ -375,7 +374,7 @@ class QuestionModal extends React.Component {
                                                     <Input type="select" name="ddlCreditCardType" id="ddlCreditCardType">
                                                         <option value="">Continue to next section</option>
                                                         {
-                                                            this.props.children.map((item, index) => (
+                                                            this.props.children.questions.map((item, index) => (
                                                                 <option value="DI">Section {index + 1}</option>
                                                             ))
                                                         }
@@ -402,7 +401,7 @@ class QuestionModal extends React.Component {
                 }
 
                 {
-                    this.props.children[0].length > 0 &&
+                    this.props.children.questions[0].length > 0 &&
                     <Card className='mt-3' style={{ width: '100%', height: 70, border: '1px solid grey', borderRadius: 5 }}>
                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
                             <Editable

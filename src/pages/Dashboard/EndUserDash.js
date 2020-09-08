@@ -8,7 +8,6 @@ import {
     FormGroup,
     Label,
     Spinner,
-
 } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
@@ -77,6 +76,14 @@ class EndUserDash extends Component {
         this.setState({ selectedQuestion: question }, () => {
             this.setState({ fillFormToggle: !this.state.fillFormToggle })
         })
+        console.log('FILL FORM TOGGLE : ', this.state.questions);
+    }
+
+    onSaveHandler = () => {
+        this.setState({
+            fillFormToggle: false
+        })
+        console.log(this.state.questions);
     }
 
     render() {
@@ -225,16 +232,16 @@ class EndUserDash extends Component {
                         </div>
                         <ModalBody>
                             <Form>
-                                <FormGroup row>
+                                {/* <FormGroup row>
                                     <Label htmlFor="example-text-input" sm="2">Header</Label>
                                     <Col sm="10">
-                                        <Input type="text" name={'form_header'} value={this.state.selectedQuestion.name} id="example-text-input" onChange={this.onChangeText} />
+                                        <Input type="text" name={'form_header'} value={this.state.selectedQuestion.questname} id="example-text-input" onChange={this.onChangeText} />
                                     </Col>
-                                </FormGroup>
+                                </FormGroup> */}
                                 <FormGroup row>
                                     <Label htmlFor="example-search-input" sm="2">Name</Label>
                                     <Col sm="10">
-                                        <Input type="search" name={'form_name'} value={this.state.selectedQuestion.header} id="example-search-input" onChange={this.onChangeText} />
+                                        <Input type="search" disabled name={'form_name'} value={this.state.selectedQuestion.questions[0].questname} id="example-search-input" onChange={this.onChangeText} />
                                     </Col>
                                 </FormGroup>
                             </Form>
@@ -249,8 +256,10 @@ class EndUserDash extends Component {
 
                         </ModalBody>
                         <ModalFooter>
-                            <Button type="button" color="secondary" onClick={() => this.setState({ fillFormToggle: false })} className="waves-effect">Close</Button>
-                            <Button diabled onClick={() => this.setState({ fillFormToggle: false })} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
+                            <Button type="button" 
+                                    color="secondary" 
+                                    onClick={() => this.setState({ fillFormToggle: false })} className="waves-effect">Close</Button>
+                            <Button diabled onClick={() => this.onSaveHandler()} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
                         </ModalFooter>
                     </Modal>
 

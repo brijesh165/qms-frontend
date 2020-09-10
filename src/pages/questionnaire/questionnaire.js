@@ -479,9 +479,6 @@ class Questionnaire extends Component {
     }
 
     duplicateQuestion = (item) => {
-        // let new_questions = [...this.state.questions];
-        // new_questions.push(item)
-        // this.setState({ questions: new_questions })
         this.props.copyquestionnairestart(item);
     }
 
@@ -496,14 +493,6 @@ class Questionnaire extends Component {
             this.setState({ allquestions: new_data })
         }
     }
-
-    //   selectNextQ = (item, child) => {
-    //     let items = []
-    //     item.map((itm, i) => {
-    //         itm.question != child.question && items.push({label: itm.question, value: i})
-    //     })
-    //     return ite
-    //   }
 
     render() {
         const { selectedGroup } = this.state;

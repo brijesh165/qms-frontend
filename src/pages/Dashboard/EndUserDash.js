@@ -59,6 +59,7 @@ class EndUserDash extends Component {
             form_name: '',
             selectedQuestion: '',
             q5InputValue: '',
+            q8InputValue: '',
             children: [[],],
             filledChildren: [[],],
             ratingCount: ''
@@ -85,273 +86,263 @@ class EndUserDash extends Component {
     }
 
     questionTypeHandler = (type, options, parentIndex, childIndex) => {
-        if (type.value == 1) { }
-        switch (type.value) {
-            case 1:
-                return (
-                    <Col md='12'>
-                        {options.map((item, index) => (
-                            <Row className='text-center'>
-                                <div className="custom-control custom-radio custom-control-inline ml-3 mt-3">
-                                    
-                                    <Input type="radio"
-                                        id={`customRadioInline${index}`}
-                                        className="custom-control-input"
-                                        value={item ? item : 'クリックして編集する'}
-                                        onChange={option => this.onSaveOptions(option, parentIndex, childIndex, index)} />
-                                    <Label className="custom-control-label" for={`customRadioInline${index}`}>{item}</Label>
-                                        {/* <Label className="custom-control-label" for={`customRadioInline${index}`}>
-                                        <Editable
-                                            validate={option => this.onSaveOptions(option, parentIndex, childIndex, index)}
-
-                                            name="username"
-                                            dataType="text"
-                                            mode="inline"
+        if (type.value == 1) { return; } 
+        else {
+            console.log('IN QUESTION TYPE HANDLE');
+            switch (type.value) {
+                case 1:
+                    return (
+                        <Row className="text-center ml-1" style={{width: '250%'}}>
+                            {options.map((item, index) => (
+                                <Row className='text-center'>
+                                    <div className="custom-control custom-radio custom-control-inline ml-2 mt-3">
+                                        <Input type="radio"
+                                            id={`customRadioInline${index}`}
+                                            className="custom-control-input"
                                             value={item ? item : 'クリックして編集する'}
-                                        />
-                                    </Label> */}
-                                </div>
-                            </Row>
-                        ))}
-
-                        {/* <a href='javascript:void(0)' onClick={() => this.addOption(parentIndex, childIndex)} className='m-2 pull-left' >オプションを追加</a> */}
-                    </Col>
-                )
-            case 2:
-                return (
-                    <Col md='12'>
-                        {options.map((item, index) => (
-                            <Row className='text-center'>
-                                <div className="custom-control custom-radio custom-control-inline ml-3 mt-3">
-
-                                    <Label for={`customCheckInline${index}`}>{item}</Label>
-                                    <Input type="checkbox"
-                                        id={`customCheckInline${index}`}
-                                        value={item ? item : 'クリックして編集する'}
-                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
-                                    {/* <Label for={`customRadioInline${index}`}>
-                                        <Editable
-                                            validate={option => this.onSaveOptions(option, parentIndex, childIndex, index)}
-                                            name="checkbox"
-                                            dataType="text"
-                                            mode="inline"
+                                            onChange={option => this.onSaveOptions(option, parentIndex, childIndex, index)} />
+                                        <Label className="custom-control-label" for={`customRadioInline${index}`}>{item}</Label>
+                                    </div>
+                                </Row>
+                            ))}
+                        </Row>
+                    )
+                case 2:
+                    return (
+                        <Row className="text-center ml-1" style={{width: '250%'}}>
+                            {options.map((item, index) => (
+                                <Row className='text-center'>
+                                    <div className="custom-control custom-radio custom-control-inline ml-4 mt-4">
+                                        <Label for={`customCheckInline${index}`}>{item}</Label>
+                                        <Input type="checkbox"
+                                            id={`customCheckInline${index}`}
                                             value={item ? item : 'クリックして編集する'}
-                                        />
-                                    </Label> */}
-                                </div>
-                            </Row>
-                        ))}
-
-                        {/* <a href='javascript:void(0)' onClick={() => this.addOption(parentIndex, childIndex)} className='m-2  ml-4 pull-left' >オプションを追加</a> */}
-                    </Col>
-                )
-            case 3:
-                return (
-                    <Col md='12'>
-                        <Row className='text-center'>
-                            <div className="custom-control custom-radio custom-control-inline ml-3 mt-3">
-                                <Rating fractions={2} stop={options.length} 
+                                            onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
+                                    </div>
+                                </Row>
+                            ))}
+                        </Row>
+                    )
+                case 3:
+                    return (
+                        <Row className="text-center ml-1" style={{width: '250%'}}>
+                            <Row className='text-center' style={{width: '100%'}}>
+                                <div className="custom-control custom-radio custom-control-inline ml-2 mt-3">
+                                    <Rating fractions={2} stop={options.length}
                                         initialRating={this.state.ratingCount}
                                         onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
-                                />
-                            </div>
+                                    />
+                                </div>
+                            </Row>
                         </Row>
-                    </Col>
-                )
-            case 4:
-                return (
-                    <Col md='12'>
-                        <Row className='text-center'>
-                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 mb-1 p-0">
-                                <Input type="select" name="ddlCreditCardType" id="ddlCreditCardType" onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}>
+                    )
+                case 4:
+                    return (
+                        <Row className="text-center ml-1" style={{width: '250%'}}>
+                            <Row className='text-center' style={{width: '100%'}}>
+                                <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                    <Input type="select" name="ddlCreditCardType" id="ddlCreditCardType" onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}>
+                                        {
+                                            options.map((item, index) => (
+                                                <option value={item}>{item}</option>
+                                            ))
+                                        }
+    
+                                    </Input>
+                                </div>
+                            </Row>
+                        </Row>
+                    )
+                case 5:
+                    return (
+                        <Row className="text-center ml-1" style={{width: '250%'}}>
+                            <Row className='text-center' style={{width: '100%'}}>
+                                <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                    <Input type="text" value={this.state.q5InputValue}
+                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
+                                    />
+                                </div>
+                            </Row>
+                        </Row>
+                    )
+                case 6:
+                    return (
+                        <Row className="text-center ml-1" style={{width: '250%'}}>
+                            <Row className='text-center' style={{width: '100%'}}>
+                                <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
                                     {
-                                        options.map((item, index) => (
-                                            <option value={item}>{item}</option>
-                                        ))
+                                        options.length == 1 ?
+                                            <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
+                                            :
+                                            <>
+                                                <table class="table columntitle table-striped">
+                                                    {
+                                                        options.map((item, i) => (
+                                                            <tr>
+                                                                {
+                                                                    item.map((itm, i2) => (
+                                                                        <>
+                                                                            {
+                                                                                <th>{
+                                                                                    i == 0 && i2 == 0 ? '' : i == 0 || i2 == 0 ?
+                                                                                        <Editable
+                                                                                            disabled
+                                                                                            validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
+                                                                                            name="username"
+                                                                                            dataType="text"
+                                                                                            mode="inline"
+                                                                                            value={itm ? itm : '編集する'}
+                                                                                        />
+                                                                                        :
+                                                                                        <Input className='p-0 m-0'
+                                                                                            type={'radio'}
+                                                                                            id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
+                                                                                            name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
+                                                                                            value={i + '' + i2}
+                                                                                            onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, i, i2)} />
+    
+                                                                                }</th>
+                                                                            }
+    
+                                                                        </>
+                                                                    ))
+                                                                }
+                                                            </tr>
+                                                        ))
+                                                    }
+    
+    
+                                                </table>
+                                            </>
                                     }
-
-                                </Input>
-                            </div>
-                        </Row>
-                    </Col>
-                )
-            case 5:
-                return (
-                    <Col md='12'>
-                        <Row className='text-center'>
-                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 mb-1 p-0">
-                                <Input value={this.state.q5InputValue} 
-                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)} 
-                                        />
-                            </div>
-                        </Row>
-                    </Col>
-                )
-            case 6:
-                return (
-                    <Col md='12'>
-                        <Row className='text-center'>
-                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 mb-1 p-0">
-                                {
-                                    options.length == 1 ?
-                                        <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
-                                        :
-                                        <>
-                                            <table class="table columntitle table-striped">
-                                                {
-                                                    options.map((item, i) => (
-                                                        <tr>
-                                                            {
-                                                                item.map((itm, i2) => (
-                                                                    <>
-                                                                        {
-                                                                            <th>{
-                                                                                i == 0 && i2 == 0 ? '' : i == 0 || i2 == 0 ?
-                                                                                    <Editable
-                                                                                        validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
-                                                                                        name="username"
-                                                                                        dataType="text"
-                                                                                        mode="inline"
-                                                                                        value={itm ? itm : '編集する'}
-                                                                                    />
-
-                                                                                    :
-                                                                                    <Input className='p-0 m-0' type={'radio'} id={i != 0 && i2 != 0 ? i.toString() + 'c' : i2} name={i != 0 && i2 != 0 ? i.toString() + 'c' : i2} />
-
-                                                                            }</th>
-                                                                        }
-
-                                                                    </>
-                                                                ))
-                                                            }
-                                                        </tr>
-                                                    ))
-                                                }
-
-
-                                            </table>
-                                        </>
-                                }
-                            </div>
-
-                        </Row>
-                        {/* {
-                            options.length > 1 &&
-                            <Row>
-                                <Button onClick={() => this.martixAddQuestionHandler(parentIndex, childIndex)} color='primary' size='sm  m-3'>質問を追加</Button>&nbsp;
-                                    <Button onClick={() => this.martixAddOptionHandler(parentIndex, childIndex)} color='primary' size='sm m-3'>オプションを追加</Button>
+                                </div>
+    
                             </Row>
-                        } */}
-
-                    </Col>
-                )
-            case 7:
-                return (
-                    <Col md='12'>
-                        <Row className='text-center'>
-                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 mb-1 p-0">
-                                {
-                                    options.length == 1 ?
-                                        <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
-                                        :
-                                        <>
-                                            <table class="table columntitle table-striped">
-                                                {
-                                                    options.map((item, i) => (
-                                                        <tr>
-                                                            {
-                                                                item.map((itm, i2) => (
-                                                                    <>
-                                                                        {
-                                                                            <th>{
-                                                                                i == 0 && i2 == 0 ? '' : i == 0 || i2 == 0 ?
-                                                                                    <Editable
-                                                                                        validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
-                                                                                        name="username"
-                                                                                        dataType="text"
-                                                                                        mode="inline"
-                                                                                        value={itm ? itm : '編集する'}
-                                                                                    />
-
-                                                                                    : <Input className='p-0 m-0' type={'checkbox'} />
-
-                                                                            }</th>
-                                                                        }
-
-                                                                    </>
-                                                                ))
-                                                            }
-                                                        </tr>
-                                                    ))
-                                                }
-                                            </table>
-                                        </>
-                                }
-                            </div>
-
                         </Row>
-                        {
-                            options.length > 1 &&
-                            <Row>
-                                <Button onClick={() => this.martixAddQuestionHandler(parentIndex, childIndex)} color='primary' size='sm  m-3'>質問を追加</Button>&nbsp;
-                                <Button onClick={() => this.martixAddOptionHandler(parentIndex, childIndex)} color='primary' size='sm m-3'>オプションを追加</Button>
+                    )
+                case 7:
+                    return (
+                        <Row className="text-center ml-1" style={{width: '250%'}}>
+                            <Row className='text-center' style={{width: '100%'}}>
+                                <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                    {
+                                        options.length == 1 ?
+                                            <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
+                                            :
+                                            <>
+                                                <table class="table columntitle table-striped">
+                                                    {
+                                                        options.map((item, i) => (
+                                                            <tr>
+                                                                {
+                                                                    item.map((itm, i2) => (
+                                                                        <>
+                                                                            {
+                                                                                <th>{
+                                                                                    i == 0 && i2 == 0 ? '' : i == 0 || i2 == 0 ?
+                                                                                        <Editable
+                                                                                            disabled
+                                                                                            validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
+                                                                                            name="username"
+                                                                                            dataType="text"
+                                                                                            mode="inline"
+                                                                                            value={itm ? itm : '編集する'}
+                                                                                        />
+    
+                                                                                        :
+                                                                                        <Input className='p-0 m-0'
+                                                                                            type={'radio'}
+                                                                                            id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
+                                                                                            name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
+                                                                                            value={i + '' + i2}
+                                                                                            onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, i, i2)} />
+    
+                                                                                }</th>
+                                                                            }
+    
+                                                                        </>
+                                                                    ))
+                                                                }
+                                                            </tr>
+                                                        ))
+                                                    }
+                                                </table>
+                                            </>
+                                    }
+                                </div>
+    
                             </Row>
-                        }
-
-                    </Col>
-                )
-            case 8:
-                return (
-                    <Col md='12'>
-                        <Row className='text-center'>
-                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 mb-1 p-0">
-                                <Input type={'textarea'} disabled />
-                            </div>
                         </Row>
-                    </Col>
-                )
+                    )
+                case 8:
+                    return (
+                        <Row className="text-center ml-1" style={{width: '250%'}}>
+                            <Row className='text-center' style={{width: '100%'}}>
+                                <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                    <Input type="textarea" value={this.state.q8InputValue}
+                                        style={{width: '100%'}}
+                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
+                                    />
+                                </div>
+                            </Row>
+                        </Row>
+                    )
+            }    
         }
     }
 
     fillFormToggle = (index) => {
+        console.log('IN FILL FORM TOGGLE');
         let question = this.state.questions[index];
         let quest_name = this.state.questions[index].questname;
-        this.setState({ selectedQuestion: question,
-                        form_name: quest_name });
+        this.setState({
+            selectedQuestion: question,
+            form_name: quest_name
+        });
 
-        this.setState({ children: question.questions }, () => {
+        this.setState({ children: question.questions,
+                        filledChildren: question.questions }, () => {
             this.setState({ fillFormToggle: !this.state.fillFormToggle })
         })
     }
 
     onSaveOptions = (option, parentIndex, childIndex, optionIndex) => {
-        console.log(option.target);
-        let new_children = [...this.state.children];
-        if (new_children[parentIndex][childIndex].type.value === 1) {
-            new_children[parentIndex][childIndex].options[optionIndex] = option.target.value;
-        } else if (new_children[parentIndex][childIndex].type.value === 2){
+        let selected_children = [...this.state.filledChildren];
+        if (selected_children[parentIndex][childIndex].type.value === 1) {
+            selected_children[parentIndex][childIndex].options[optionIndex] = option.target.value;
+        } else if (selected_children[parentIndex][childIndex].type.value === 2) {
             if (option.target.checked) {
-                new_children[parentIndex][childIndex].options[optionIndex] = option.target.value
-            } 
-            // else {
-            //     new_children[parentIndex][childIndex].options.splice(optionIndex, 1)
-            // }
-        } else if (new_children[parentIndex][childIndex].type.value === 3) {
+                let length = selected_children[parentIndex][childIndex].options.length;
+                selected_children[parentIndex][childIndex].options.splice((length + 1), 0, option.target.value)
+            } else {
+                let length = selected_children[parentIndex][childIndex].options.length;
+                selected_children[parentIndex][childIndex].options.splice((length - 1), 1)
+            }
+        } else if (selected_children[parentIndex][childIndex].type.value === 3) {
             this.setState({
                 ratingCount: option
             });
-            new_children[parentIndex][childIndex].options = option;
-
-        } else if (new_children[parentIndex][childIndex].type.value === 4) {
-            new_children[parentIndex][childIndex].options[optionIndex] = option.target.value;
-        } else if (new_children[parentIndex][childIndex].type.value === 5) {
+            let length = selected_children[parentIndex][childIndex].options.length;
+            selected_children[parentIndex][childIndex].options.splice((length + 1),0, option);
+        } else if (selected_children[parentIndex][childIndex].type.value === 4) {
+            selected_children[parentIndex][childIndex].options[optionIndex] = option.target.value;
+        } else if (selected_children[parentIndex][childIndex].type.value === 5) {
             this.setState({
                 q5InputValue: option.target.value
             })
-            new_children[parentIndex][childIndex].options[0] = option.target.value
+            selected_children[parentIndex][childIndex].options[0] = option.target.value
+        } else if (selected_children[parentIndex][childIndex].type.value === 6) {
+            selected_children[parentIndex][childIndex].options[optionIndex][childIndex] = option.target.value
+        } else if (selected_children[parentIndex][childIndex].type.value === 7) {
+            selected_children[parentIndex][childIndex].options[optionIndex][childIndex] = option.target.value
         }
-        console.log(new_children);
-        this.setState({ filledChildren: new_children })
+        else if (selected_children[parentIndex][childIndex].type.value === 8) {
+            this.setState({
+                q8InputValue: option.target.value
+            })
+            selected_children[parentIndex][childIndex].options[0] = option.target.value
+        }
+        this.setState({ filledChildren: selected_children })
     }
 
     render() {
@@ -527,7 +518,13 @@ class EndUserDash extends Component {
                                                         <Card className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
                                                             <Row>
                                                                 <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }} disabled>
-                                                                    <Input disabled={this.state.fillFormToggle} placeholder='Type your question here' value={child.question} type="text" id="example-text-input" onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
+                                                                    <Input disabled={this.state.fillFormToggle} 
+                                                                            placeholder='Type your question here' 
+                                                                            value={child.question} 
+                                                                            type="text" 
+                                                                            id="example-text-input" 
+                                                                            style={{ width: '240%', minHeight: 50, border: '1px solid grey', borderRadius: 5 }}
+                                                                            onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
                                                                     {this.questionTypeHandler(child.type, child.options, index, childIndex)}
                                                                     {/* <Input style={{ marginTop: 12 }} disabled type="text" name={'form_header'}
                                                                     id="example-text-input" /> */}

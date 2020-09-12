@@ -10,6 +10,7 @@ class SideNav extends Component {
     }
 
     render() {
+        const localStorageData = JSON.parse(localStorage.getItem('user')) || '';
         return (
             <React.Fragment>
                 <div id="sidebar-menu">
@@ -21,7 +22,7 @@ class SideNav extends Component {
                             </Link>
                         </li>
                         {
-                                this.props.role != 'enduser' &&
+                                localStorageData.role != 'enduser' &&
                                 <>
                                     <li>
                                         <Link to="/user-management" className="waves-effect">

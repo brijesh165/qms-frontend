@@ -11,6 +11,8 @@ const dashboardTypes = {
     END_SURVEY_SUCCESS: 'end_survey_success',
     DOWNLOAD_SURVEY_START: 'download_survey_start',
     DOWNLOAD_SURVEY_SUCCESS: 'download_survey_success',
+    FILL_QUESTION_START: 'fill_question_start',
+    FILL_QUESTION_SUCCESS: 'fill_question_success',
     API_FAILED: 'api_failed',
 };
 

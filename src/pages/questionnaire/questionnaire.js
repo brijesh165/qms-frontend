@@ -385,7 +385,8 @@ class Questionnaire extends Component {
         new_children[new_children.length - 1].push({
             type: { label: "ラジオボタン（1つ選択）", value: 1 },
             question: "",
-            options: ['']
+            options: [''],
+            answers: ['']
         })
         console.log(new_children, 'ckckckckckck')
         this.setState({ children: new_children })
@@ -434,6 +435,7 @@ class Questionnaire extends Component {
     martixQuestionHandler = (parentIndex, childIndex) => {
         let new_children = [...this.state.children];
         new_children[parentIndex][childIndex]['options'] = [['', ''], ['', '']]
+        new_children[parentIndex][childIndex]['answers'] = [['', ''], ['', '']]
         this.setState({ children: new_children })
     }
     martixAddQuestionHandler = (parentIndex, childIndex) => {

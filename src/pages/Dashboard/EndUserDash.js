@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Select from 'react-select';
 
-import { getUserSurveyStart } from '../../store/actions';
+import { getUserSurveyStart, fillQuestionStart } from '../../store/actions';
 
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
@@ -62,7 +62,8 @@ class EndUserDash extends Component {
             q8InputValue: '',
             children: [[],],
             filledChildren: [[],],
-            ratingCount: ''
+            ratingCount: '',
+            radioButton: false
         };
     }
 
@@ -85,10 +86,8 @@ class EndUserDash extends Component {
         })
     }
 
-    questionTypeHandler = (type, options, parentIndex, childIndex) => {
-        if (type.value == 1) { return; } 
-        else {
-            console.log('IN QUESTION TYPE HANDLE');
+    questionTypeHandler = (type, options, answers, parentIndex, childIndex) => {
+        if (type.value == 1) { } 
             switch (type.value) {
                 case 1:
                     return (
@@ -96,12 +95,15 @@ class EndUserDash extends Component {
                             {options.map((item, index) => (
                                 <Row className='text-center'>
                                     <div className="custom-control custom-radio custom-control-inline ml-2 mt-3">
-                                        <Input type="radio"
-                                            id={`customRadioInline${index}`}
-                                            className="custom-control-input"
-                                            value={item ? item : 'クリックして編集する'}
-                                            onChange={option => this.onSaveOptions(option, parentIndex, childIndex, index)} />
-                                        <Label className="custom-control-label" for={`customRadioInline${index}`}>{item}</Label>
+                                    <Label key={index} className="ml-2">
+                                    <Input type="radio"
+                                        key={index}
+                                        name={item}
+                                        checked={this.state.radioButton == item+''+index} 
+                                        value={item ? item+''+index : 'クリックして編集する'}
+                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
+                                        {item}
+                                    </Label>
                                     </div>
                                 </Row>
                             ))}
@@ -115,7 +117,7 @@ class EndUserDash extends Component {
                                     <div className="custom-control custom-radio custom-control-inline ml-4 mt-4">
                                         <Label for={`customCheckInline${index}`}>{item}</Label>
                                         <Input type="checkbox"
-                                            id={`customCheckInline${index}`}
+                                            id={`customCheckInline${index}`}    
                                             value={item ? item : 'クリックして編集する'}
                                             onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
                                     </div>
@@ -251,7 +253,7 @@ class EndUserDash extends Component {
     
                                                                                         :
                                                                                         <Input className='p-0 m-0'
-                                                                                            type={'radio'}
+                                                                                            type={'checkbox'}
                                                                                             id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                             name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                             value={i + '' + i2}
@@ -287,12 +289,10 @@ class EndUserDash extends Component {
                             </Row>
                         </Row>
                     )
-            }    
         }
     }
 
     fillFormToggle = (index) => {
-        console.log('IN FILL FORM TOGGLE');
         let question = this.state.questions[index];
         let quest_name = this.state.questions[index].questname;
         this.setState({
@@ -309,40 +309,49 @@ class EndUserDash extends Component {
     onSaveOptions = (option, parentIndex, childIndex, optionIndex) => {
         let selected_children = [...this.state.filledChildren];
         if (selected_children[parentIndex][childIndex].type.value === 1) {
-            selected_children[parentIndex][childIndex].options[optionIndex] = option.target.value;
+            this.setState({ radioButton: option.target.value })
+            selected_children[parentIndex][childIndex].answers[0] = option.target.name;
         } else if (selected_children[parentIndex][childIndex].type.value === 2) {
             if (option.target.checked) {
-                let length = selected_children[parentIndex][childIndex].options.length;
-                selected_children[parentIndex][childIndex].options.splice((length + 1), 0, option.target.value)
+                selected_children[parentIndex][childIndex].answers[optionIndex] = option.target.value;
             } else {
-                let length = selected_children[parentIndex][childIndex].options.length;
-                selected_children[parentIndex][childIndex].options.splice((length - 1), 1)
+                selected_children[parentIndex][childIndex].answers.splice(optionIndex, 1)
             }
         } else if (selected_children[parentIndex][childIndex].type.value === 3) {
-            this.setState({
-                ratingCount: option
-            });
-            let length = selected_children[parentIndex][childIndex].options.length;
-            selected_children[parentIndex][childIndex].options.splice((length + 1),0, option);
+            this.setState({ ratingCount: option })
+            selected_children[parentIndex][childIndex].answers[0] = option;
         } else if (selected_children[parentIndex][childIndex].type.value === 4) {
-            selected_children[parentIndex][childIndex].options[optionIndex] = option.target.value;
+            console.log(optionIndex)
+            selected_children[parentIndex][childIndex].answers[0] = option.target.value;
         } else if (selected_children[parentIndex][childIndex].type.value === 5) {
             this.setState({
                 q5InputValue: option.target.value
             })
-            selected_children[parentIndex][childIndex].options[0] = option.target.value
+            selected_children[parentIndex][childIndex].answers[0] = option.target.value
         } else if (selected_children[parentIndex][childIndex].type.value === 6) {
-            selected_children[parentIndex][childIndex].options[optionIndex][childIndex] = option.target.value
+            selected_children[parentIndex][childIndex].answers[optionIndex][childIndex] = option.target.value
         } else if (selected_children[parentIndex][childIndex].type.value === 7) {
-            selected_children[parentIndex][childIndex].options[optionIndex][childIndex] = option.target.value
+            selected_children[parentIndex][childIndex].answers[optionIndex][childIndex] = option.target.value
         }
         else if (selected_children[parentIndex][childIndex].type.value === 8) {
             this.setState({
                 q8InputValue: option.target.value
             })
-            selected_children[parentIndex][childIndex].options[0] = option.target.value
+            selected_children[parentIndex][childIndex].answers[0] = option.target.value
         }
+        // console.log(selected_children);
         this.setState({ filledChildren: selected_children })
+    }
+
+    onSaveHandler = () => {
+        const filledQuestStart = {
+            "fillout": 'True',
+            "filleddata": this.state.filledChildren,
+            "questname": this.state.form_name
+        }
+        console.log(filledQuestStart);
+        // this.props.fillQuestionStart(filledQuestStart)    
+        // this.setState({ fillFormToggle: !this.state.fillFormToggle }) 
     }
 
     render() {
@@ -525,7 +534,7 @@ class EndUserDash extends Component {
                                                                             id="example-text-input" 
                                                                             style={{ width: '240%', minHeight: 50, border: '1px solid grey', borderRadius: 5 }}
                                                                             onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
-                                                                    {this.questionTypeHandler(child.type, child.options, index, childIndex)}
+                                                                    {this.questionTypeHandler(child.type, child.options, child.answers, index, childIndex)}
                                                                     {/* <Input style={{ marginTop: 12 }} disabled type="text" name={'form_header'}
                                                                     id="example-text-input" /> */}
                                                                 </Col>
@@ -542,7 +551,7 @@ class EndUserDash extends Component {
                             <Button type="button"
                                 color="secondary"
                                 onClick={() => this.setState({ fillFormToggle: false })} className="waves-effect">Close</Button>
-                            <Button disabled onClick={() => this.onSaveHandler()} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
+                            <Button onClick={() => this.onSaveHandler()} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
                         </ModalFooter>
                     </Modal>
 
@@ -564,4 +573,4 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
 }
 
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserSurveyStart })(EndUserDash));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserSurveyStart, fillQuestionStart })(EndUserDash));

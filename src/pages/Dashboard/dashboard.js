@@ -17,7 +17,6 @@ const CustomTitle = (data) => (
     <a>{data.name}</a>
 )
 
-const localStorageData = JSON.parse(localStorage.getItem('user')) || '';
 class Dashboard extends Component {
     constructor(props) {
         super(props);
@@ -25,21 +24,23 @@ class Dashboard extends Component {
             confirm_both: false,
             success_dlg: '',
             error_dlg: '',
-            role: localStorageData.role
+            role: ''
         };
     }
 
-    componentDidMount() {
+    componentDidMount() { 
         this.props.activateAuthLayout();
     }
 
     render() {
-        console.log('RENDER ROLE : ', this.state.role);
-        if (this.state.role === "enduser") {
-            console.log('ENDUSER');
+        
+        const localStorageData = JSON.parse(localStorage.getItem('user')) || '';
+        console.log('localStorageData ROLE : ', localStorageData.role);
+        console.log('localStorageData ROLE : ', localStorageData.role === "enduser");
+        if (localStorageData.role === "enduser") {
+            console.log('localStorageData ROLE : ', localStorageData.role);
             return (<EndUserDash />)
         } else {
-            console.log('SUPER ADMIN')
             return (<AuthDash />)
         }
     }

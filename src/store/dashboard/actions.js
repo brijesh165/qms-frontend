@@ -19,6 +19,13 @@ export const getUserSurveyStart = () => (
     }
 )
 
+export const fillQuestionStart = (quest_data) => (
+    {
+        type: dashboardTypes.FILL_QUESTION_START,
+        payload: quest_data
+    }
+)
+
 export const endSurveyStart = (questid) => (
     {
         type: dashboardTypes.END_SURVEY_START,

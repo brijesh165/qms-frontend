@@ -100,4 +100,26 @@ const downloadSurvetSuccess = (data) => {
     }
 }
 
-export {getSurveySuccess, getUserSurveyUtil, getAdminSurveyUtil, endSurveySuccess, downloadSurvetSuccess};
+const fillQuestionUtil = (data) => {
+    try {
+        const newData = {
+            "questid": data,
+            "download": "True"
+        }
+        console.log('Questionnaire DOWNLOAD', newData);
+        return axios.post(`http://localhost:5000/dashboard`, newData, { params: { token: localStorageData.token } })
+            .then(response => {
+                console.log('Profile Utils : ', response);
+                if (response.status === 400 || response.status === 500)
+                    throw response.data;
+                return response.data;
+            }).catch(err => {
+                console.log('Profile Util error : ', err);
+                throw err[1];
+            })
+    } catch (error) {
+        console.log('Dashboard Management Util error : ', error);
+    }
+}
+
+export {getSurveySuccess, getUserSurveyUtil, getAdminSurveyUtil, endSurveySuccess, downloadSurvetSuccess, fillQuestionUtil};

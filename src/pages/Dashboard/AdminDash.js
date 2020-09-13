@@ -18,7 +18,7 @@ import Rating from 'react-rating';
 import Editable from 'react-x-editable';
 
 import {
-    getSurveyStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart,
+    getAdminSurveyStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart,
     getUserSurveyStart, fillQuestionStart, submitQuestionStart
 } from './../../store/actions';
 
@@ -45,6 +45,8 @@ class AuthDash extends Component {
 
             questions: [],
             questions2: [],
+            optionGroup: [],
+            optionGroup2: [],
             fillFormToggle: false,
             form_name: '',
             selectedQuestion: '',
@@ -61,17 +63,35 @@ class AuthDash extends Component {
 
     componentDidMount() {
         this.props.activateAuthLayout();
-        this.props.getSurveyStart();
+        this.props.getAdminSurveyStart();
         this.props.getUserSurveyStart();
     }
 
     componentWillReceiveProps(nextProps) {
+        let optionGroupName = this.props.questions ? this.props.questions.map((item) => {
+            return {'label':item.questname, 'value': item.questname}
+        }) : null
+        let optionGroupName2 = this.props.questions2 ? this.props.questions2.map((item) => {
+            return {'label':item.questname, 'value': item.questname}
+        }) : null
+
         if (this.props.questions) {
             this.setState({
-                questions: nextProps.questions
+                questions: nextProps.questions,
+                optionGroup: optionGroupName
             })
         }
+
+
+        if (this.props.questions2) {
+            this.setState({
+                questions2: nextProps.questions2,
+                optionGroup2: optionGroupName2
+            })
+        }
+
     }
+
 
     copyQuestion = (item) => {
         let questions = [...this.state.questions]
@@ -553,17 +573,17 @@ class AuthDash extends Component {
             table2 = this.state.questions2.map((item, index) =>
                 <Card className='card-4 mt-3'>
                     <Row>
-                        <Col xl='5 text-center mt-3' >{item.name}</Col>
-                        <Col xl='2 text-center mt-3' >{item.date}</Col>
-                        <Col xl='2 text-center mt-3' >締切日：2020年6月14日</Col>
-                        <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
+                        <Col xl='3 text-center mt-3' >{item.questname}</Col>
+                        <Col xl='4 text-center mt-3' >{'Created At : ' + item.createdAt.slice(0, 10).replace(/-/g, "/")}</Col>
+                        <Col xl='4 text-center mt-3' >{'Expires At : ' + item.dateexpired.slice(0, 10).replace(/-/g, "/")}</Col>
+                        {/* <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col> */}
                         <Col xl='1  text-center' >
                             <UncontrolledDropdown  >
                                 <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
                                     <i className="mdi mdi-dots-vertical-circle" style={{ color: 'grey', fontSize: 25 }}></i>
                                 </DropdownToggle>
                                 <DropdownMenu right>
-                                    <DropdownItem onClick={() => this.fillFormToggle(index)}>アンケートを開く</DropdownItem>
+                                    <DropdownItem>アンケートを表示</DropdownItem>
                                 </DropdownMenu>
                             </UncontrolledDropdown>
                         </Col>
@@ -571,6 +591,7 @@ class AuthDash extends Component {
                 </Card>
             )
         }
+
 
         return (
             <React.Fragment>
@@ -629,7 +650,7 @@ class AuthDash extends Component {
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
                                 {
-                                    table1
+                                    table3
                                 }
                             </Col>
                         </Scrollbars>
@@ -639,7 +660,7 @@ class AuthDash extends Component {
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
                                 {
-                                    table2
+                                    table4
                                 }
                             </Col>
                         </Scrollbars>
@@ -749,18 +770,18 @@ class AuthDash extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
-    console.log('MAP STATE TO PROPS : ', dashboardManagement)
     return {
         role: Login.role,
         survey: dashboardManagement.adminSurveyData,
         loading: dashboardManagement.loading,
         downloadSurvey: dashboardManagement.downloadSurvey,
-        questions: dashboardManagement.userSurveyData
+        questions: dashboardManagement.userSurveyData,
+        questions2: dashboardManagement.userSurveyData2
     }
 }
 
 
 export default withRouter(connect(mapStateToProps, {
-    deletequestionnairestart, activateAuthLayout, getSurveyStart, endSurveyStart, downloadSurveyStart,
+    deletequestionnairestart, activateAuthLayout, getAdminSurveyStart, endSurveyStart, downloadSurveyStart,
     getUserSurveyStart, fillQuestionStart, submitQuestionStart
 })(AuthDash));

@@ -89,14 +89,16 @@ function* sendEmailSuccesss({ payload: { email_data } }) {
         console.log('Saga', email_data);
         const response = yield call(sendEmailSuccess, { email_data });
         console.log(response.status);
-        console.log(response.status == 205 ? true : false);
+        const status = response.status == 205 ? true : false;
+        yield put({type: userManagementTypes.SEND_EMAIL_SUCCESSFUL,
+            payload: status})
     } catch (error) {
         yield put(apiError(error));
     }
 }
 
 export function* watchSendEmail() {
-    yield takeEvery(userManagementTypes.SEND_EMAIL_SUCCESSFUL, sendEmailSuccesss)
+    yield takeEvery(userManagementTypes.SEND_EMAIL_START, sendEmailSuccesss)
 }
 
 // function* deleteUserSaga() {

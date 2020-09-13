@@ -96,12 +96,19 @@ const userManagement = (state = initialState, action) => {
                 userData: changeUserRole,
             }
             break;
+        case userManagementTypes.SEND_EMAIL_START:
+            state = {
+                ...state,
+                loading: false,
+                userManagementError: null
+            }
+            break;
         case userManagementTypes.SEND_EMAIL_SUCCESSFUL: 
             state = {
                 ...state, 
-                loading: false,
+                loading: true,
                 userManagementError: null,
-                sendEmailSuccess: action.payload.send
+                sendEmailSuccess: action.payload
             }
             break;
         case userManagementTypes.API_FAILED:

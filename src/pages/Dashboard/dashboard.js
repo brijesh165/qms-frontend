@@ -36,11 +36,17 @@ class Dashboard extends Component {
         
         const localStorageData = JSON.parse(localStorage.getItem('user')) || '';
         if (localStorageData.role === "enduser") {
-            return (<EndUserDash />)
+            return (
+                <EndUserDash />
+            )
         } else if (localStorageData.role === 'admin') {
-            return (<AdminDash />)
+            return (
+                    <AdminDash />
+                )
         } else {
-            return (<AuthDash />)
+            return (
+                    <AuthDash />
+                )
         }
     }
 }

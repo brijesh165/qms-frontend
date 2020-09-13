@@ -10,7 +10,8 @@ import { getSurveySuccess, endSurveySuccess, downloadSurvetSuccess,
 
 function* getSurveySuccesss() {
     try {
-        const response = yield call(getSurveySuccess);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        const response = yield call(getSurveySuccess, localStorageData.token);
         console.log(response);
         if (response.table1) {
             yield put({type: dashboardTypes.GET_SURVEY_DATA_SUCCESS, 
@@ -28,11 +29,12 @@ export function* watchGetSurvey() {
 function* getUserSurveyStart() {
     try {
         console.log('GET USER SURVEY START SAGA');
-        const response = yield call(getUserSurveyUtil);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        const response = yield call(getUserSurveyUtil, localStorageData.token);
         console.log(response);
         if (response) {
             yield put({type: dashboardTypes.GET_USER_SURVEY_DATA_SUCCESS,
-                        payload: response.questData})
+                        payload: response})
         }
     } catch (error) {
         yield put(apiError(error));
@@ -45,7 +47,8 @@ export function* watchGetUserSurvey() {
 
 function* getAdminSurveyStart() {
     try {
-        const response = yield call(getAdminSurveyUtil);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        const response = yield call(getAdminSurveyUtil, localStorageData.token);
         console.log(response);
         if (response) {
             yield put({type: dashboardTypes.GET_ADMIN_SURVEY_DATA_SUCCESS,
@@ -100,9 +103,9 @@ function* fillQuestionStart({payload: quest_data}) {
         console.log(quest_data)
         const response = yield call(fillQuestionUtil, quest_data);
         console.log(response);
-        if (response.data) {
+        if (response) {
             yield put({type: dashboardTypes.FILL_QUESTION_SUCCESS,
-                    payload: response.data})
+                    payload: response})
         }
     } catch (error) {
         yield put(apiError(error))

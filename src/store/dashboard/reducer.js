@@ -4,7 +4,8 @@ const initialState = {
     dashboardError: null, loading: null, downloadSurvey: [],
     surveyData: [],
     adminSurveyData: [],
-    userSurveyData: []
+    userSurveyData: [],
+    userSurveyData2: []
 }
 
 const dashboardManagement = (state = initialState, action) => {
@@ -53,7 +54,8 @@ const dashboardManagement = (state = initialState, action) => {
                 ...state,
                 loading: true,
                 dashboardError: null,
-                userSurveyData: action.payload
+                userSurveyData: action.payload.questData,
+                userSurveyData2: action.payload.respData
             }
             break;
         case dashboardTypes.END_SURVEY_START:
@@ -71,7 +73,7 @@ const dashboardManagement = (state = initialState, action) => {
             let index = prevSurveyData.findIndex(item => item.id === action.payload);
             let changeStatus = { ...surveyDataAfterDelete, ...{ accept: false } };
             prevSurveyData[index] = changeStatus;
-            console.log('Survey After Delete : ', prevSurveyData);
+
             state = {
                 ...state,
                 loading: true,
@@ -103,10 +105,17 @@ const dashboardManagement = (state = initialState, action) => {
             }
             break;
         case dashboardTypes.FILL_QUESTION_SUCCESS:
+            let unfilledData = [...state.userSurveyData];
+            let updatedData = unfilledData.find((item) => item.id === action.payload.id);
+            let updateindex = unfilledData.findIndex(item => item.id === action.payload);
+            let changeUpdateStatus = { ...updatedData, ...{ filled: true } };
+            unfilledData[updateindex] = changeUpdateStatus;
+
             state = {
                 ...state,
                 loading: true,
-                dashboardError: null
+                dashboardError: null,
+                userSurveyData: unfilledData
             }
             break;
 
@@ -118,10 +127,18 @@ const dashboardManagement = (state = initialState, action) => {
             }
             break;
         case dashboardTypes.SUBMIT_QUESTION_SUCCESS:
+            let submitQuest = [...state.userSurveyData];
+            let submitedQuest = submitQuest.find((item) => item.id === action.payload.id);
+            let removeFromUserSurvey = submitQuest.filter((item) => item.id !== submitedQuest.id)
+            let newUserSurveyData2 = [...state.userSurveyData2];
+            let updatedUserSurvetData2 = [...newUserSurveyData2, action.payload];
+
             state = {
                 ...state,
                 loading: true,
-                dashboardError: null
+                dashboardError: null,
+                userSurveyData: removeFromUserSurvey,
+                userSurveyData2: updatedUserSurvetData2
             }
             break;
         case dashboardTypes.API_FAILED:

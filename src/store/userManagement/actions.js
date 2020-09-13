@@ -27,10 +27,10 @@ export const changeUserRoleStart = (user_data, history) => (
         payload: {user_data, history}
 })
 
-export const sendemailsuccessful = (email_data, history) => (
+export const sendemailstart = (email_data, history) => (
     console.log('Action Change: ', email_data),
     {
-        type: userManagementTypes.SEND_EMAIL_SUCCESSFUL,
+        type: userManagementTypes.SEND_EMAIL_START,
         payload: {email_data, history}
 })
 

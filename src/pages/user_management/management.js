@@ -18,7 +18,7 @@ import {
     Spinner,
 } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { activateAuthLayout, addUserStart, sendemailsuccessful, getUserListStart } from '../../store/actions';
+import { activateAuthLayout, addUserStart, sendemailstart, getUserListStart } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -56,6 +56,7 @@ class UserManagement extends Component {
     }
 
     resetState = () => {
+        console.log('IN RESET');
         this.setState({
             selectedEmail: [],
             sendsubject: '',
@@ -94,7 +95,7 @@ class UserManagement extends Component {
         //     this.state.emailsubject, this.state.expiresat,
         //     this.state.selectedGroup.label, this.state.selectedGroup.id, this.state.selectedEmail,
         //     this.state.sendbody);
-        this.props.sendemailsuccessful({
+        this.props.sendemailstart({
             "sendsubject": this.state.emailsubject,
             "sendusers": this.state.selectedEmail,
             "questname": this.state.selectedGroup.label,
@@ -103,10 +104,6 @@ class UserManagement extends Component {
             "sendbody": this.state.sendbody,
             "send": "True",
         }, this.props.history);
-
-        if (this.props.sendEmailStatus) {
-            this.resetState()
-        }
     }
 
     handleSelectGroup = (selectedGroup) => {
@@ -148,6 +145,9 @@ class UserManagement extends Component {
         }
         if (this.props.questions) {
             this.setOptionGroup(nextProps.questions);
+        }
+        if (this.props.sendEmailStatus) {
+            this.resetState()
         }
     }
 
@@ -470,6 +470,7 @@ class UserManagement extends Component {
     }
 }
 const mapStateToProps = ({ Login, userManagement }) => {
+    console.log('MAP STATE TO PROPS : ', userManagement.sendEmailSuccess)
     return {
         role: Login.role,
         loading: userManagement.loading,
@@ -479,4 +480,4 @@ const mapStateToProps = ({ Login, userManagement }) => {
     }
 }
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserListStart, addUserStart, sendemailsuccessful })(UserManagement));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserListStart, addUserStart, sendemailstart })(UserManagement));

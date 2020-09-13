@@ -465,10 +465,8 @@ class Questionnaire extends Component {
     onAddMatrixQ = (option, parentIndex, childIndex, i, i2) => {
         let new_children = [...this.state.children];
         let options = new_children[parentIndex][childIndex]['options'];
-        let answers = new_children[parentIndex][childIndex]['answers'];
         console.log(option, options[i], options[i][i2], 'mmmm')
         options[i][i2] = option;
-        answers[i][i2] = answers;
 
         this.setState({ children: new_children })
     }

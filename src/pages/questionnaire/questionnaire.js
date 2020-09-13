@@ -423,6 +423,7 @@ class Questionnaire extends Component {
     addOption = (parentIndex, childIndex) => {
         let new_children = [...this.state.children];
         new_children[parentIndex][childIndex].options.push('')
+        new_children[parentIndex][childIndex].answers.push('')
         this.setState({ children: new_children })
     }
 
@@ -442,11 +443,13 @@ class Questionnaire extends Component {
         let new_children = [...this.state.children];
         let options = new_children[parentIndex][childIndex]['options'];
         let length = options[0].length;
+        let answers = new_children[parentIndex][childIndex]['answers'];
         let new_options = []
         for (let i = 0; i < length; i++) {
             new_options.push('')
         }
         options.push(new_options)
+        answers.push(new_options)
         this.setState({ children: new_children })
 
     }
@@ -462,8 +465,10 @@ class Questionnaire extends Component {
     onAddMatrixQ = (option, parentIndex, childIndex, i, i2) => {
         let new_children = [...this.state.children];
         let options = new_children[parentIndex][childIndex]['options'];
+        let answers = new_children[parentIndex][childIndex]['answers'];
         console.log(option, options[i], options[i][i2], 'mmmm')
         options[i][i2] = option;
+        answers[i][i2] = answers;
 
         this.setState({ children: new_children })
     }

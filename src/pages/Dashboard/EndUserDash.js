@@ -18,14 +18,13 @@ import { connect } from 'react-redux';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Select from 'react-select';
 
-import { getUserSurveyStart, fillQuestionStart } from '../../store/actions';
+import { getUserSurveyStart, fillQuestionStart, submitQuestionStart } from '../../store/actions';
 
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
 // import questions from '../../data/sample.json'
 // import questions2 from '../../data/sample2.json'
-
-import QuestionModal from '../../components/questionModal'
+// import QuestionModal from '../../components/questionModal'
 
 
 
@@ -198,6 +197,7 @@ class EndUserDash extends Component {
                                                                                         :
                                                                                         <Input className='p-0 m-0'
                                                                                             type={'radio'}
+                                                                                            key={i + '' + i2}
                                                                                             id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                             name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                             value={i + '' + i2}
@@ -295,9 +295,11 @@ class EndUserDash extends Component {
     fillFormToggle = (index) => {
         let question = this.state.questions[index];
         let quest_name = this.state.questions[index].questname;
+        let quest_id = this.state.questions[index]._id;
         this.setState({
             selectedQuestion: question,
-            form_name: quest_name
+            form_name: quest_name,
+            quest_id: quest_id
         });
 
         this.setState({ children: question.questions,
@@ -306,7 +308,17 @@ class EndUserDash extends Component {
         })
     }
 
-    onSaveOptions = (option, parentIndex, childIndex, optionIndex) => {
+    onSubmitHandler = (index) => {
+        let quest_id = this.state.questions[index]._id;
+        const data = {
+            "submit": "True",
+            id: quest_id
+        }
+        this.props.submitQuestionStart(data);
+    }
+
+
+    onSaveOptions = (option, parentIndex, childIndex, optionIndex, optionChildIndex) => {
         let selected_children = [...this.state.filledChildren];
         if (selected_children[parentIndex][childIndex].type.value === 1) {
             this.setState({ radioButton: option.target.value })
@@ -329,9 +341,13 @@ class EndUserDash extends Component {
             })
             selected_children[parentIndex][childIndex].answers[0] = option.target.value
         } else if (selected_children[parentIndex][childIndex].type.value === 6) {
-            selected_children[parentIndex][childIndex].answers[optionIndex][childIndex] = option.target.value
+            selected_children[parentIndex][childIndex].answers[optionIndex - 1][childIndex] = option.target.value
         } else if (selected_children[parentIndex][childIndex].type.value === 7) {
-            selected_children[parentIndex][childIndex].answers[optionIndex][childIndex] = option.target.value
+            if (option.target.checked) {
+                selected_children[parentIndex][childIndex].answers[optionIndex - 1][optionChildIndex - 1] = option.target.value
+            } else {
+                selected_children[parentIndex][childIndex].answers[optionIndex - 1].splice(optionChildIndex - 1 , 1);
+            }
         }
         else if (selected_children[parentIndex][childIndex].type.value === 8) {
             this.setState({
@@ -346,12 +362,13 @@ class EndUserDash extends Component {
     onSaveHandler = () => {
         const filledQuestStart = {
             "fillout": 'True',
-            "filleddata": this.state.filledChildren,
-            "questname": this.state.form_name
+            "response": this.state.filledChildren,
+            "questname": this.state.form_name,
+            "id": this.state.quest_id
         }
         console.log(filledQuestStart);
-        // this.props.fillQuestionStart(filledQuestStart)    
-        // this.setState({ fillFormToggle: !this.state.fillFormToggle }) 
+        this.props.fillQuestionStart(filledQuestStart)    
+        this.setState({ fillFormToggle: !this.state.fillFormToggle }) 
     }
 
     render() {
@@ -371,7 +388,7 @@ class EndUserDash extends Component {
                                 </DropdownToggle>
                                 <DropdownMenu right>
                                     <DropdownItem onClick={() => this.fillFormToggle(index)}>アンケート記入</DropdownItem>
-                                    <DropdownItem tag="a" href="#">アンケートを提出</DropdownItem>
+                                    <DropdownItem tag="a" href="#" onClick={() => this.onSubmitHandler(index)}>アンケートを提出</DropdownItem>
                                 </DropdownMenu>
                             </UncontrolledDropdown>
                         </Col>
@@ -573,4 +590,5 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
 }
 
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserSurveyStart, fillQuestionStart })(EndUserDash));
+export default withRouter(connect(mapStateToProps, 
+                                { activateAuthLayout, getUserSurveyStart, fillQuestionStart, submitQuestionStart })(EndUserDash));

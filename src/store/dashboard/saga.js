@@ -5,7 +5,8 @@ import dashboardTypes from './actionTypes';
 import { apiError } from './actions';
 
 import { getSurveySuccess, endSurveySuccess, downloadSurvetSuccess, 
-        getUserSurveyUtil, getAdminSurveyUtil, fillQuestionUtil } from './../../helpers/dashboardManagementUtil';
+        getUserSurveyUtil, getAdminSurveyUtil, fillQuestionUtil,
+        submitQuestionUtil } from './../../helpers/dashboardManagementUtil';
 
 function* getSurveySuccesss() {
     try {
@@ -112,12 +113,31 @@ export function* watchFillQuestion() {
     yield takeEvery(dashboardTypes.FILL_QUESTION_START, fillQuestionStart)
 }
 
+function* submitQuestionStart({payload: quest_data}) {
+    try {
+        console.log(quest_data)
+        const response = yield call(submitQuestionUtil, quest_data);
+        console.log(response);
+        if (response.data) {
+            yield put({type: dashboardTypes.SUBMIT_QUESTION_SUCCESS,
+                    payload: response.data})
+        }
+    } catch (error) {
+        yield put(apiError(error))
+    }
+}
+
+export function* watchSubmitQuestion() {
+    yield takeEvery(dashboardTypes.SUBMIT_QUESTION_START, submitQuestionStart)
+}
+
 function* dashboardManagementSagas() {
     yield all([call(watchGetSurvey),
                 call(watchGetUserSurvey),
                 call(watchGetAdminSurvey),
                 call(watchEndSurvey),
                 call(watchFillQuestion),
+                call(watchSubmitQuestion),
                 call(watchDownloadSurvey)]);
 }
 

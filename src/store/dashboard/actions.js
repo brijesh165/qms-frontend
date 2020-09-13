@@ -26,6 +26,13 @@ export const fillQuestionStart = (quest_data) => (
     }
 )
 
+export const submitQuestionStart = (quest_data) => (
+    {
+        type: dashboardTypes.SUBMIT_QUESTION_START,
+        payload: quest_data
+    }
+)
+
 export const endSurveyStart = (questid) => (
     {
         type: dashboardTypes.END_SURVEY_START,

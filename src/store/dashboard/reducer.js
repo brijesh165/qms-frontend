@@ -109,6 +109,21 @@ const dashboardManagement = (state = initialState, action) => {
                 dashboardError: null
             }
             break;
+
+        case dashboardTypes.SUBMIT_QUESTION_START: 
+            state = {
+                ...state,
+                loading: false,
+                dashboardError: null
+            }
+            break;
+        case dashboardTypes.SUBMIT_QUESTION_SUCCESS:
+            state = {
+                ...state,
+                loading: true,
+                dashboardError: null
+            }
+            break;
         case dashboardTypes.API_FAILED:
             state = {
                 ...state,

@@ -14,8 +14,13 @@ import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { CSVLink } from 'react-csv';
+import Rating from 'react-rating';
+import Editable from 'react-x-editable';
 
-import { getSurveyStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart } from './../../store/actions';
+import {
+    getSurveyStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart,
+    getUserSurveyStart, fillQuestionStart, submitQuestionStart
+} from './../../store/actions';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import DataTable from 'react-data-table-component';
@@ -37,6 +42,19 @@ class AuthDash extends Component {
             editQuestionModal: false,
             selectedQuestion: '',
             downloadSurveyData: [],
+
+            questions: [],
+            questions2: [],
+            fillFormToggle: false,
+            form_name: '',
+            selectedQuestion: '',
+            q5InputValue: '',
+            q8InputValue: '',
+            children: [[],],
+            filledChildren: [[],],
+            ratingCount: '',
+            radioButton: false
+
         };
         this.surveyLink = React.createRef();
     }
@@ -44,6 +62,15 @@ class AuthDash extends Component {
     componentDidMount() {
         this.props.activateAuthLayout();
         this.props.getSurveyStart();
+        this.props.getUserSurveyStart();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.questions) {
+            this.setState({
+                questions: nextProps.questions
+            })
+        }
     }
 
     copyQuestion = (item) => {
@@ -94,6 +121,301 @@ class AuthDash extends Component {
 
     onDeleteHandler = (questid) => {
         this.props.deletequestionnairestart(questid)
+    }
+
+    // TABLE 3 AND 4
+    handleInputChange = (event) => {
+        this.setState({
+            q5InputValue: event.target.value
+        })
+    }
+
+    questionTypeHandler = (type, options, answers, parentIndex, childIndex) => {
+        if (type.value == 1) { }
+        switch (type.value) {
+            case 1:
+                return (
+                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                        {options.map((item, index) => (
+                            <Row className='text-center'>
+                                <div className="custom-control custom-radio custom-control-inline ml-2 mt-3">
+                                    <Label key={index} className="ml-2">
+                                        <Input type="radio"
+                                            key={index}
+                                            name={item}
+                                            checked={this.state.radioButton == item + '' + index}
+                                            value={item ? item + '' + index : 'クリックして編集する'}
+                                            onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
+                                        {item}
+                                    </Label>
+                                </div>
+                            </Row>
+                        ))}
+                    </Row>
+                )
+            case 2:
+                return (
+                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                        {options.map((item, index) => (
+                            <Row className='text-center'>
+                                <div className="custom-control custom-radio custom-control-inline ml-4 mt-4">
+                                    <Label for={`customCheckInline${index}`}>{item}</Label>
+                                    <Input type="checkbox"
+                                        id={`customCheckInline${index}`}
+                                        value={item ? item : 'クリックして編集する'}
+                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
+                                </div>
+                            </Row>
+                        ))}
+                    </Row>
+                )
+            case 3:
+                return (
+                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                        <Row className='text-center' style={{ width: '100%' }}>
+                            <div className="custom-control custom-radio custom-control-inline ml-2 mt-3">
+                                <Rating fractions={2} stop={options.length}
+                                    initialRating={this.state.ratingCount}
+                                    onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
+                                />
+                            </div>
+                        </Row>
+                    </Row>
+                )
+            case 4:
+                return (
+                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                        <Row className='text-center' style={{ width: '100%' }}>
+                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                <Input type="select" name="ddlCreditCardType" id="ddlCreditCardType" onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}>
+                                    {
+                                        options.map((item, index) => (
+                                            <option value={item}>{item}</option>
+                                        ))
+                                    }
+
+                                </Input>
+                            </div>
+                        </Row>
+                    </Row>
+                )
+            case 5:
+                return (
+                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                        <Row className='text-center' style={{ width: '100%' }}>
+                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                <Input type="text" value={this.state.q5InputValue}
+                                    onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
+                                />
+                            </div>
+                        </Row>
+                    </Row>
+                )
+            case 6:
+                return (
+                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                        <Row className='text-center' style={{ width: '100%' }}>
+                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                {
+                                    options.length == 1 ?
+                                        <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
+                                        :
+                                        <>
+                                            <table class="table columntitle table-striped">
+                                                {
+                                                    options.map((item, i) => (
+                                                        <tr>
+                                                            {
+                                                                item.map((itm, i2) => (
+                                                                    <>
+                                                                        {
+                                                                            <th>{
+                                                                                i == 0 && i2 == 0 ? '' : i == 0 || i2 == 0 ?
+                                                                                    <Editable
+                                                                                        disabled
+                                                                                        validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
+                                                                                        name="username"
+                                                                                        dataType="text"
+                                                                                        mode="inline"
+                                                                                        value={itm ? itm : '編集する'}
+                                                                                    />
+                                                                                    :
+                                                                                    <Input className='p-0 m-0'
+                                                                                        type={'radio'}
+                                                                                        key={i + '' + i2}
+                                                                                        id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
+                                                                                        name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
+                                                                                        value={i + '' + i2}
+                                                                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, i, i2)} />
+
+                                                                            }</th>
+                                                                        }
+
+                                                                    </>
+                                                                ))
+                                                            }
+                                                        </tr>
+                                                    ))
+                                                }
+
+
+                                            </table>
+                                        </>
+                                }
+                            </div>
+
+                        </Row>
+                    </Row>
+                )
+            case 7:
+                return (
+                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                        <Row className='text-center' style={{ width: '100%' }}>
+                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                {
+                                    options.length == 1 ?
+                                        <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
+                                        :
+                                        <>
+                                            <table class="table columntitle table-striped">
+                                                {
+                                                    options.map((item, i) => (
+                                                        <tr>
+                                                            {
+                                                                item.map((itm, i2) => (
+                                                                    <>
+                                                                        {
+                                                                            <th>{
+                                                                                i == 0 && i2 == 0 ? '' : i == 0 || i2 == 0 ?
+                                                                                    <Editable
+                                                                                        disabled
+                                                                                        validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
+                                                                                        name="username"
+                                                                                        dataType="text"
+                                                                                        mode="inline"
+                                                                                        value={itm ? itm : '編集する'}
+                                                                                    />
+
+                                                                                    :
+                                                                                    <Input className='p-0 m-0'
+                                                                                        type={'checkbox'}
+                                                                                        id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
+                                                                                        name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
+                                                                                        value={i + '' + i2}
+                                                                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, i, i2)} />
+
+                                                                            }</th>
+                                                                        }
+
+                                                                    </>
+                                                                ))
+                                                            }
+                                                        </tr>
+                                                    ))
+                                                }
+                                            </table>
+                                        </>
+                                }
+                            </div>
+
+                        </Row>
+                    </Row>
+                )
+            case 8:
+                return (
+                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                        <Row className='text-center' style={{ width: '100%' }}>
+                            <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
+                                <Input type="textarea" value={this.state.q8InputValue}
+                                    style={{ width: '100%' }}
+                                    onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
+                                />
+                            </div>
+                        </Row>
+                    </Row>
+                )
+        }
+    }
+
+    fillFormToggle = (index) => {
+        let question = this.state.questions[index];
+        let quest_name = this.state.questions[index].questname;
+        let quest_id = this.state.questions[index]._id;
+        this.setState({
+            selectedQuestion: question,
+            form_name: quest_name,
+            quest_id: quest_id
+        });
+
+        this.setState({
+            children: question.questions,
+            filledChildren: question.questions
+        }, () => {
+            this.setState({ fillFormToggle: !this.state.fillFormToggle })
+        })
+    }
+
+    onSubmitHandler = (index) => {
+        let quest_id = this.state.questions[index]._id;
+        const data = {
+            "submit": "True",
+            id: quest_id
+        }
+        this.props.submitQuestionStart(data);
+    }
+
+
+    onSaveOptions = (option, parentIndex, childIndex, optionIndex, optionChildIndex) => {
+        let selected_children = [...this.state.filledChildren];
+        if (selected_children[parentIndex][childIndex].type.value === 1) {
+            this.setState({ radioButton: option.target.value })
+            selected_children[parentIndex][childIndex].answers[0] = option.target.name;
+        } else if (selected_children[parentIndex][childIndex].type.value === 2) {
+            if (option.target.checked) {
+                selected_children[parentIndex][childIndex].answers[optionIndex] = option.target.value;
+            } else {
+                selected_children[parentIndex][childIndex].answers.splice(optionIndex, 1)
+            }
+        } else if (selected_children[parentIndex][childIndex].type.value === 3) {
+            this.setState({ ratingCount: option })
+            selected_children[parentIndex][childIndex].answers[0] = option;
+        } else if (selected_children[parentIndex][childIndex].type.value === 4) {
+            console.log(optionIndex)
+            selected_children[parentIndex][childIndex].answers[0] = option.target.value;
+        } else if (selected_children[parentIndex][childIndex].type.value === 5) {
+            this.setState({
+                q5InputValue: option.target.value
+            })
+            selected_children[parentIndex][childIndex].answers[0] = option.target.value
+        } else if (selected_children[parentIndex][childIndex].type.value === 6) {
+            selected_children[parentIndex][childIndex].answers[optionIndex - 1][childIndex] = option.target.value
+        } else if (selected_children[parentIndex][childIndex].type.value === 7) {
+            if (option.target.checked) {
+                selected_children[parentIndex][childIndex].answers[optionIndex - 1][optionChildIndex - 1] = option.target.value
+            } else {
+                selected_children[parentIndex][childIndex].answers[optionIndex - 1].splice(optionChildIndex - 1, 1);
+            }
+        }
+        else if (selected_children[parentIndex][childIndex].type.value === 8) {
+            this.setState({
+                q8InputValue: option.target.value
+            })
+            selected_children[parentIndex][childIndex].answers[0] = option.target.value
+        }
+        // console.log(selected_children);
+        this.setState({ filledChildren: selected_children })
+    }
+
+    onSaveHandler = () => {
+        const filledQuestStart = {
+            "fillout": 'True',
+            "response": this.state.filledChildren,
+            "questname": this.state.form_name,
+            "id": this.state.quest_id
+        }
+        console.log(filledQuestStart);
+        this.props.fillQuestionStart(filledQuestStart)
+        this.setState({ fillFormToggle: !this.state.fillFormToggle })
     }
 
     render() {
@@ -173,8 +495,8 @@ class AuthDash extends Component {
                         {/* <Col xl='2 text-center mt-3' >{new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(item.createdAt)}</Col> */}
                         {/* <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col> */}
                         <Col xl='4  text-center mt-2' >
-                            <Button type="button" 
-                                    onClick={() => this.onDeleteHandler(item.id)} color="danger" className="waves-effect waves-light">Delete</Button>
+                            <Button type="button"
+                                onClick={() => this.onDeleteHandler(item.id)} color="danger" className="waves-effect waves-light">Delete</Button>
                             {/* <Toggler
                             copyQuestion={() => this.copyQuestion(item)}
                             deleteQuestion={() => this.deleteQuestion(index)}
@@ -200,6 +522,56 @@ class AuthDash extends Component {
                     </Col>
                 </Row> : null
         }
+
+        let table3 = <Spinner />
+        if (this.props.loading) {
+            table1 = this.state.questions.map((item, index) =>
+                <Card className='card-4 mt-3'>
+                    <Row>
+                        <Col xl='3 text-center mt-3' >{item.questname}</Col>
+                        <Col xl='4 text-center mt-3' >{'Created At : ' + item.createdAt.slice(0, 10).replace(/-/g, "/")}</Col>
+                        <Col xl='4 text-center mt-3' >{'Expires At : ' + item.dateexpired.slice(0, 10).replace(/-/g, "/")}</Col>
+                        {/* <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col> */}
+                        <Col xl='1  text-center' >
+                            <UncontrolledDropdown  >
+                                <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
+                                    <i className="mdi mdi-dots-vertical-circle" style={{ color: 'grey', fontSize: 25 }}></i>
+                                </DropdownToggle>
+                                <DropdownMenu right>
+                                    <DropdownItem onClick={() => this.fillFormToggle(index)}>アンケート記入</DropdownItem>
+                                    <DropdownItem tag="a" href="#" onClick={() => this.onSubmitHandler(index)}>アンケートを提出</DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                        </Col>
+                    </Row>
+                </Card>
+            )
+        };
+
+        let table4 = <Spinner />
+        if (this.props.loading) {
+            table2 = this.state.questions2.map((item, index) =>
+                <Card className='card-4 mt-3'>
+                    <Row>
+                        <Col xl='5 text-center mt-3' >{item.name}</Col>
+                        <Col xl='2 text-center mt-3' >{item.date}</Col>
+                        <Col xl='2 text-center mt-3' >締切日：2020年6月14日</Col>
+                        <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col>
+                        <Col xl='1  text-center' >
+                            <UncontrolledDropdown  >
+                                <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
+                                    <i className="mdi mdi-dots-vertical-circle" style={{ color: 'grey', fontSize: 25 }}></i>
+                                </DropdownToggle>
+                                <DropdownMenu right>
+                                    <DropdownItem onClick={() => this.fillFormToggle(index)}>アンケートを開く</DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                        </Col>
+                    </Row>
+                </Card>
+            )
+        }
+
         return (
             <React.Fragment>
                 <Container fluid>
@@ -253,6 +625,25 @@ class AuthDash extends Component {
                         </SweetAlert>
                     }
 
+                    <Row>
+                        <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
+                            <Col xl='12'>
+                                {
+                                    table1
+                                }
+                            </Col>
+                        </Scrollbars>
+                    </Row>
+                
+                    <Row>
+                        <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
+                            <Col xl='12'>
+                                {
+                                    table2
+                                }
+                            </Col>
+                        </Scrollbars>
+                    </Row>
 
                     <Modal className="modal-lg" isOpen={this.state.toggleEditModal} toggle={() => this.setState({ toggleEditModal: false })} >
                         <div className="modal-header">
@@ -284,6 +675,72 @@ class AuthDash extends Component {
                             <Button onClick={() => this.setState({ toggleEditModal: false })} type="button" color="primary" className="waves-effect waves-light">変更を保存</Button>
                         </ModalFooter>
                     </Modal>
+                    
+                    {/* Modal for table3 and table4 */}
+                    <Modal className="modal-lg" isOpen={this.state.fillFormToggle} toggle={() => this.setState({ fillFormToggle: false })} >
+                        <div className="modal-header">
+                            <h5 className="modal-title mt-0" id="myLargeModalLabel">Fill questions here</h5>
+                            <button onClick={() => this.setState({ fillFormToggle: false })} type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <ModalBody>
+                            <Form>
+                                {/* <FormGroup row>
+                                    <Label htmlFor="example-text-input" sm="2">Header</Label>
+                                    <Col sm="10">
+                                        <Input type="text" name={'form_header'} value={this.state.selectedQuestion.questname} id="example-text-input" onChange={this.onChangeText} />
+                                    </Col>
+                                </FormGroup> */}
+                                <FormGroup row>
+                                    <Label htmlFor="example-search-input" sm="2">Name</Label>
+                                    <Col sm="10">
+                                        <Input type="search" disabled name={'form_name'} value={this.state.form_name} id="example-search-input" onChange={this.onChangeText} />
+                                    </Col>
+                                </FormGroup>
+                            </Form>
+                            <Col xs='12 text-center'>
+                                {
+                                    this.state.selectedQuestion ?
+                                        this.state.selectedQuestion.questions.map((item, index) => (
+                                            <>
+                                                {
+                                                    this.state.selectedQuestion.questions.length > 1 &&
+                                                    <h5 className='pull-left'>section {index + 1} of {this.state.selectedQuestion.questions.length}</h5>
+                                                }
+                                                {
+                                                    item.map((child, childIndex) => (
+                                                        <Card className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
+                                                            <Row>
+                                                                <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }} disabled>
+                                                                    <Input disabled={this.state.fillFormToggle} 
+                                                                            placeholder='Type your question here' 
+                                                                            value={child.question} 
+                                                                            type="text" 
+                                                                            id="example-text-input" 
+                                                                            style={{ width: '240%', minHeight: 50, border: '1px solid grey', borderRadius: 5 }}
+                                                                            onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
+                                                                    {this.questionTypeHandler(child.type, child.options, child.answers, index, childIndex)}
+                                                                    {/* <Input style={{ marginTop: 12 }} disabled type="text" name={'form_header'}
+                                                                    id="example-text-input" /> */}
+                                                                </Col>
+                                                            </Row>
+                                                        </Card>
+                                                    ))}
+                                                <hr />
+                                            </>
+                                        )) : null
+                                }
+                            </Col>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button type="button"
+                                color="secondary"
+                                onClick={() => this.setState({ fillFormToggle: false })} className="waves-effect">Close</Button>
+                            <Button onClick={() => this.onSaveHandler()} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
+                        </ModalFooter>
+                    </Modal>
+
                 </Container>
 
             </React.Fragment>
@@ -295,11 +752,15 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
     console.log('MAP STATE TO PROPS : ', dashboardManagement)
     return {
         role: Login.role,
-        survey: dashboardManagement.surveyData,
+        survey: dashboardManagement.adminSurveyData,
         loading: dashboardManagement.loading,
-        downloadSurvey: dashboardManagement.downloadSurvey
+        downloadSurvey: dashboardManagement.downloadSurvey,
+        questions: dashboardManagement.userSurveyData
     }
 }
 
 
-export default withRouter(connect(mapStateToProps, { deletequestionnairestart, activateAuthLayout, getSurveyStart, endSurveyStart, downloadSurveyStart })(AuthDash));
+export default withRouter(connect(mapStateToProps, {
+    deletequestionnairestart, activateAuthLayout, getSurveyStart, endSurveyStart, downloadSurveyStart,
+    getUserSurveyStart, fillQuestionStart, submitQuestionStart
+})(AuthDash));

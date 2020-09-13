@@ -581,7 +581,6 @@ class EndUserDash extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
-    console.log(dashboardManagement.userSurveyData);
     return {
         role: Login.role,
         loading: dashboardManagement.loading,

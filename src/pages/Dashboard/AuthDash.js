@@ -46,6 +46,17 @@ class AuthDash extends Component {
         this.props.getSurveyStart();
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.loading && nextProps.downloadSurvey) {
+            if (!this.props.loading && this.props.downloadSurvey) {
+                console.log('IN DOWNLOAD!!!', this.props.downloadSurvey);
+                this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
+                    this.surveyLink.link.click()
+                });
+            }    
+        }
+    }
+
     copyQuestion = (item) => {
         let questions = [...this.state.questions]
         questions.push(item)

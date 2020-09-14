@@ -35,11 +35,14 @@ const dashboardManagement = (state = initialState, action) => {
             }
             break;
         case dashboardTypes.GET_ADMIN_SURVEY_DATA_SUCCESS:
+            console.log('GET ADMIN SUCCESS : ', action.payload);
             state = {
                 ...state,
                 loading: true,
                 dashboardError: null,
-                adminSurveyData: action.payload
+                adminSurveyData: action.payload.table1,
+                userSurveyData: action.payload.table2,
+                userSurveyData2: action.payload.respData
             }
             break;
         case dashboardTypes.GET_USER_SURVEY_DATA_START:

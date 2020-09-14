@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    Container, Row, Col, Card, Button, Breadcrumb, BreadcrumbItem, Input,
+    Container, Row, Col, Card, Button, Breadcrumb, BreadcrumbItem, Input, DropdownMenu, DropdownItem, DropdownToggle, UncontrolledDropdown,
     Modal,
     ModalBody,
     ModalFooter,
@@ -8,7 +8,6 @@ import {
     FormGroup,
     Label,
     Spinner,
-
 } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
@@ -48,6 +47,7 @@ class AuthDash extends Component {
             optionGroup: [],
             optionGroup2: [],
             fillFormToggle: false,
+            showFormToggle: false,
             form_name: '',
             selectedQuestion: '',
             q5InputValue: '',
@@ -69,27 +69,38 @@ class AuthDash extends Component {
 
     componentWillReceiveProps(nextProps) {
         let optionGroupName = this.props.questions ? this.props.questions.map((item) => {
-            return {'label':item.questname, 'value': item.questname}
+            return { 'label': item.questname, 'value': item.questname }
         }) : null
         let optionGroupName2 = this.props.questions2 ? this.props.questions2.map((item) => {
-            return {'label':item.questname, 'value': item.questname}
+            return { 'label': item.questname, 'value': item.questname }
         }) : null
 
-        if (this.props.questions) {
-            this.setState({
-                questions: nextProps.questions,
-                optionGroup: optionGroupName
-            })
+        if (nextProps.questions) {
+            if (this.props.questions) {
+                this.setState({
+                    questions: nextProps.questions,
+                    optionGroup: optionGroupName
+                })
+            }
         }
 
-
-        if (this.props.questions2) {
-            this.setState({
-                questions2: nextProps.questions2,
-                optionGroup2: optionGroupName2
-            })
+        if (nextProps.questions2) {
+            if (this.props.questions2) {
+                this.setState({
+                    questions2: nextProps.questions2,
+                    optionGroup2: optionGroupName2
+                })
+            }
         }
 
+        if (nextProps.loading && nextProps.downloadSurvey) {
+            if (!this.props.loading && this.props.downloadSurvey) {
+                console.log('IN DOWNLOAD!!!', this.props.downloadSurvey);
+                this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
+                    this.surveyLink.link.click()
+                });
+            }    
+        }
     }
 
 
@@ -130,13 +141,7 @@ class AuthDash extends Component {
     }
 
     onDownloadSurveyHandler = (questid) => {
-        console.log('QUEST NAME : ', questid);
         this.props.downloadSurveyStart(questid);
-        if (!this.props.loading && this.props.downloadSurvey.length > 0) {
-            this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
-                this.surveyLink.link.click()
-            });
-        }
     }
 
     onDeleteHandler = (questid) => {
@@ -163,7 +168,10 @@ class AuthDash extends Component {
                                         <Input type="radio"
                                             key={index}
                                             name={item}
-                                            checked={this.state.radioButton == item + '' + index}
+                                            disabled={this.state.showFormToggle}
+                                            checked={
+                                                answers.includes(item) ? answers.includes(item) :
+                                                    this.state.radioButton == item + '' + index}
                                             value={item ? item + '' + index : 'クリックして編集する'}
                                             onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
                                         {item}
@@ -182,6 +190,8 @@ class AuthDash extends Component {
                                     <Label for={`customCheckInline${index}`}>{item}</Label>
                                     <Input type="checkbox"
                                         id={`customCheckInline${index}`}
+                                        disabled={this.state.showFormToggle}
+                                        checked={answers.includes(item)}
                                         value={item ? item : 'クリックして編集する'}
                                         onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
                                 </div>
@@ -194,10 +204,18 @@ class AuthDash extends Component {
                     <Row className="text-center ml-1" style={{ width: '250%' }}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div className="custom-control custom-radio custom-control-inline ml-2 mt-3">
-                                <Rating fractions={2} stop={options.length}
-                                    initialRating={this.state.ratingCount}
-                                    onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
-                                />
+                                {
+                                    answers[0] > 0 ?
+                                        <Rating fractions={2} stop={options.length}
+                                            readonly
+                                            initialRating={answers[0]}
+                                        /> :
+                                        <Rating fractions={2} stop={options.length}
+                                            initialRating={this.state.ratingCount}
+                                            onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
+                                        />
+                                }
+
                             </div>
                         </Row>
                     </Row>
@@ -207,10 +225,14 @@ class AuthDash extends Component {
                     <Row className="text-center ml-1" style={{ width: '250%' }}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
-                                <Input type="select" name="ddlCreditCardType" id="ddlCreditCardType" onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}>
+                                <Input type="select"
+                                    defaultValue={answers[0]}
+                                    name="ddlCreditCardType" id="ddlCreditCardType"
+                                    disabled={this.state.showFormToggle}
+                                    onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}>
                                     {
                                         options.map((item, index) => (
-                                            <option value={item}>{item}</option>
+                                            <option value={item} disabled={this.state.showFormToggle}>{item}</option>
                                         ))
                                     }
 
@@ -224,7 +246,8 @@ class AuthDash extends Component {
                     <Row className="text-center ml-1" style={{ width: '250%' }}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
-                                <Input type="text" value={this.state.q5InputValue}
+                                <Input type="text" value={answers[0] === "" ? this.state.q5InputValue : answers[0]}
+                                    disabled={this.state.showFormToggle}
                                     onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
                                 />
                             </div>
@@ -241,7 +264,7 @@ class AuthDash extends Component {
                                         <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
                                         :
                                         <>
-                                            <table class="table columntitle table-striped">
+                                            <table class="table columntitle table-striped" disabled={this.state.showFormToggle}>
                                                 {
                                                     options.map((item, i) => (
                                                         <tr>
@@ -260,12 +283,13 @@ class AuthDash extends Component {
                                                                                         value={itm ? itm : '編集する'}
                                                                                     />
                                                                                     :
-                                                                                    <Input className='p-0 m-0'
+                                                                                    <Input className='p-0 m-0 '
                                                                                         type={'radio'}
                                                                                         key={i + '' + i2}
                                                                                         id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                         name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                         value={i + '' + i2}
+                                                                                        checked={[].concat.apply([], answers).includes(i + '' + i2)}
                                                                                         onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, i, i2)} />
 
                                                                             }</th>
@@ -297,7 +321,7 @@ class AuthDash extends Component {
                                         <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
                                         :
                                         <>
-                                            <table class="table columntitle table-striped">
+                                            <table class="table columntitle table-striped" disabled={this.state.showFormToggle}>
                                                 {
                                                     options.map((item, i) => (
                                                         <tr>
@@ -322,6 +346,8 @@ class AuthDash extends Component {
                                                                                         id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                         name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                         value={i + '' + i2}
+                                                                                        disabled={this.state.showFormToggle}
+                                                                                        checked={[].concat.apply([], answers).includes(i + '' + i2)}
                                                                                         onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, i, i2)} />
 
                                                                             }</th>
@@ -346,7 +372,8 @@ class AuthDash extends Component {
                     <Row className="text-center ml-1" style={{ width: '250%' }}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
-                                <Input type="textarea" value={this.state.q8InputValue}
+                                <Input type="textarea" value={answers[0] === "" ? this.state.q8InputValue : answers[0]}
+                                    disabled={this.state.showFormToggle}
                                     style={{ width: '100%' }}
                                     onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
                                 />
@@ -373,6 +400,20 @@ class AuthDash extends Component {
         }, () => {
             this.setState({ fillFormToggle: !this.state.fillFormToggle })
         })
+    }
+
+    showFormToggle = (index) => {
+        let question = this.state.questions2[index];
+        let quest_name = this.state.questions2[index].respname;
+        let quest_id = this.state.questions2[index]._id;
+        console.log('SELECTED QUESTION : ', question);
+        this.setState({
+            selectedQuestion: question,
+            form_name: quest_name,
+            quest_id: quest_id
+        }, () => {
+            this.setState({ showFormToggle: !this.state.showFormToggle })
+        });
     }
 
     onSubmitHandler = (index) => {
@@ -545,7 +586,7 @@ class AuthDash extends Component {
 
         let table3 = <Spinner />
         if (this.props.loading) {
-            table1 = this.state.questions.map((item, index) =>
+            table3 = this.state.questions.map((item, index) =>
                 <Card className='card-4 mt-3'>
                     <Row>
                         <Col xl='3 text-center mt-3' >{item.questname}</Col>
@@ -570,7 +611,7 @@ class AuthDash extends Component {
 
         let table4 = <Spinner />
         if (this.props.loading) {
-            table2 = this.state.questions2.map((item, index) =>
+            table4 = this.state.questions2.map((item, index) =>
                 <Card className='card-4 mt-3'>
                     <Row>
                         <Col xl='3 text-center mt-3' >{item.questname}</Col>
@@ -583,7 +624,7 @@ class AuthDash extends Component {
                                     <i className="mdi mdi-dots-vertical-circle" style={{ color: 'grey', fontSize: 25 }}></i>
                                 </DropdownToggle>
                                 <DropdownMenu right>
-                                    <DropdownItem>アンケートを表示</DropdownItem>
+                                    <DropdownItem onClick={() => this.showFormToggle(index)}>アンケートを表示</DropdownItem>
                                 </DropdownMenu>
                             </UncontrolledDropdown>
                         </Col>
@@ -646,6 +687,8 @@ class AuthDash extends Component {
                         </SweetAlert>
                     }
 
+
+                    <br /><br />
                     <Row>
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
@@ -655,7 +698,9 @@ class AuthDash extends Component {
                             </Col>
                         </Scrollbars>
                     </Row>
-                
+
+                    <br /><br />
+
                     <Row>
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
@@ -696,23 +741,17 @@ class AuthDash extends Component {
                             <Button onClick={() => this.setState({ toggleEditModal: false })} type="button" color="primary" className="waves-effect waves-light">変更を保存</Button>
                         </ModalFooter>
                     </Modal>
-                    
+
                     {/* Modal for table3 and table4 */}
-                    <Modal className="modal-lg" isOpen={this.state.fillFormToggle} toggle={() => this.setState({ fillFormToggle: false })} >
+                    <Modal className="modal-lg" isOpen={this.state.fillFormToggle || this.state.showFormToggle} toggle={() => this.setState({ fillFormToggle: false })} >
                         <div className="modal-header">
                             <h5 className="modal-title mt-0" id="myLargeModalLabel">Fill questions here</h5>
-                            <button onClick={() => this.setState({ fillFormToggle: false })} type="button" className="close" data-dismiss="modal" aria-label="Close">
+                            <button onClick={() => this.setState({ fillFormToggle: false, showFormToggle: false })} type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <ModalBody>
                             <Form>
-                                {/* <FormGroup row>
-                                    <Label htmlFor="example-text-input" sm="2">Header</Label>
-                                    <Col sm="10">
-                                        <Input type="text" name={'form_header'} value={this.state.selectedQuestion.questname} id="example-text-input" onChange={this.onChangeText} />
-                                    </Col>
-                                </FormGroup> */}
                                 <FormGroup row>
                                     <Label htmlFor="example-search-input" sm="2">Name</Label>
                                     <Col sm="10">
@@ -722,7 +761,7 @@ class AuthDash extends Component {
                             </Form>
                             <Col xs='12 text-center'>
                                 {
-                                    this.state.selectedQuestion ?
+                                    this.state.selectedQuestion.questions ?
                                         this.state.selectedQuestion.questions.map((item, index) => (
                                             <>
                                                 {
@@ -734,13 +773,13 @@ class AuthDash extends Component {
                                                         <Card className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
                                                             <Row>
                                                                 <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }} disabled>
-                                                                    <Input disabled={this.state.fillFormToggle} 
-                                                                            placeholder='Type your question here' 
-                                                                            value={child.question} 
-                                                                            type="text" 
-                                                                            id="example-text-input" 
-                                                                            style={{ width: '240%', minHeight: 50, border: '1px solid grey', borderRadius: 5 }}
-                                                                            onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
+                                                                    <Input disabled={this.state.fillFormToggle}
+                                                                        placeholder='Type your question here'
+                                                                        value={child.question}
+                                                                        type="text"
+                                                                        id="example-text-input"
+                                                                        style={{ width: '240%', minHeight: 50, border: '1px solid grey', borderRadius: 5 }}
+                                                                        onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
                                                                     {this.questionTypeHandler(child.type, child.options, child.answers, index, childIndex)}
                                                                     {/* <Input style={{ marginTop: 12 }} disabled type="text" name={'form_header'}
                                                                     id="example-text-input" /> */}
@@ -750,15 +789,46 @@ class AuthDash extends Component {
                                                     ))}
                                                 <hr />
                                             </>
-                                        )) : null
+                                        )) : this.state.selectedQuestion.response ?
+                                            this.state.selectedQuestion.response.map((item, index) => (
+                                                <>
+                                                    {
+                                                        this.state.selectedQuestion.response.length > 1 &&
+                                                        <h5 className='pull-left'>section {index + 1} of {this.state.selectedQuestion.response.length}</h5>
+                                                    }
+                                                    {
+                                                        item.map((child, childIndex) => (
+                                                            <Card className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
+                                                                <Row>
+                                                                    <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }} disabled>
+                                                                        <Input disabled={this.state.fillFormToggle}
+                                                                            placeholder='Type your question here'
+                                                                            value={child.question}
+                                                                            type="text"
+                                                                            id="example-text-input"
+                                                                            style={{ width: '240%', minHeight: 50, border: '1px solid grey', borderRadius: 5 }}
+                                                                            onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
+                                                                        {this.questionTypeHandler(child.type, child.options, child.answers, index, childIndex)}
+                                                                        {/* <Input style={{ marginTop: 12 }} disabled type="text" name={'form_header'}
+                                                                    id="example-text-input" /> */}
+                                                                    </Col>
+                                                                </Row>
+                                                            </Card>
+                                                        ))}
+                                                    <hr />
+                                                </>
+                                            )) : null
                                 }
                             </Col>
                         </ModalBody>
                         <ModalFooter>
                             <Button type="button"
                                 color="secondary"
-                                onClick={() => this.setState({ fillFormToggle: false })} className="waves-effect">Close</Button>
-                            <Button onClick={() => this.onSaveHandler()} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
+                                onClick={() => this.setState({ fillFormToggle: false, showFormToggle: false })} className="waves-effect">Close</Button>
+                            {!this.state.showFormToggle ?
+                                <Button onClick={() => this.onSaveHandler()} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
+                                : null
+                            }
                         </ModalFooter>
                     </Modal>
 
@@ -770,6 +840,7 @@ class AuthDash extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
+    console.log('ADMIN MAP STATE : ', dashboardManagement.userSurveyData);
     return {
         role: Login.role,
         survey: dashboardManagement.adminSurveyData,

@@ -49,7 +49,7 @@ function* getAdminSurveyStart() {
     try {
         const localStorageData = JSON.parse(localStorage.getItem('user'));
         const response = yield call(getAdminSurveyUtil, localStorageData.token);
-        console.log(response);
+        console.log('ADMIN : ', response);
         if (response) {
             yield put({type: dashboardTypes.GET_ADMIN_SURVEY_DATA_SUCCESS,
                         payload: response})

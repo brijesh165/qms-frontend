@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import AdminDash from './AuthDash'
+import AdminDash from './AdminDash'
 import EndUserDash from './EndUserDash'
 import AuthDash from './AuthDash';
 
@@ -35,11 +35,13 @@ class Dashboard extends Component {
     render() {
         
         const localStorageData = JSON.parse(localStorage.getItem('user')) || '';
+        console.log('LOCALSTORAGE ROLE : ', localStorageData.role);
         if (localStorageData.role === "enduser") {
             return (
                 <EndUserDash />
             )
         } else if (localStorageData.role === 'admin') {
+            console.log('IN ADMIN : ', localStorageData.role)
             return (
                     <AdminDash />
                 )

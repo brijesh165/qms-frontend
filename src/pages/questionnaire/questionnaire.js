@@ -442,32 +442,37 @@ class Questionnaire extends Component {
     martixAddQuestionHandler = (parentIndex, childIndex) => {
         let new_children = [...this.state.children];
         let options = new_children[parentIndex][childIndex]['options'];
-        let length = options[0].length;
         let answers = new_children[parentIndex][childIndex]['answers'];
-        let new_options = []
+        let length = options[0].length;
+        let new_options = [];
+        let new_answers = [];
         for (let i = 0; i < length; i++) {
             new_options.push('')
+            new_answers.push('')
         }
         options.push(new_options)
-        answers.push(new_options)
+        answers.push(new_answers)
         this.setState({ children: new_children })
 
     }
     martixAddOptionHandler = (parentIndex, childIndex) => {
         let new_children = [...this.state.children];
         let options = new_children[parentIndex][childIndex]['options'];
+        // let answers = new_children[parentIndex][childIndex]['answers'];
         for (let i = 0; i < options.length; i++) {
             //
             options[i].push('')
+            // answers[i].push('')
         }
         this.setState({ children: new_children })
     }
     onAddMatrixQ = (option, parentIndex, childIndex, i, i2) => {
         let new_children = [...this.state.children];
         let options = new_children[parentIndex][childIndex]['options'];
+        let answers = new_children[parentIndex][childIndex]['answers'];
         console.log(option, options[i], options[i][i2], 'mmmm')
         options[i][i2] = option;
-
+        answers[i][i2] = answers;
         this.setState({ children: new_children })
     }
 
@@ -490,8 +495,6 @@ class Questionnaire extends Component {
     searchQuestion = (event) => {
         if (this.props.questions) {
             let new_data = this.props.questions.filter(item => {
-                console.log('From State : ', item.questname.toLowerCase());
-                console.log('From Input : ', event.target.value.toLowerCase());
                 return item.questname.toLowerCase().includes(event.target.value.toLowerCase())
             })
             console.log(new_data, 'vvvv')

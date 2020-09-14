@@ -26,13 +26,38 @@ class Responses extends Component {
             confirm_both: false,
             success_dlg: '',
             error_dlg: '',
-            downloadSurveyData: []
+            downloadSurveyData: [],
+            optionGroup: []
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let optionGroupName = this.props.survey ? this.props.survey.map((item) => {
+            return { 'label': item.questname, 'value': item.questname }
+        }) : null;
+
+        if (this.props.survey) {
+            this.setState({
+                masterList: [...nextProps.survey],
+                optionGroup: optionGroupName
+            })
+        }
+
     }
 
     componentDidMount() {
         this.props.activateAuthLayout();
         this.props.getSurveyStart();
+    }
+
+    handleSelectGroup = (selectedGroup) => {
+        console.log('IN HANDLE SUBMIT : ', selectedGroup);
+        const selectQuestion = [...this.state.masterList];
+        let new_question = selectQuestion.filter((item) => {
+            return item.questname === selectedGroup.value
+        })
+
+        this.setState({ questions: new_question })
     }
 
     onEndSurveyHandler = (questid) => {
@@ -51,6 +76,7 @@ class Responses extends Component {
     }
 
     render() {
+        const { selectedGroup } = this.state;
         const columns = [
             {
                 name: 'アンケート名',
@@ -128,10 +154,9 @@ class Responses extends Component {
                         </Row>
                         <Col md='4 p-0 m-0'>
                             <Select
-
-                                // value={selectedGroup}
+                                value={selectedGroup}
                                 onChange={this.handleSelectGroup}
-                                options={optionGroup}
+                                options={this.state.optionGroup}
                                 placeholder='検索。。'
                             />
                         </Col>

@@ -47,7 +47,7 @@ class UserManagement extends Component {
             emailsubject: '',
             expiresat: '',
             sendbody: '',
-            optionGroup: JSON.parse(localStorage.getItem('optionGroup')) || [],
+            optionGroup: [],
             loading: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -138,38 +138,48 @@ class UserManagement extends Component {
                 users: nextProps.users
             })
         }
+
         if (nextProps.loading) {
             this.setState({
                 loading: nextProps.loading
             })
         }
-        if (this.props.questions) {
-            this.setOptionGroup(nextProps.questions);
+
+        if (nextProps.questions) {
+            let optionGroup = this.props.questions ? this.props.questions.map((item) => {
+                console.log('ITEM : ', item);
+                return { 'id': item.id, 'label': item.questname, 'value': item.questions }
+            }) : null;
+
+            this.setState({
+                optionGroup: optionGroup
+            })
         }
-        if (this.props.sendEmailStatus) {
+
+        if (nextProps.sendEmailStatus) {
             this.resetState()
         }
     }
 
-    setOptionGroup(nextProps) {
-        let newOptionGroup = [];
-        let newOptions;
-        for (let i = 0; i < nextProps.length; i++) {
-            newOptions = {
-                id: nextProps[i].id,
-                label: nextProps[i].questname,
-                value: nextProps[i].questions
-            }
+    // setOptionGroup(nextProps) {
+    //     let newOptionGroup = [];
+    //     let newOptions;
+    //     for (let i = 0; i < nextProps.length; i++) {
+    //         newOptions = {
+    //             id: nextProps[i].id,
+    //             label: nextProps[i].questname,
+    //             value: nextProps[i].questions
+    //         }
 
-            newOptionGroup.push(newOptions);
-        }
+    //         newOptionGroup.push(newOptions);
+    //     }
 
-        this.setState({
-            optionGroup: newOptionGroup
-        }, () => {
-            localStorage.setItem('optionGroup', JSON.stringify(newOptionGroup))
-        })
-    }
+    //     this.setState({
+    //         optionGroup: newOptionGroup
+    //     }, () => {
+    //         localStorage.setItem('optionGroup', JSON.stringify(newOptionGroup))
+    //     })
+    // }
 
     componentWillUnmount() {
         this.setState = (state, callback) => {
@@ -373,7 +383,7 @@ class UserManagement extends Component {
                                             placeholder="検索"
                                             value={selectedGroup}
                                             onChange={this.handleSelectGroup}
-                                            options={this.state.optionGroup}
+                                            options={this.state.optionGroup ? this.state.optionGroup : null}
                                         >
                                             {/* {
                                                 this.state.optionGroup.map((item) => {

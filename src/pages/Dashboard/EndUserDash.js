@@ -33,6 +33,7 @@ class EndUserDash extends Component {
             confirm_both: false,
             success_dlg: '',
             error_dlg: '',
+            masterList: [],
             questions: [],
             questions2: [],
             optionGroup: [],
@@ -58,7 +59,7 @@ class EndUserDash extends Component {
 
     handleSelectGroup = (selectedGroup) => {
         console.log('IN HANDLE SUBMIT : ', selectedGroup);
-        const selectQuestion = [...this.state.questions];
+        const selectQuestion = [...this.state.masterList];
         let new_question = selectQuestion.filter((item) => {
             console.log(item.questname);
             return item.questname === selectedGroup.value
@@ -72,12 +73,13 @@ class EndUserDash extends Component {
             return { 'label': item.questname, 'value': item.questname }
         }) : null;
         let optionGroupName2 = this.props.questions2 ? this.props.questions2.map((item) => {
-            return { 'label': item.questname, 'value': item.questname }
+            return { 'label': item.respname, 'value': item.respname }
         }) : null;
 
         if (this.props.questions) {
             this.setState({
                 questions: nextProps.questions,
+                masterList: [...nextProps.questions],
                 optionGroup: optionGroupName
             })
         }
@@ -113,8 +115,8 @@ class EndUserDash extends Component {
                                             name={item}
                                             disabled={this.state.showFormToggle}
                                             checked={
-                                                answers.includes(item) ? answers.includes(item) : 
-                                                this.state.radioButton == item + '' + index}
+                                                answers.includes(item) ? answers.includes(item) :
+                                                    this.state.radioButton == item + '' + index}
                                             value={item ? item + '' + index : 'クリックして編集する'}
                                             onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
                                         {item}
@@ -130,13 +132,13 @@ class EndUserDash extends Component {
                         {options.map((item, index) => (
                             <Row className='text-center'>
                                 <div className="custom-control custom-radio custom-control-inline ml-4 mt-4">
-                                    <Label for={`customCheckInline${index}`}>{item}</Label>                                   
-                                        <Input type="checkbox"
-                                            id={`customCheckInline${index}`}
-                                            disabled={this.state.showFormToggle}
-                                            checked={answers.includes(item)}
-                                            value={item ? item : 'クリックして編集する'} 
-                                            onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
+                                    <Label for={`customCheckInline${index}`}>{item}</Label>
+                                    <Input type="checkbox"
+                                        id={`customCheckInline${index}`}
+                                        disabled={this.state.showFormToggle}
+                                        checked={answers.includes(item)}
+                                        value={item ? item : 'クリックして編集する'}
+                                        onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, index)} />
                                 </div>
                             </Row>
                         ))}
@@ -168,9 +170,9 @@ class EndUserDash extends Component {
                     <Row className="text-center ml-1" style={{ width: '250%' }}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
-                                <Input type="select" 
-                                    defaultValue={answers[0]} 
-                                    name="ddlCreditCardType" id="ddlCreditCardType" 
+                                <Input type="select"
+                                    defaultValue={answers[0]}
+                                    name="ddlCreditCardType" id="ddlCreditCardType"
                                     disabled={this.state.showFormToggle}
                                     onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}>
                                     {
@@ -190,7 +192,7 @@ class EndUserDash extends Component {
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
                                 <Input type="text" value={answers[0] === "" ? this.state.q5InputValue : answers[0]}
-                                        disabled={this.state.showFormToggle}
+                                    disabled={this.state.showFormToggle}
                                     onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex)}
                                 />
                             </div>
@@ -226,12 +228,14 @@ class EndUserDash extends Component {
                                                                                         value={itm ? itm : '編集する'}
                                                                                     />
                                                                                     :
-                                                                                    <Input className='p-0 m-0'
+                                                                                    <Input className='p-0 m-0 '
                                                                                         type={'radio'}
                                                                                         key={i + '' + i2}
                                                                                         id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                         name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                         value={i + '' + i2}
+                                                                                        disabled={this.state.showFormToggle}
+                                                                                        checked={[].concat.apply([], answers).includes(i + '' + i2)}
                                                                                         onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, i, i2)} />
 
                                                                             }</th>
@@ -288,6 +292,8 @@ class EndUserDash extends Component {
                                                                                         id={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                         name={i != 0 && i2 != 0 ? i.toString() : i2.toString()}
                                                                                         value={i + '' + i2}
+                                                                                        disabled={this.state.showFormToggle}
+                                                                                        checked={[].concat.apply([], answers).includes(i + '' + i2)}
                                                                                         onChange={(option) => this.onSaveOptions(option, parentIndex, childIndex, i, i2)} />
 
                                                                             }</th>
@@ -344,7 +350,7 @@ class EndUserDash extends Component {
 
     showFormToggle = (index) => {
         let question = this.state.questions2[index];
-        let quest_name = this.state.questions2[index].questname;
+        let quest_name = this.state.questions2[index].respname;
         let quest_id = this.state.questions2[index]._id;
         console.log('SELECTED QUESTION : ', question);
         this.setState({
@@ -450,7 +456,7 @@ class EndUserDash extends Component {
             table2 = this.state.questions2.map((item, index) =>
                 <Card className='card-4 mt-3'>
                     <Row>
-                        <Col xl='3 text-center mt-3' >{item.questname}</Col>
+                        <Col xl='3 text-center mt-3' >{item.respname}</Col>
                         <Col xl='4 text-center mt-3' >{'Created At : ' + item.createdAt.slice(0, 10).replace(/-/g, "/")}</Col>
                         <Col xl='4 text-center mt-3' >{'Expires At : ' + item.dateexpired.slice(0, 10).replace(/-/g, "/")}</Col>
                         {/* <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col> */}
@@ -637,7 +643,10 @@ class EndUserDash extends Component {
                             <Button type="button"
                                 color="secondary"
                                 onClick={() => this.setState({ fillFormToggle: false, showFormToggle: false })} className="waves-effect">Close</Button>
-                            <Button onClick={() => this.onSaveHandler()} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
+                            {!this.state.showFormToggle ?
+                                <Button onClick={() => this.onSaveHandler()} type="button" color="primary" className="waves-effect waves-light">Save changes</Button>
+                                : null
+                            }
                         </ModalFooter>
                     </Modal>
 

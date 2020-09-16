@@ -42,12 +42,13 @@ const postRegister = (url, data) => {
 // Login Method
 const loginUserUtil = (data) => {
     return axios.post(`http://localhost:5000/login`, data).then(response => {
-        if (response.status === 400 || response.status === 500)
-            throw response.data;
+        console.log(response);
+        if (response.status === 402 || response.status === 300)
+            throw response.message;
         return response.data;
     }).catch(err => {
-        console.log('App Util error : ',err);
-        throw err[1];
+        console.log('App Util error : ',err.response);
+        return err.response.data;
     });
 }
 

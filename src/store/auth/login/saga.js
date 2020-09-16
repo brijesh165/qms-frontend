@@ -11,7 +11,8 @@ function* loginUser({ payload: { username, password, history } }) {
         try {
             const response = yield call(loginUserUtil, {qmsid: username, userpassword: password});
             setLoggeedInUserUtil(response);
-            if (response.code == 200) {
+            console.log('LOGIN USER UTIL : ', response);
+            if (response.status == 200) {
                 yield put({type: userLogin.LOGIN_USER_SUCCESSFUL, 
                     payload: response});
                 history.push('/dashboard');

@@ -38,6 +38,7 @@ class Pageslogin extends Component {
                             <Link to="/" className="logo logo-admin"><img src={logosm} height="75" alt="logo" /></Link>
                         </div>
                         <div className="account-card-content">
+                            <br />
 
                            {this.props.user && <Alert color="success">
                                     ログインに成功しました。</Alert>}
@@ -78,6 +79,7 @@ class Pageslogin extends Component {
 }
 
 const mapStatetoProps = ({Login}) => {
+    console.log('LOGIN ERROR : ', Login.loginError);
     const { user, loginError, loading } = Login;
     return { user, loginError, loading };
 }

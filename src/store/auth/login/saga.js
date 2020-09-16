@@ -1,27 +1,30 @@
 import { takeEvery, fork, put, all, call } from 'redux-saga/effects';
 
 // Login Redux States
-import { CHECK_LOGIN } from './actionTypes';
-import {  apiError, loginUserSuccessful } from './actions';
+import userLogin from './actionTypes';
 
 // AUTH related methods
-import { setLoggeedInUser,postLogin } from '../../../helpers/authUtils';
+import { setLoggeedInUserUtil, loginUserUtil } from '../../../helpers/authUtils';
 
 //If user is login then dispatch redux action's are directly from here.
 function* loginUser({ payload: { username, password, history } }) {
         try {
-            console.log('Saga', username);
-            const response = yield call(postLogin, {qmsid: username, userpassword: password});
-             setLoggeedInUser(response);
-             yield put(loginUserSuccessful(response));
-            history.push('/dashboard');
+            const response = yield call(loginUserUtil, {qmsid: username, userpassword: password});
+            setLoggeedInUserUtil(response);
+            if (response.code == 200) {
+                yield put({type: userLogin.LOGIN_USER_SUCCESSFUL, 
+                    payload: response});
+                history.push('/dashboard');
+            } else {
+                yield put({type: userLogin.API_FAILED, payload: response.message});
+            }
         } catch (error) {
-            yield put(apiError(error));
+            yield put({type: userLogin.API_FAILED, payload: error});
         }
 }
 
 export function* watchUserLogin() {
-    yield takeEvery(CHECK_LOGIN, loginUser)
+    yield takeEvery(userLogin.LOGIN_USER_START, loginUser)
 }
 
 function* loginSaga() {

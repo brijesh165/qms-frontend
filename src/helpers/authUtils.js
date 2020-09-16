@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 //Set the logged in user data in local session 
-const setLoggeedInUser = (user) => {
+const setLoggeedInUserUtil = (user) => {
     localStorage.setItem('user', JSON.stringify(user));
 }
 
@@ -40,12 +40,7 @@ const postRegister = (url, data) => {
 }
 
 // Login Method
-const postLogin = (data) => {
-
-    // axios.post("http://localhost:5000/login", data).then(response => {
-    //     console.log(response);
-    // });
-
+const loginUserUtil = (data) => {
     return axios.post(`http://localhost:5000/login`, data).then(response => {
         if (response.status === 400 || response.status === 500)
             throw response.data;
@@ -79,4 +74,10 @@ const postResetPwd = (data) => {
     });
 }
 
-export { setLoggeedInUser, getLoggedInUser, isUserAuthenticated, postRegister, postLogin, postForgetPwd, postResetPwd }
+export { setLoggeedInUserUtil, 
+        getLoggedInUser, 
+        isUserAuthenticated, 
+        postRegister, 
+        loginUserUtil, 
+        postForgetPwd, 
+        postResetPwd }

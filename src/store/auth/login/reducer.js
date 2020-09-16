@@ -1,62 +1,37 @@
-import { CHECK_LOGIN, LOGIN_USER_SUCCESSFUL, API_FAILED, CHECK_OTP, VALIDATE_OTP_SUCCESS, VALIDATE_OTP_ERROR } from './actionTypes';
+import userLogin from './actionTypes';
 
 const initialState = {
-    loginError: null, 
-    message: null, 
+    loginError: null,
+    user: null, 
     loading: null, 
-    role: localStorage.getItem('role') || '',
+    role: '',
 }
 
 const login = (state = initialState, action) => {
-    console.log('Reducer Payload LOGIN : ', action.payload);
     switch (action.type) {
-        case CHECK_LOGIN:
+        case userLogin.LOGIN_USER_START:
             state = {
                 ...state,
-                user: null,
-                loading: true,
+                loading: false,
                 loginError: null
             }
             break;
-        case LOGIN_USER_SUCCESSFUL:
+
+        case userLogin.LOGIN_USER_SUCCESSFUL:
             state = {
                 ...state,
                 user: action.payload,
-                loading: false,
+                role: action.payload.role,
+                loading: true,
                 loginError: null,
-                role: action.payload.role
             }
             break;
-        case API_FAILED:
+
+        case userLogin.API_FAILED:
             state = {
                 ...state,
                 loading: false,
                 loginError: action.payload
-            }
-            break;
-
-        case CHECK_OTP:
-            state = {
-                ...state,
-                user: null,
-                validate_otp_success: false,
-                validate_otp_error: false,
-            }
-            break;
-
-        case VALIDATE_OTP_SUCCESS:
-            state = {
-                ...state,
-                validate_otp_success: action.payload,
-                validate_otp_error: false,
-            }
-            break;
-
-        case VALIDATE_OTP_ERROR:
-            state = {
-                ...state,
-                validate_otp_success: false,
-                validate_otp_error: action.payload,
             }
             break;
 

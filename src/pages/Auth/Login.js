@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Alert, Button, Col, Row, Card } from 'reactstrap';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { checkLogin } from '../../store/actions';
+import { loginUserStart } from '../../store/actions';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import logosm from '../../images/avatar.png';
 
@@ -17,7 +17,7 @@ class Pageslogin extends Component {
 
     handleSubmit(event, values) {
         event.preventDefault();
-        this.props.checkLogin(values.username, values.password, this.props.history);
+        this.props.loginUserStart(values.username, values.password, this.props.history);
     }
 
     render() {
@@ -77,9 +77,9 @@ class Pageslogin extends Component {
     }
 }
 
-const mapStatetoProps = state => {
-    const { user, loginError, loading } = state.Login;
+const mapStatetoProps = ({Login}) => {
+    const { user, loginError, loading } = Login;
     return { user, loginError, loading };
 }
 
-export default withRouter(connect(mapStatetoProps, { checkLogin })(Pageslogin));
+export default withRouter(connect(mapStatetoProps, { loginUserStart })(Pageslogin));

@@ -53,13 +53,13 @@ const loginUserUtil = (data) => {
 }
 
 // postForgetPwd 
-const postForgetPwd = (data) => {
+const forgetPasswordUtil = (data) => {
     return axios.post(`http://localhost:5000/forget-password`, data).then(response => {
         if (response.status === 400 || response.status === 500)
             throw response.data;
         return response.data;
     }).catch(err => {
-        throw err[1];
+        return err.response.data
     });
 }
 
@@ -71,7 +71,7 @@ const postResetPwd = (data) => {
         
         return response.data;
     }).catch(err => {
-        throw err[1];
+        return err.response.data
     });
 }
 
@@ -80,5 +80,5 @@ export { setLoggeedInUserUtil,
         isUserAuthenticated, 
         postRegister, 
         loginUserUtil, 
-        postForgetPwd, 
+        forgetPasswordUtil, 
         postResetPwd }

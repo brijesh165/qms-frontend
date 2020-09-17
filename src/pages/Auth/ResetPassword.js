@@ -43,6 +43,12 @@ class ResetPassword extends Component {
                         </div>
                         {/* Reset Password UI */}
                         <div className="account-card-content">
+
+                            {/* Error Message */}
+                            <br />
+                            {this.props.resetPasswordError && <Alert color="danger">
+                                {this.props.resetPasswordError}</Alert>}
+
                             <AvForm className="form-horizontal m-t-30" onValidSubmit={this.handleSubmit} >
                                 <AvField name="password" label="パスワード" value={this.state.password} placeholder="パスワードを入力してください。" type="text" required />
                                 <AvField name="confirmpassword" label="パスワードを認証する" value={this.state.confirmpassword} placeholder="確認パスワードを入力してください。" type="text" required />
@@ -71,9 +77,9 @@ class ResetPassword extends Component {
     }
 }
 
-const mapStatetoProps = state => {
-    const { user, loginError, loading } = state.Reset;
-    return { user, loginError, loading };
+const mapStatetoProps = ({ Reset }) => {
+    const { user, resetPasswordError, loading } = Reset;
+    return { user, resetPasswordError, loading };
 }
 
 export default withRouter(connect(mapStatetoProps, { resetpassword })(ResetPassword));

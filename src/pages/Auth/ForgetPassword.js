@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Card, Col, Row } from 'reactstrap';
+import { Alert, Button, Card, Col, Row } from 'reactstrap';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import logosm from '../../images/avatar.png';
@@ -34,6 +34,13 @@ class ForgetPassword extends Component {
                             <Link to="/" className="logo logo-admin"><img src={logosm} height="75" alt="logo" /></Link>
                         </div>
                         <div className="account-card-content">
+
+                            {/* Error Message */}
+                            <br />
+                            {this.props.forgetPasswordError && <Alert color="danger">
+                                {this.props.forgetPasswordError}</Alert>}
+
+                            
                             <AvForm className="form-horizontal m-t-30" onValidSubmit={this.handleSubmit} >
                                 <AvField name="qmsid" label="ユーザーID" value={this.state.qmsid} placeholder="会員に登録されているユーザID、を入力してください。" type="text" required />
 
@@ -62,9 +69,10 @@ class ForgetPassword extends Component {
 
 
 
-const mapStatetoProps = state => {
-    const { user, loginError, loading } = state.Forget;
-    return { user, loginError, loading };
+const mapStatetoProps = ({ Forget }) => {
+    console.log('Map State to Props : ', Forget);
+    const { user, forgetPasswordError, loading } = Forget;
+    return { user, forgetPasswordError, loading };
 }
 
 export default withRouter(connect(mapStatetoProps, { forgetUser })(ForgetPassword));

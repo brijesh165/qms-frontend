@@ -1,25 +1,29 @@
 import { takeEvery, fork, put, all, call } from 'redux-saga/effects';
 
 // Login Redux States
-import { RESET_PASSWORD } from './actionTypes';
+import resetPassword from './actionTypes';
 import { apiError } from './actions';
 
 // AUTH related methods
 import { postResetPwd } from '../../../helpers/authUtils';
 
 //If user is login then dispatch redux action's are directly from here.
-function* resetPassword({ payload: { password, params, history } }) {
+function* resetPasswordd({ payload: { password, params, history } }) {
         try {
             const response = yield call(postResetPwd, {password, params});
-            if(response)
-               history.push('/login');
+            console.log('RESET PASSWORD : ', response);
+            if(response.status === 200) {
+                history.push('/login');
+            } else {
+                yield put({type: resetPassword.API_FAILED, payload: response.message});
+            }
         } catch (error) {
-            yield put(apiError(error));
+            yield put({type: resetPassword.API_FAILED, payload: error});
         }
 }
 
 export function* watchPasswordReset() {
-    yield takeEvery(RESET_PASSWORD, resetPassword)
+    yield takeEvery(resetPassword.RESET_PASSWORD_START, resetPasswordd)
 }
 
 function* resetSaga() {

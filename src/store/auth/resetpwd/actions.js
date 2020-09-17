@@ -1,22 +1,22 @@
-import { RESET_PASSWORD, RESET_PASSWORD_SUCCESSFUL, API_FAILED } from './actionTypes';
+import resetPassword from './actionTypes';
 
 export const resetpassword = (password, params, history) => {
     return {
-        type: RESET_PASSWORD,
+        type: resetPassword.RESET_PASSWORD_START,
         payload: { password, params, history }
     }
 }
 
 export const resetPasswordSuccessful = (user) => {
     return {
-        type: RESET_PASSWORD_SUCCESSFUL,
+        type: resetPassword.RESET_PASSWORD_SUCCESSFUL,
         payload: user
     }
 }
 
 export const apiError = (error) => {
     return {
-        type: API_FAILED,
+        type: resetPassword.API_FAILED,
         payload: error
     }
 }

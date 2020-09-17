@@ -1,22 +1,22 @@
-import { FORGET_USER, FORGET_USER_SUCCESSFUL, API_FAILED } from './actionTypes';
+import forgotPassword from './actionTypes';
 
 export const forgetUser = (qmsid, history) => {
     return {
-        type: FORGET_USER,
+        type: forgotPassword.FORGET_PASSWORD_START,
         payload: { qmsid, history }
     }
 }
 
 export const forgetUserSuccessful = (user) => {
     return {
-        type: FORGET_USER_SUCCESSFUL,
+        type: forgotPassword.FORGET_PASSWORD_SUCCESSFUL,
         payload: user
     }
 }
 
 export const apiError = (error) => {
     return {
-        type: API_FAILED,
+        type: forgotPassword.API_FAILED,
         payload: error
     }
 }

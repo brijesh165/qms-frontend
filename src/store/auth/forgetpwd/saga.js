@@ -1,25 +1,29 @@
 import { takeEvery, fork, put, all, call } from 'redux-saga/effects';
 
 // Login Redux States
-import { FORGET_USER } from './actionTypes';
-import { apiError } from './actions';
+// import { FORGET_USER } from './actionTypes';
+import forgotPassword from './actionTypes';
 
 // AUTH related methods
-import { postForgetPwd } from '../../../helpers/authUtils';
+import { forgetPasswordUtil } from '../../../helpers/authUtils';
 
 //If user is login then dispatch redux action's are directly from here.
 function* forgetUser({ payload: { qmsid, history } }) {
         try {
-            const response = yield call(postForgetPwd, {qmsid});
-            if(response)
-               history.push('/reset-password');
+            const response = yield call(forgetPasswordUtil, {qmsid});
+            console.log('Forget Password Response : ', response);
+            if(response.status === 200){
+                history.push('/reset-password');
+            } else {
+                yield put({type: forgotPassword.API_FAILED, payload: response.message});
+            }
         } catch (error) {
-            yield put(apiError(error));
+            yield put({type: forgotPassword.API_FAILED, payload: error});
         }
 }
 
 export function* watchUserForget() {
-    yield takeEvery(FORGET_USER, forgetUser)
+    yield takeEvery(forgotPassword.FORGET_PASSWORD_START, forgetUser)
 }
 
 function* forgetSaga() {

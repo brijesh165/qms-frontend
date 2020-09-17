@@ -1,32 +1,32 @@
-import { RESET_PASSWORD_SUCCESSFUL, RESET_PASSWORD, API_FAILED } from './actionTypes';
+import resetPassword from './actionTypes';
 
 const initialState = {
-    forgetError: null, message: null, loading: false
+    resetPasswordError: null, message: null, loading: false
 }
 
 const forgetpwd = (state = initialState, action) => {
     switch (action.type) {
-        case RESET_PASSWORD:
+        case resetPassword.RESET_PASSWORD_START:
             state = {
                 ...state,
                 user: null,
-                loading: true,
-                forgetError: null,
+                loading: false,
+                resetPasswordError: null,
             }
             break;
-        case RESET_PASSWORD_SUCCESSFUL:
+        case resetPassword.RESET_PASSWORD_SUCCESSFUL:
             state = {
                 ...state,
                 user: action.payload,
-                loading: false,
-                forgetError: null
+                loading: true,
+                resetPasswordError: null
             }
             break;
-        case API_FAILED:
+        case resetPassword.API_FAILED:
             state = {
                 ...state,
                 loading: false,
-                forgetError: action.payload
+                resetPasswordError: action.payload
             }
             break;
         default:

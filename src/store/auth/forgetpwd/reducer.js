@@ -1,32 +1,34 @@
-import { FORGET_USER, FORGET_USER_SUCCESSFUL, API_FAILED } from './actionTypes';
+import forgotPassword from './actionTypes';
 
 const initialState = {
-    forgetError: null, message: null, loading: false
+    forgetPasswordError: null, 
+    message: null, 
+    loading: false
 }
 
 const forgetpwd = (state = initialState, action) => {
     switch (action.type) {
-        case FORGET_USER:
+        case forgotPassword.FORGET_PASSWORD_START:
             state = {
                 ...state,
                 user: null,
-                loading: true,
-                forgetError: null
+                loading: false,
+                forgetPasswordError: null
             }
             break;
-        case FORGET_USER_SUCCESSFUL:
+        case forgotPassword.FORGET_PASSWORD_SUCCESSFUL:
             state = {
                 ...state,
                 user: action.payload,
-                loading: false,
-                forgetError: null
+                loading: true,
+                forgetPasswordError: null
             }
             break;
-        case API_FAILED:
+        case forgotPassword.API_FAILED:
             state = {
                 ...state,
                 loading: false,
-                forgetError: action.payload
+                forgetPasswordError: action.payload
             }
             break;
         default:

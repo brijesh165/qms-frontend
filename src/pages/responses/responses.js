@@ -9,7 +9,7 @@ import Select from 'react-select';
 import { CSVLink } from 'react-csv';
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import { getSurveyStart, endSurveyStart, downloadSurveyStart } from './../../store/actions';
+import { getQuestionaireStart, endSurveyStart, downloadSurveyStart } from './../../store/actions';
 
 const optionGroup = [
 
@@ -32,13 +32,13 @@ class Responses extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        let optionGroupName = this.props.survey ? this.props.survey.map((item) => {
+        let optionGroupName = this.props.questionaire ? this.props.questionaire.map((item) => {
             return { 'label': item.questname, 'value': item.questname }
         }) : null;
 
-        if (this.props.survey) {
+        if (this.props.questionaire) {
             this.setState({
-                masterList: [...nextProps.survey],
+                masterList: [...nextProps.questionaire],
                 optionGroup: optionGroupName
             })
         }
@@ -46,8 +46,9 @@ class Responses extends Component {
     }
 
     componentDidMount() {
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.activateAuthLayout();
-        this.props.getSurveyStart();
+        this.props.getQuestionaireStart(localStorageData.token);
     }
 
     handleSelectGroup = (selectedGroup) => {
@@ -128,13 +129,13 @@ class Responses extends Component {
 
         let surveyTable = <Spinner />
         if (this.props.loading) {
-            surveyTable = this.props.survey ?
+            surveyTable = this.props.questionaire ?
                 <Row style={{ marginTop: 30 }}>
                     <Col xl='12'>
                         <DataTable
                             // title="Table List"
                             columns={columns}
-                            data={this.props.survey}
+                            data={this.props.questionaire}
                         />
                     </Col>
                 </Row> : null
@@ -197,10 +198,10 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
     console.log(dashboardManagement);
     return {
         role: Login.role,
-        survey: dashboardManagement.surveyData,
+        questionaire: dashboardManagement.questionaireData,
         loading: dashboardManagement.loading,
         downloadSurvey: dashboardManagement.downloadSurvey
     }
 }
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout, getSurveyStart, endSurveyStart, downloadSurveyStart })(Responses));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getQuestionaireStart, endSurveyStart, downloadSurveyStart })(Responses));

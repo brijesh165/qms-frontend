@@ -2,6 +2,7 @@ import forgotPassword from './actionTypes';
 
 const initialState = {
     forgetPasswordError: null, 
+    forgotPasswordSuccessMsg: null,
     message: null, 
     loading: false
 }
@@ -17,11 +18,12 @@ const forgetpwd = (state = initialState, action) => {
             }
             break;
         case forgotPassword.FORGET_PASSWORD_SUCCESSFUL:
+            console.log('REDUCER : ', action.payload);
             state = {
                 ...state,
-                user: action.payload,
                 loading: true,
-                forgetPasswordError: null
+                forgetPasswordError: null,
+                forgotPasswordSuccessMsg: action.payload
             }
             break;
         case forgotPassword.API_FAILED:

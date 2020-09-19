@@ -40,6 +40,9 @@ class ForgetPassword extends Component {
                             {this.props.forgetPasswordError && <Alert color="danger">
                                 {this.props.forgetPasswordError}</Alert>}
 
+                            {this.props.forgotPasswordSuccessMsg && <Alert color="success">
+                                    {this.props.forgotPasswordSuccessMsg}
+                                </Alert>}
                             
                             <AvForm className="form-horizontal m-t-30" onValidSubmit={this.handleSubmit} >
                                 <AvField name="qmsid" label="ユーザーID" value={this.state.qmsid} placeholder="会員に登録されているユーザID、を入力してください。" type="text" required />
@@ -70,9 +73,9 @@ class ForgetPassword extends Component {
 
 
 const mapStatetoProps = ({ Forget }) => {
-    console.log('Map State to Props : ', Forget);
-    const { user, forgetPasswordError, loading } = Forget;
-    return { user, forgetPasswordError, loading };
+    console.log('MAP STATE TO PROPS : ', Forget.forgotPasswordSuccessMsg);
+    const { user, forgetPasswordError, forgotPasswordSuccessMsg,loading } = Forget;
+    return { user, forgetPasswordError, forgotPasswordSuccessMsg, loading };
 }
 
 export default withRouter(connect(mapStatetoProps, { forgetUser })(ForgetPassword));

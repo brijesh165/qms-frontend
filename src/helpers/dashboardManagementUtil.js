@@ -2,54 +2,54 @@ import axios from 'axios';
 
 const localStorageData = JSON.parse(localStorage.getItem('user'));
 
-const getSurveySuccess = (token) => {
+const getQuestionaireUtil = (token) => {
     try {
-        console.log('Questionnaire GET', localStorageData);
-        return axios.get(`http://localhost:5000/dashboard`, {params: {token: token}})
+        console.log('GET QUESTIONAIRE UTIL : ', token);
+        return axios.get(`http://localhost:5000/questionare`, {params: {token: token}})
         .then(response => {
-            console.log('Dashboard Management Util : ', response);
-            if (response.status === 400 || response.status === 500)
+            console.log('RESPONSE : ', response);
+            if (response.status === 402 || response.status === 300)
                 throw response.data;
-            return response.data;
+            return response.data.Questions;
         }).catch(err => {
-            console.log('Dashboard Util error : ', err);
-            throw err[1];
-        })    
+            console.log('Dashboard Management Util error : ', err);
+            return err.response;
+        })   
     } catch (error) {
         console.log('Dashboard Management Util error : ', error);
     }
 }
 
-const getUserSurveyUtil = (token) => {
+const getAdminQuestionaireUtil = (token) => {
     try {
-        console.log('Questionnaire USER GET', token);
-        return axios.get(`http://localhost:5000/dashboard`, {params: {token: token}})
+        console.log('Questionnaire GET',);
+        return axios.get(`http://localhost:5000/questionare`, {params: {token: token}})
             .then(response => {
-                console.log('Dashboard Management Util : ', response);
+                console.log('Dashboard ADMIN Util Response: ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
             }).catch(err => {
-                console.log('Dashboard Util error : ', err);
-                throw err[1];
+                console.log('Dashboard Admin Util error : ', err);
+                return err.response;
             })
     } catch (error) {
         console.log('Dashboard Util Error : ', error);
     }
 }
 
-const getAdminSurveyUtil = (token) => {
+const getUserQuestionaireUtil = (token) => {
     try {
-        console.log('Questionnaire GET',);
-        return axios.get(`http://localhost:5000/dashboard`, {params: {token: token}})
+        console.log('Questionnaire USER GET', token);
+        return axios.get(`http://localhost:5000/dashboard/responses`, {params: {token: token}})
             .then(response => {
-                console.log('Dashboard Management Util : ', response);
+                console.log('Dashboard USER Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
             }).catch(err => {
-                console.log('Dashboard Util error : ', err);
-                throw err[1];
+                console.log('Dashboard User Util error : ', err.response.data.message);
+                return err.response.data.message;
             })
     } catch (error) {
         console.log('Dashboard Util Error : ', error);
@@ -136,6 +136,6 @@ const submitQuestionUtil = (data) => {
     }
 }
 
-export {getSurveySuccess, getUserSurveyUtil, getAdminSurveyUtil, 
+export {getQuestionaireUtil, getAdminQuestionaireUtil, getUserQuestionaireUtil, 
         endSurveySuccess, downloadSurvetSuccess, fillQuestionUtil,
         submitQuestionUtil };

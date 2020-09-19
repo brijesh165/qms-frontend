@@ -17,8 +17,8 @@ import Rating from 'react-rating';
 import Editable from 'react-x-editable';
 
 import {
-    getAdminSurveyStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart,
-    getUserSurveyStart, fillQuestionStart, submitQuestionStart
+    getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart,
+    getUserQuestionaireStart, fillQuestionStart, submitQuestionStart
 } from './../../store/actions';
 
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -56,15 +56,15 @@ class AuthDash extends Component {
             filledChildren: [[],],
             ratingCount: '',
             radioButton: false
-
         };
         this.surveyLink = React.createRef();
     }
 
     componentDidMount() {
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.activateAuthLayout();
-        this.props.getAdminSurveyStart();
-        this.props.getUserSurveyStart();
+        this.props.getAdminQuestionaireStart(localStorageData.token);
+        this.props.getUserQuestionaireStart(localStorageData.token);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -853,6 +853,6 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
 
 
 export default withRouter(connect(mapStateToProps, {
-    deletequestionnairestart, activateAuthLayout, getAdminSurveyStart, endSurveyStart, downloadSurveyStart,
-    getUserSurveyStart, fillQuestionStart, submitQuestionStart
+    deletequestionnairestart, activateAuthLayout, getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart,
+    getUserQuestionaireStart, fillQuestionStart, submitQuestionStart
 })(AuthDash));

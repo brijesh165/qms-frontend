@@ -13,7 +13,7 @@ function* forgetUser({ payload: { qmsid, history } }) {
             const response = yield call(forgetPasswordUtil, {qmsid});
             console.log('Forget Password Response : ', response);
             if(response.status === 200){
-                history.push('/reset-password');
+                yield put({type: forgotPassword.FORGET_PASSWORD_SUCCESSFUL, payload: response.message})
             } else {
                 yield put({type: forgotPassword.API_FAILED, payload: response.message});
             }

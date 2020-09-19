@@ -7,18 +7,18 @@ import {
     Form,
     FormGroup,
     Label,
-    Spinner,
+    Alert
 } from 'reactstrap';
 import Rating from 'react-rating';
 import Editable from 'react-x-editable';
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-
+import Spinner from '../../components/Spinner/Spinner';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Select from 'react-select';
 
-import { getUserSurveyStart, fillQuestionStart, submitQuestionStart } from '../../store/actions';
+import { getUserQuestionaireStart, fillQuestionStart, submitQuestionStart } from '../../store/actions';
 
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
@@ -53,8 +53,9 @@ class EndUserDash extends Component {
     }
 
     componentDidMount() {
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.activateAuthLayout();
-        this.props.getUserSurveyStart();
+        this.props.getUserQuestionaireStart(localStorageData.token);
     }
 
     handleSelectGroup = (selectedGroup) => {
@@ -91,7 +92,6 @@ class EndUserDash extends Component {
                 optionGroup2: optionGroupName2
             })
         }
-
     }
 
     handleInputChange = (event) => {
@@ -478,6 +478,10 @@ class EndUserDash extends Component {
         return (
             <React.Fragment>
                 <Container fluid>
+
+                    {this.props.dashboardError && <Alert className="mt-5" color="danger">
+                        {this.props.dashboardError}</Alert>}
+
                     <div className="page-title-box">
                         <Row className="align-items-center">
                             <Col sm="6">
@@ -662,11 +666,12 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
     return {
         role: Login.role,
         loading: dashboardManagement.loading,
-        questions: dashboardManagement.userSurveyData,
-        questions2: dashboardManagement.userSurveyData2
+        questions: dashboardManagement.userQuestionaireData,
+        questions2: dashboardManagement.userQuestionaireData2,
+        dashboardError: dashboardManagement.dashboardError
     }
 }
 
 
 export default withRouter(connect(mapStateToProps,
-    { activateAuthLayout, getUserSurveyStart, fillQuestionStart, submitQuestionStart })(EndUserDash));
+    { activateAuthLayout, getUserQuestionaireStart, fillQuestionStart, submitQuestionStart })(EndUserDash));

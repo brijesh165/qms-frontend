@@ -4,36 +4,18 @@ import { takeEvery, put, all, call } from 'redux-saga/effects';
 import dashboardTypes from './actionTypes';
 import { apiError } from './actions';
 
-import { getSurveySuccess, endSurveySuccess, downloadSurvetSuccess, 
-        getUserSurveyUtil, getAdminSurveyUtil, fillQuestionUtil,
+import { getQuestionaireUtil, endSurveySuccess, downloadSurvetSuccess, 
+        getUserQuestionaireUtil, getAdminQuestionaireUtil, fillQuestionUtil,
         submitQuestionUtil } from './../../helpers/dashboardManagementUtil';
 
-function* getSurveySuccesss() {
+function* getQuestionaireSaga({payload: token}) {
     try {
-        const localStorageData = JSON.parse(localStorage.getItem('user'));
-        const response = yield call(getSurveySuccess, localStorageData.token);
-        console.log(response);
-        if (response.table1) {
-            yield put({type: dashboardTypes.GET_SURVEY_DATA_SUCCESS, 
-                        payload: response.table1})
-        }
-    } catch (error) {
-        yield put(apiError(error));
-    }
-}
-
-export function* watchGetSurvey() {
-    yield takeEvery(dashboardTypes.GET_SURVEY_DATA_START, getSurveySuccesss)
-}
-
-function* getUserSurveyStart() {
-    try {
-        console.log('GET USER SURVEY START SAGA');
-        const localStorageData = JSON.parse(localStorage.getItem('user'));
-        const response = yield call(getUserSurveyUtil, localStorageData.token);
+        // const localStorageData = JSON.parse(localStorage.getItem('user'));
+        console.log('GET QUESTIONAIRE SAGA : ', token);
+        const response = yield call(getQuestionaireUtil, token);
         console.log(response);
         if (response) {
-            yield put({type: dashboardTypes.GET_USER_SURVEY_DATA_SUCCESS,
+            yield put({type: dashboardTypes.GET_QUESTIONAIRE_DATA_SUCCESS, 
                         payload: response})
         }
     } catch (error) {
@@ -41,17 +23,17 @@ function* getUserSurveyStart() {
     }
 }
 
-export function* watchGetUserSurvey() {
-    yield takeEvery(dashboardTypes.GET_USER_SURVEY_DATA_START, getUserSurveyStart);
+export function* watchGetSurvey() {
+    yield takeEvery(dashboardTypes.GET_QUESTIONAIRE_DATA_START, getQuestionaireSaga)
 }
 
-function* getAdminSurveyStart() {
+function* getAdminQuestionaireSaga({payloda: token}) {
     try {
-        const localStorageData = JSON.parse(localStorage.getItem('user'));
-        const response = yield call(getAdminSurveyUtil, localStorageData.token);
+        console.log('GET ADMIN SURVEY START SAGA', token);
+        const response = yield call(getAdminQuestionaireUtil, token);
         console.log('ADMIN : ', response);
         if (response) {
-            yield put({type: dashboardTypes.GET_ADMIN_SURVEY_DATA_SUCCESS,
+            yield put({type: dashboardTypes.GET_ADMIN_QUESTIONAIRE_DATA_SUCCESS,
                         payload: response})
         }
     } catch (error) {
@@ -60,7 +42,27 @@ function* getAdminSurveyStart() {
 }
 
 export function* watchGetAdminSurvey() {
-    yield takeEvery(dashboardTypes.GET_ADMIN_SURVEY_DATA_START, getAdminSurveyStart);
+    yield takeEvery(dashboardTypes.GET_ADMIN_QUESTIONAIRE_DATA_START, getAdminQuestionaireSaga);
+}
+
+function* getUserQuestionaireSaga({payload: token}) {
+    try {
+        console.log('GET USER SURVEY START SAGA', token);
+        const response = yield call(getUserQuestionaireUtil, token);
+        console.log(response);
+        if (response.status === 200) {
+            yield put({type: dashboardTypes.GET_USER_QUESTIONAIRE_DATA_SUCCESS,
+                        payload: response})
+        } else {
+            yield put(apiError(response))
+        }
+    } catch (error) {
+        yield put(apiError(error));
+    }
+}
+
+export function* watchGetUserSurvey() {
+    yield takeEvery(dashboardTypes.GET_USER_QUESTIONAIRE_DATA_START, getUserQuestionaireSaga);
 }
 
 function* endSurveyStart({payload: questid}) {

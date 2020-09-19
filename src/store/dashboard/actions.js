@@ -1,21 +1,23 @@
 import dashboardTypes from './actionTypes';
 
-export const getSurveyStart = () => (
+export const getQuestionaireStart = (token) => (
     {
-        type: dashboardTypes.GET_SURVEY_DATA_START
+        type: dashboardTypes.GET_QUESTIONAIRE_DATA_START,
+        payload: token
     }
 )
 
-export const getAdminSurveyStart = () => (
+export const getAdminQuestionaireStart = (token) => (
     {
-        type: dashboardTypes.GET_ADMIN_SURVEY_DATA_START
+        type: dashboardTypes.GET_ADMIN_QUESTIONAIRE_DATA_START,
+        payload: token
     }
 )
 
-export const getUserSurveyStart = () => (
-    console.log('GET USER ACTION'),
+export const getUserQuestionaireStart = (token) => (
     {
-        type: dashboardTypes.GET_USER_SURVEY_DATA_START
+        type: dashboardTypes.GET_USER_QUESTIONAIRE_DATA_START,
+        payload: token
     }
 )
 

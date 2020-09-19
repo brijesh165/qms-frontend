@@ -1,52 +1,32 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Breadcrumb, Input } from 'reactstrap';
-import { activateAuthLayout, profileUpdateSuccessful } from '../../store/actions';
+import { Container, Row, Col, Breadcrumb, Input, Alert } from 'reactstrap';
+import { activateAuthLayout, getProfileStart, updateProfileStart, changePasswordStart } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import axios from 'axios';
-// import { Scrollbars } from 'react-custom-scrollbars';
-// import Toggler from '../../components/dashToggler'
-// import DataTable from 'react-data-table-component';
-// import data from '../../data/questions.json'
-// import Select from 'react-select';
-
 import 'chartist/dist/scss/chartist.scss';
 
 class Profile extends Component {
 	constructor(props) {
 		super(props);
-		let localStorageData = JSON.parse(localStorage.getItem('user'));
 		this.state = {
 			active_tab: 1,
-			token: localStorageData.token,
+
 			role: "",
+			id: "",
 			username: "",
 			useremail: "",
 			userdelg: "",
 			usercompany: "",
 			userpassword: "",
-			userconfirmpassword: "",
-			forProfileUpdate: false,
-			forPasswordUpddate: true
+			userconfirmpassword: ""
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleChangePasswordSubmit = this.handleChangePasswordSubmit.bind(this);
 	}
 
 	handleChange(event) {
 		const {name, value} = event.target;
-		// if (name === "username" || name === "useremail" || name === "userdelg" || name === "usercompany") {
-		// 	this.setState({
-		// 		forProfileUpdate: true
-		// 	})
-		// }
-
-		// if (name === "userpassword" || name === "userconfirmpassword") {
-		// 	this.setState({
-		// 		forPasswordUpddate: true
-		// 	})
-		// }
-
 		this.setState({
 			[name]: value
 		});
@@ -54,44 +34,50 @@ class Profile extends Component {
 
 	handleSubmit(event) {
 		event.preventDefault();
-		this.props.profileUpdateSuccessful(this.state, this.props.history);
-		// this.setState({
-		// 	forProfileUpdate: false
-		// })
+		const localStorageData = JSON.parse(localStorage.getItem('user'));
+		const update_data = {
+			id: this.state.id,
+			token: localStorageData.token,
+			username: this.state.username,
+			useremail: this.state.useremail,
+			userdelg: this.state.userdelg,
+			usercompany: this.state.usercompany,
+		}
+		this.props.updateProfileStart(update_data);
+	}
 
-		// if (this.state.userpassword !== this.state.userconfirmpassword) {
-		// 	alert('Password does not match. Please try adain!');
-		// } else {
-		// 	console.log('Password Update Called!!!');
-		// 	this.props.passwordUpdateSuccessful(this.state.userpassword, this.props.history);
-		// 	this.setState({
-		// 		forPasswordUpddate: false
-		// 	})
-		// }
+	handleChangePasswordSubmit(event) {
+		event.preventDefault();
+		const localStorageData = JSON.parse(localStorage.getItem('user'));
+		if (this.state.userpassword !== this.state.userconfirmpassword) {
+			alert("Password did not match. Please enter valid password!")
+		}
+		const change_password_data = {
+			token: localStorageData.token,
+			userpassword: this.state.userpassword
+		}
+		this.props.changePasswordStart(change_password_data); 
 	}
 
 	componentDidMount() {
+		const localStorageData = JSON.parse(localStorage.getItem('user'));
 		this.props.activateAuthLayout();
-		axios.get("http://localhost:5000/profile", {params: {token: this.state.token}})
-		.then((response) => {
-			console.log(response.data);
-			this.setState({
-				role: response.data.role,
-				username: response.data.username,
-				useremail: response.data.useremail,
-				userdelg: response.data.userdelg,
-				usercompany: response.data.usercompany
-			}, () => {
-				localStorage.setItem('role', response.data.role)
-			});
-		}).catch(error => {
-			console.log(error);
-		})
+		this.props.getProfileStart(localStorageData.token);
 	}
 
-	componentWillUnmount() {
-		this.setState = (state, callback) => {
-			return;
+	componentWillReceiveProps(nextProps) {
+		if (this.props.profileData) {
+			this.setState({
+				id: nextProps.profileData._id,
+				role: nextProps.profileData.role,
+				username: nextProps.profileData.username,
+				useremail: nextProps.profileData.useremail,
+				userdelg: nextProps.profileData.userdelg,
+				usercompany: nextProps.profileData.usercompany,
+			})
+		}
+		if (this.props.changePasswordSuccess) {
+			this.props.history('/profile');
 		}
 	}
 
@@ -140,6 +126,9 @@ class Profile extends Component {
 								{
 									this.state.active_tab == 1 ?
 										<div className="tab-pane fade show active" id="account" role="tabpanel">
+											
+											{this.props.profileError && <Alert color="danger">
+												{this.props.profileError}</Alert>}
 
 											<div className="card">
 												<div className="card-header">
@@ -171,50 +160,41 @@ class Profile extends Component {
 																		placeholder="田中_12" 
 																		value={this.state.username} 
 																		onChange={this.handleChange}
-																		disabled={this.props.role === 'Super-Admin' ? false : true} />
+																		disabled={this.state.role === 'Super-Admin' ? false : true} />
 																</div>
-																<div class="form-group">
+																<div className="form-group">
 																	<label htmlFor="example-email-input">メール</label>
 																	<Input type="email" 
 																			id="example-email-input"
 																			name="useremail"
 																			value={this.state.useremail}
 																			onChange={this.handleChange}
-																			disabled={this.props.role === 'Super-Admin' ? false : true} />
+																			disabled={this.state.role === 'Super-Admin' ? false : true} />
 																</div>
-																<div class="form-group">
+																<div className="form-group">
 																	<label htmlFor="example-designation-input">指定</label>
 																	<Input type="text" 
 																			id="example-designation-input"
 																			name="userdelg"
 																			value={this.state.userdelg}
 																			onChange={this.handleChange}
-																			disabled={this.props.role === 'Super-Admin' ? false : true} />
+																			disabled={this.state.role === 'Super-Admin' ? false : true} />
 																</div>
-																<div class="form-group">
+																<div className="form-group">
 																	<label htmlFor="example-company-input">会社</label>
 																	<Input type="text" 
 																			id="example-company-input"
 																			name="usercompany"
 																			value={this.state.usercompany} 
 																			onChange={this.handleChange}
-																			disabled={this.props.role === 'Super-Admin' ? false : true} />
+																			disabled={this.state.role === 'Super-Admin' ? false : true} />
 																</div>
 															</div>
-															{/* <div class="col-md-4">
-														<div class="text-center">
-															<img alt="Chris Wood" src={require('./../../images/users/user-3.jpg')} className="rounded-circle img-responsive mt-2" width="128" height="128"/>
-															<div className="mt-2">
-																<span className="btn btn-primary"><i className="fas fa-upload"></i> アップロード</span>
-															</div>
-															<small>最良の結果を得るには、少なくとも.jpg形式の128px x 128pxの画像を使用してください。</small>
-														</div>
-													</div> */}
 														</div>
 
 														<button type="submit" 
 															className="btn btn-primary"
-															hidden={this.props.role === 'Super-Admin' ? false : true}>変更を保存</button>
+															hidden={this.state.role === 'Super-Admin' ? false : true}>変更を保存</button>
 													</form>
 
 												</div>
@@ -227,12 +207,13 @@ class Profile extends Component {
 												<div className="card-body">
 													<h5 className="card-title">パスワード</h5>
 
-													<form onSubmit={this.handleSubmit}>
-														{/* <div className="form-group">
-															<label htmlFor="inputPasswordCurrent">現在のパスワード</label>
-															<input type="password" className="form-control" id="inputPasswordCurrent" />
-															<small><a href="#">パスワードをお忘れですか？</a></small>
-														</div> */}
+													{this.props.changePasswordSuccess && <Alert color="success">
+														{this.props.changePasswordSuccess}</Alert>}
+
+													{this.props.profileError && <Alert color="danger">
+														{this.props.profileError}</Alert>}
+
+													<form onSubmit={this.handleChangePasswordSubmit}>
 														<div className="form-group">
 															<label htmlFor="inputPasswordNew">新しいパスワード</label>
 															<input type="password" 
@@ -261,13 +242,6 @@ class Profile extends Component {
 							</div>
 						</div>
 					</Row>
-
-
-
-
-
-
-
 				</Container>
 
 			</React.Fragment>
@@ -275,11 +249,11 @@ class Profile extends Component {
 	}
 }
 
-const mapStatetoProps = ({Login, Profile}) => {
-	console.log('ROLE : ', Login);
-	const {role} = Login;
-    const { user, loginError, loading } = Profile;
-    return { user, loginError, loading, role };
+const mapStatetoProps = ({Profile}) => {
+	console.log('MAP STATE TO PROPS : ', Profile);
+    const { profileData, profileError, loading } = Profile;
+    return { profileData, profileError, loading };
 }
 
-export default withRouter(connect(mapStatetoProps, { activateAuthLayout, profileUpdateSuccessful })(Profile));
+export default withRouter(connect(mapStatetoProps, { activateAuthLayout, 
+	getProfileStart, updateProfileStart, changePasswordStart })(Profile));

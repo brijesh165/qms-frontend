@@ -1,16 +1,29 @@
-import { PROFILE_UPDATE_SUCCESSFUL, API_FAILED } from './actionTypes';
+import profilePage from './actionTypes';
 
-export const profileUpdateSuccessful = (profile_data, history) => {
-    console.log('Action : ', profile_data);
+export const getProfileStart = (token) => {
     return {
-        type: PROFILE_UPDATE_SUCCESSFUL,
-        payload: {profile_data, history}
+        type: profilePage.GET_PROFILE_START,
+        payload: token
+    }
+}
+
+export const updateProfileStart = (update_data) => {
+    return {
+        type: profilePage.UPDATE_PROFILE_START,
+        payload: update_data
+    }
+}
+
+export const changePasswordStart = (change_password_data) => {
+    return {
+        type: profilePage.CHANGE_PASSWORD_START,
+        payload: change_password_data
     }
 }
 
 export const apiError = (error) => {
     return {
-        type: API_FAILED,
+        type: profilePage.API_FAILED,
         payload: error
     }
 }

@@ -1,31 +1,74 @@
-import { takeEvery, fork, put, all, call } from 'redux-saga/effects';
+import { takeEvery, put, all, call } from 'redux-saga/effects';
 
 // Login Redux States
-import { PROFILE_UPDATE_SUCCESSFUL } from './actionTypes';
-import { apiError } from './actions';
+import profilePage from './actionTypes';
 
 // AUTH related methods
-// import { setLoggeedInUser,postLogin } from '../../../helpers/authUtils';
-import { profileUpdate } from '../.././helpers/profileUtils';
+import { getProfileUtil ,updateProfileUtil, changePasswordUtil } from '../.././helpers/profileUtils';
+
+function* getProfileSaga({payload: token}) {
+    try {
+        console.log('GET PROFILE SAGA : ', token);
+        const response = yield call(getProfileUtil, token);
+        console.log(response);
+        if (response.status === 200) {
+            yield put({type: profilePage.GET_PROFILE_SUCCESSFUL, payload: response})
+        } else {
+            yield put({type: profilePage.API_FAILED, payload: response.message})
+        }
+    } catch (error) {
+        console.log('PROFILE PAGE ERROR : ', error);
+        yield put({type: profilePage.API_FAILED, payload: error})
+    }
+}
+
+export function* watchGetProfile() {
+    yield takeEvery(profilePage.GET_PROFILE_START, getProfileSaga)
+}
 
 //If user is login then dispatch redux action's are directly from here.
-function* profileUpdatee({ payload: { profile_data, history } }) {
+function* UpdateProfileSaga({ payload: update_data }) {
     try {
-        console.log('Saga', profile_data);
-        const response = yield call(profileUpdate, { profile_data });
+        console.log('Saga', update_data);
+        const response = yield call(updateProfileUtil, update_data);
         console.log(response);
-        history.push('/dashboard');
+        if (response.status === 200) {
+            yield put({type: profilePage.UPDATE_PROFILE_SUCCESSFUL, payload: response.data})
+        } else {
+            yield put({type: profilePage.API_FAILED, payload: response.message})
+        }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({type: profilePage.API_FAILED, payload: error.message});
     }
 }
 
 export function* watchProfileUpdate() {
-    yield takeEvery(PROFILE_UPDATE_SUCCESSFUL, profileUpdatee)
+    yield takeEvery(profilePage.UPDATE_PROFILE_START, UpdateProfileSaga)
+}
+
+function* changePasswordSaga({ payload: change_password_data }) {
+    try {
+        console.log('Saga', change_password_data);
+        const response = yield call(changePasswordUtil, change_password_data);
+        console.log(response);
+        if (response.status === 200) {
+            yield put({type: profilePage.CHANGE_PASSWORD_SUCCESS, payload: response.data})
+        } else {
+            yield put({type: profilePage.API_FAILED, payload: response.message})
+        }
+    } catch (error) {
+        yield put({type: profilePage.API_FAILED, payload: error.message});
+    }
+}
+
+export function* watchChangePassword() {
+    yield takeEvery(profilePage.CHANGE_PASSWORD_START, changePasswordSaga)
 }
 
 function* profileUpdateSaga() {
-    yield all([fork(watchProfileUpdate)]);
+    yield all([call(watchProfileUpdate),
+                call(watchGetProfile),
+                call(watchChangePassword)]);
 }
 
 

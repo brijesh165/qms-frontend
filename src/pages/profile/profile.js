@@ -50,7 +50,9 @@ class Profile extends Component {
 		const localStorageData = JSON.parse(localStorage.getItem('user'));
 		if (this.state.userpassword !== this.state.userconfirmpassword) {
 			alert("Password did not match. Please enter valid password!")
+			return;
 		}
+		
 		const change_password_data = {
 			token: localStorageData.token,
 			userpassword: this.state.userpassword
@@ -81,6 +83,10 @@ class Profile extends Component {
 		if (this.props.changePasswordSuccess !== prevProps.changePasswordSuccess) {
 			alert('Successfully changed password!')
 			this.props.history.push('/dashboard');
+		}
+
+		if (this.props.changePasswordFail !== prevProps.changePasswordFail) {
+			alert(this.props.changePasswordMessage)
 		}
 	}
 

@@ -3,7 +3,9 @@ import profilePage from './actionTypes';
 const initialState = {
     profileError: null, loading: null,
     profileData: [], changePasswordSuccess: false, changePasswordSuccessMessage: null,
-    profileUpdateMessage: null
+    profileUpdateMessage: null,
+    changePasswordFail: false,
+    changePasswordMessage: null
 }
 
 const profile = (state = initialState, action) => {
@@ -55,6 +57,13 @@ const profile = (state = initialState, action) => {
                 profileError: null,
                 changePasswordSuccess: true,
                 changePasswordSuccessMessage: action.payload.message
+            }
+            break;
+        case profilePage.CHANGE_PASSWORD_FAIL:
+            state = {
+                ...state,
+                changePasswordFail: true,
+                changePasswordMessage: action.payload
             }
             break;
         case profilePage.API_FAILED:

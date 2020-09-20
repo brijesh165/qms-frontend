@@ -54,10 +54,10 @@ function* changePasswordSaga({ payload: change_password_data }) {
         if (response.status === 200) {
             yield put({type: profilePage.CHANGE_PASSWORD_SUCCESS, payload: response})
         } else {
-            yield put({type: profilePage.API_FAILED, payload: response.message})
+            yield put({type: profilePage.CHANGE_PASSWORD_FAIL, payload: response.message})
         }
     } catch (error) {
-        yield put({type: profilePage.API_FAILED, payload: error.message});
+        yield put({type: profilePage.CHANGE_PASSWORD_FAIL, payload: error.message});
     }
 }
 

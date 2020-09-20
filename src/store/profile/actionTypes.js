@@ -7,6 +7,7 @@ const profilePage = {
 
     CHANGE_PASSWORD_START: 'change_password_start',
     CHANGE_PASSWORD_SUCCESS: 'change_password_successful',
+    CHANGE_PASSWORD_FAIL: 'change_password_fail',
 
     API_FAILED: 'api_failed'
 }

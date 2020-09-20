@@ -2,6 +2,12 @@ import userManagementTypes from './actionTypes';
 
 const initialState = {
     userManagementError: null, loading: null, userData: null, questions: null,
+    addUserFail: false,
+    addUserError: null,
+    deleteUserFail: false,
+    deleteUserError: null,
+    changeUserRoleFail: false,
+    changeUserRoleError: null, 
     sendEmailSuccess: false
 }
 
@@ -17,20 +23,31 @@ const userManagement = (state = initialState, action) => {
             }
             break;
         case userManagementTypes.GET_USER_LIST_SUCCESS:
-            const allUser = [...action.payload.users];
-            const allQuestions = [...action.payload.questions];
             state = {
                 ...state,
                 loading: true,
                 userManagementError: null,
-                userData: allUser,
-                questions: allQuestions
+                userData: action.payload.users,
+            }
+            break;
+        case userManagementTypes.GET_QUESTIONS_START: 
+            state = {
+                ...state,
+                loading: false,
+                userManagementError: null
+            }
+            break;
+        case userManagementTypes.GET_QUESTIONS_SUCCESS:
+            state = {
+                ...state,
+                loading: true,
+                userManagementError: null,
+                questions: action.payload.questions,
             }
             break;
         case userManagementTypes.ADD_USER_START: 
             state = {
                 ...state,
-                loading: false,
                 userManagementError: null
             }
             break;
@@ -48,15 +65,20 @@ const userManagement = (state = initialState, action) => {
             const addedUser = [...prevUser, newAddUser];
             state = {
                 ...state,
-                loading: true,
                 userManagementError: null,
                 userData: addedUser
+            }
+            break;
+        case userManagementTypes.ADD_USER_FAIL: 
+            state = {
+                ...state,
+                addUserFail: true,
+                addUserError: action.payload
             }
             break;
         case userManagementTypes.DELETE_USER_START: 
             state = {
                 ...state,
-                loading: false,
                 userManagementError: null
             }
             break;
@@ -67,15 +89,20 @@ const userManagement = (state = initialState, action) => {
             });
             state = {
                 ...state, 
-                loading: true,
                 userManagementError: null,
                 userData: userAfterDelete
+            }
+            break;
+        case userManagementTypes.DELETE_USER_FAIL:
+            state = {
+                ...state,
+                deleteUserFail: true,
+                deleteUserError: action.payload
             }
             break;
         case userManagementTypes.CHANGE_USER_ROLE_START: 
             state = {
                 ...state, 
-                loading: false,
                 userManagementError: null
             }
             break;
@@ -91,9 +118,15 @@ const userManagement = (state = initialState, action) => {
             console.log('AFTER CHANGE ROLE : ', changeUserRole);
             state = {
                 ...state, 
-                loading: true,
                 userManagementError: null,
                 userData: changeUserRole,
+            }
+            break;
+        case userManagementTypes.CHANGE_USER_ROLE_FAIL: 
+            state = {
+                ...state,
+                changeUserRoleFail: true,
+                changeUserRoleError: action.payload 
             }
             break;
         case userManagementTypes.SEND_EMAIL_START:

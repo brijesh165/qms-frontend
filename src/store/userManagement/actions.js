@@ -1,30 +1,36 @@
 import userManagementTypes from './actionTypes';
 
-export const getUserListStart = () => (
+export const getUserListStart = (token) => (
     {
-        type: userManagementTypes.GET_USER_LIST_START
+        type: userManagementTypes.GET_USER_LIST_START,
+        payload: token
     }
 )
 
-export const addUserStart = (user_data, history) => (
-    console.log('Action Add', user_data),
+export const getQuestionsStart = (token) => (
+    {
+        type: userManagementTypes.GET_QUESTIONS_START,
+        payload: token
+    }
+)
+
+export const addUserStart = (user_data, token) => (
     {
         type: userManagementTypes.ADD_USER_START,
-        payload: {user_data, history}
+        payload: {user_data, token}
 })
 
-export const deleteUserStart = (user_data, history) => (
-    console.log('Action DELETE: ', user_data),
+export const deleteUserStart = (user_data, token) => (
+    console.log('ACTION : ', user_data, token),
     {
-        type: userManagementTypes.DELETE_USER_SUCCESSFUL,
-        payload: {user_data, history}
+        type: userManagementTypes.DELETE_USER_START,
+        payload: {user_data, token}
 })
 
-export const changeUserRoleStart = (user_data, history) => (
-    console.log('Action Change: ', user_data),
+export const changeUserRoleStart = (user_data, token) => (
     {
         type: userManagementTypes.CHANGE_USER_ROLE_START,
-        payload: {user_data, history}
+        payload: {user_data, token}
 })
 
 export const sendemailstart = (email_data, history) => (

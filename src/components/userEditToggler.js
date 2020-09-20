@@ -8,12 +8,14 @@ const EditToggler = (props) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const onDeleteHandler = async (event) => {
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
         event.preventDefault();
-        dispatch(deleteUserStart(props.user));
+        dispatch(deleteUserStart(props.user, localStorageData.token));
     }
     const onChangeRoleHandler = (event) => {
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
         event.preventDefault();
-        dispatch(changeUserRoleStart(props.user));
+        dispatch(changeUserRoleStart(props.user, localStorageData.token));
     }
     return (
         <UncontrolledDropdown >

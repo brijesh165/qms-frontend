@@ -1,46 +1,66 @@
 import axios from 'axios';
 
 const localStorageData = JSON.parse(localStorage.getItem('user'));
-const getUserListStart = () => {
+const getUserListUtil = (token) => {
     try {
-        console.log('GET USER LIST UTIL');
-        return axios.get(`http://localhost:5000/user-management`, { params: { token: localStorageData.token } })
+        console.log('GET USER LIST UTIL', token);
+        return axios.get(`http://localhost:5000/user-management/users`, { params: { token: token } })
             .then((response) => {
-                console.log('User Management Util : ', response);
+                console.log('User Management GET Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 if (response.data.Role === 'SuperAdmin') {
                     return {
                         'users': [...response.data.SuperUser, ...response.data.Admins],
-                        'questions': response.data.Questions
+                        'status': response.data.status
                     }
                 } else {
                     return {
-                        'users': response.data.Admins,
-                        'questions': response.data.questions
+                        'users': response.data.User,
+                        status: response.data.status
                     }
                 }
-                // return response.data;
             })
             .catch((error) => {
                 console.log('User Management Error : ', error);
+                return error.response.data;
             })
     } catch (error) {
         console.log('User Management Util error : ', error)
     }
 }
 
+const getQuestionsUtil = (token) => {
+    try {
+        console.log('GET QUESTIONS LIST UTIL', token);
+        return axios.get(`http://localhost:5000/questionare`, { params: { token: token } })
+            .then((response) => {
+                console.log('User Management GET Questions Util : ', response);
+                if (response.status === 400 || response.status === 500)
+                    throw response.data;
+                return response.data;
+            })
+            .catch((error) => {
+                console.log('User Management Error : ', error);
+                return error.response.data;
+            })
+    } catch (error) {
+        console.log('User Management Util error : ', error)
+    }
+} 
+
 const addUserUtil = (data) => {
     try {
-        return axios.post(`http://localhost:5000/create-user`, data.user_data, { params: { token: localStorageData.token } })
+        console.log('ADD USER UTIL : ', data);
+        return axios.post(`http://localhost:5000/user-management/create-user`, data.user_data, { params: { token: data.token } })
             .then(response => {
-                console.log('User Management Util : ', response);
+                console.log('User Management ADD USER Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
             }).catch(err => {
                 console.log('Profile Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('User Management Util error : ', error);
@@ -49,9 +69,8 @@ const addUserUtil = (data) => {
 
 const deleteUserSuccess = async data => {
     try {
-        const newData = { ...data.user_data, "Delete": "True" };
-        console.log('User Management Util', newData);
-        return await axios.post(`http://localhost:5000/user-management`, newData, { params: { token: localStorageData.token } })
+        console.log('User Management Util', data);
+        return await axios.post(`http://localhost:5000/user-management/delete-user`, data.user_data, { params: { token: data.token } })
             .then((response) => {
                 console.log('User Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
@@ -59,7 +78,7 @@ const deleteUserSuccess = async data => {
                 return response.data;
             }).catch(err => {
                 console.log('User Management Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('User Management Util error : ', error);
@@ -68,13 +87,8 @@ const deleteUserSuccess = async data => {
 
 const changeUserRoleSuccess = async data => {
     try {
-        const newData = {
-            "id": data.user_data.id,
-            "role": data.user_data.role,
-            "clearance": "True"
-        };
-        console.log('User Management Util', newData);
-        return await axios.post(`http://localhost:5000/user-management`, newData, { params: { token: localStorageData.token } })
+        console.log('User Management Util', data);
+        return await axios.post(`http://localhost:5000/user-management/change-role`, data.user_data, { params: { token: data.token } })
             .then((response) => {
                 console.log('User Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
@@ -82,7 +96,7 @@ const changeUserRoleSuccess = async data => {
                 return response.data;
             }).catch(err => {
                 console.log('User Management Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('User Management Util error : ', error);
@@ -114,4 +128,4 @@ const sendEmailSuccess = async data => {
     }
 }
 
-export { getUserListStart, addUserUtil, deleteUserSuccess, changeUserRoleSuccess, sendEmailSuccess };
+export { getUserListUtil, getQuestionsUtil, addUserUtil, deleteUserSuccess, changeUserRoleSuccess, sendEmailSuccess };

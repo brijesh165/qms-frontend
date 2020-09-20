@@ -15,10 +15,11 @@ import {
     Button,
     Modal,
     ModalBody,
-    Spinner,
+    Spinner, 
+    Alert
 } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { activateAuthLayout, addUserStart, sendemailstart, getUserListStart } from '../../store/actions';
+import { activateAuthLayout, addUserStart, sendemailstart, getUserListStart, getQuestionsStart } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -66,14 +67,15 @@ class UserManagement extends Component {
     }
 
     handleSubmit(event, values) {
-        this.props.addUserStart({
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        const addUserData = {
             "username": values.username,
             "useremail": values.useremail,
             "userdesig": values.userdesig,
             "usercompany": values.usercompany,
-            "userrole": values.userrole
-        }, this.props.history);
-        // this.props.checkLogin(values.username, values.useremail, values.userdesgig, values.usercompany, this.props.history);
+            "userrole": values.userrole,
+        };
+        this.props.addUserStart(addUserData, localStorageData.token);
     }
 
     handleEditorChange = (event) => {
@@ -111,43 +113,73 @@ class UserManagement extends Component {
     }
 
     componentDidMount() {
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.activateAuthLayout();
-        this.props.getUserListStart();
+        this.props.getUserListStart(localStorageData.token);
+        this.props.getQuestionsStart(localStorageData.token);
     }
 
-    componentWillMount() {
-        if (this.props.users) {
+    // componentWillMount() {
+    //     if (this.props.users) {
+    //         this.setState({
+    //             users: this.props.users
+    //         });
+    //     }
+    //     if (this.props.loading) {
+    //         this.setState({
+    //             loading: this.props.loading
+    //         })
+    //     }
+    // }
+
+    componentWillReceiveProps(nextProps) {
+        // if (nextProps.users) {
+        //     this.setState({
+        //         users: nextProps.users
+        //     })
+        // }
+
+        // if (nextProps.loading) {
+        //     this.setState({
+        //         loading: nextProps.loading
+        //     })
+        // }
+
+        // if (nextProps.questions) {
+        //     let optionGroup = this.props.questions ? this.props.questions.map((item) => {
+        //         console.log('ITEM : ', item);
+        //         return { 'id': item.id, 'label': item.questname, 'value': item.questions }
+        //     }) : null;
+
+        //     this.setState({
+        //         optionGroup: optionGroup
+        //     })
+        // }
+
+        // if (nextProps.sendEmailStatus) {
+        //     this.resetState()
+        // }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.addUserFail !== prevProps.addUserFail) {
+            alert(this.props.addUserError);
+        }
+
+        if (this.props.users !== prevProps.users) {
             this.setState({
                 users: this.props.users
-            });
+            })
         }
-        if (this.props.loading) {
+
+        if (this.props.loading !== prevProps.loading) {
             this.setState({
                 loading: this.props.loading
             })
         }
-        // console.log('COMPONENT WILL MOUNT : ', this.props.questions);
-        // if (this.props.questions.length > 0) {
-        //     this.setOptionGroup(this.props.questions)
-        // }
-    }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.users) {
-            this.setState({
-                users: nextProps.users
-            })
-        }
-
-        if (nextProps.loading) {
-            this.setState({
-                loading: nextProps.loading
-            })
-        }
-
-        if (nextProps.questions) {
+        if (this.props.questions !== prevProps.questions) {
             let optionGroup = this.props.questions ? this.props.questions.map((item) => {
-                console.log('ITEM : ', item);
                 return { 'id': item.id, 'label': item.questname, 'value': item.questions }
             }) : null;
 
@@ -156,8 +188,20 @@ class UserManagement extends Component {
             })
         }
 
-        if (nextProps.sendEmailStatus) {
+        if (this.props.sendEmailStatus !== prevProps.sendEmailStatus) {
             this.resetState()
+        }
+
+        if (this.props.addUserFail !== prevProps.addUserFail) {
+            alert(this.props.addUserError)
+        }
+
+        if (this.props.deleteUserFail !== prevProps.deleteUserFail) {
+            alert(this.props.deleteUserError)
+        }
+
+        if  (this.props.changeUserRoleFail !== prevProps.changeUserRoleFail) {
+            alert(this.props.changeUserRoleError)
         }
     }
 
@@ -235,24 +279,10 @@ class UserManagement extends Component {
                             <th scope="row">{item.username}</th>
                             <td>
                                 {item.usercompany}
-                                {/* <div>
-                                <img src={require(`./../../images/users/${item.image}`)} alt="" className="thumb-md rounded-circle mr-2" /> 
-                            </div> */}
                             </td>
                             <td>{item.userdelg}</td>
-                            {/* {
-                            this.props.role == 'superadmin' &&
-                            <th scope="col">{item.userdelg}</th>
-                        } */}
-                            {/* <th>{item._id}</th> */}
                             <td colSpan="2"><span className="badge badge-success">
                                 {item.role}
-                                {/* {
-                                this.props.role === '管理者' ?
-                                    item.role === 'ユーザー管理' ? 'end user' : '管理者'
-                                    :
-                                    '管理者'
-                            } */}
                             </span></td>
                             <td>
                                 <div>
@@ -260,7 +290,6 @@ class UserManagement extends Component {
                                         user={item}
                                         role={this.props.role}
                                     />
-                                    {/* <Link to="#" className="btn btn-primary btn-sm">編集</Link> */}
                                 </div>
                             </td>
                         </tr>
@@ -325,6 +354,9 @@ class UserManagement extends Component {
                     </Modal>
 
                     {/* User Management User Table */}
+                    {this.props.userManagementError && <Alert color="danger">
+                        {this.props.userManagementError}</Alert>}
+
                     <Row>
                         <Col xl="12 text-center">
                             <Card>
@@ -480,14 +512,21 @@ class UserManagement extends Component {
     }
 }
 const mapStateToProps = ({ Login, userManagement }) => {
-    console.log('MAP STATE TO PROPS : ', userManagement.sendEmailSuccess)
+    console.log('MAP STATE TO PROPS : ', userManagement)
     return {
         role: Login.role,
         loading: userManagement.loading,
         questions: userManagement.questions,
         users: userManagement.userData,
-        sendEmailStatus: userManagement.sendEmailSuccess
+        sendEmailStatus: userManagement.sendEmailSuccess,
+        userManagementError: userManagement.userManagementError,
+        addUserFail: userManagement.addUserFail,
+        addUserError: userManagement.addUserError,
+        changeUserRoleFail: userManagement.changeUserRoleFail,
+        changeUserRoleError: userManagement.changeUserRoleError, 
+        deleteUserFail: userManagement.deleteUserFail,
+        deleteUserError: userManagement.deleteUserError
     }
 }
 
-export default withRouter(connect(mapStateToProps, { activateAuthLayout, getUserListStart, addUserStart, sendemailstart })(UserManagement));
+export default withRouter(connect(mapStateToProps, { activateAuthLayout, getQuestionsStart, getUserListStart, addUserStart, sendemailstart })(UserManagement));

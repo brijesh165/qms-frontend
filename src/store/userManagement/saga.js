@@ -6,39 +6,72 @@ import { apiError } from './actions';
 
 // AUTH related methods
 // import { setLoggeedInUser,postLogin } from '../../../helpers/authUtils';
-import { getUserListStart, addUserUtil, deleteUserSuccess, changeUserRoleSuccess, sendEmailSuccess } from '../.././helpers/userManagementUtil';
+import { getUserListUtil, 
+        getQuestionsUtil,
+        addUserUtil, deleteUserSuccess, changeUserRoleSuccess, sendEmailSuccess } from '../.././helpers/userManagementUtil';
+import resetPassword from '../auth/resetpwd/actionTypes';
 
 //If user is login then dispatch redux action's are directly from here.
 
-function* getUserStart() {
+function* getUserSaga({payload: token}) {
     try {
-        console.log('GET USER START');
-        const response = yield call(getUserListStart);
+        console.log('GET USER SAGA', token);
+        const response = yield call(getUserListUtil, token);
         console.log(response);
-        yield put({
-            type: userManagementTypes.GET_USER_LIST_SUCCESS,
-            payload: response
-        })
+        if (response.status === 200) {
+            yield put({
+                type: userManagementTypes.GET_USER_LIST_SUCCESS,
+                payload: response
+            })    
+        } else {
+            yield put({type: userManagementTypes.API_FAILED, payload: response.message})
+        }
     } catch(error) {
-        yield put(apiError(error));
+        yield put({type: userManagementTypes.API_FAILED, payload: error})
     }
 }
 
 export function* watchGetUser() {
-    yield takeEvery(userManagementTypes.GET_USER_LIST_START, getUserStart)
+    yield takeEvery(userManagementTypes.GET_USER_LIST_START, getUserSaga)
 }
 
-function* addUserStart({ payload: { user_data } }) {
+function* getQuestionsSaga({payload: token}) {
     try {
-        console.log('Saga', user_data);
-        const response = yield call(addUserUtil, { user_data });
+        console.log('GET QUESTIONS SAGA', token);
+        const response = yield call(getQuestionsUtil, token);
         console.log(response);
-        yield put({
-            type: userManagementTypes.ADD_USER_SUCCESSFUL,
-            payload: response
-        })
+        if (response.status === 200) {
+            yield put({
+                type: userManagementTypes.GET_QUESTIONS_SUCCESS,
+                payload: response
+            })    
+        } else {
+            yield put({type: userManagementTypes.API_FAILED, payload: response.message})
+        }
+    } catch(error) {
+        yield put({type: userManagementTypes.API_FAILED, payload: error})
+    }
+}
+
+export function* watchGetQuestions() {
+    yield takeEvery(userManagementTypes.GET_QUESTIONS_START, getQuestionsSaga)
+}
+
+function* addUserStart({ payload: {user_data, token} }) {
+    try {
+        console.log('Saga', user_data, token);
+        const response = yield call(addUserUtil, {user_data, token});
+        console.log(response);
+        if (response.status === 200) {
+            yield put({
+                type: userManagementTypes.ADD_USER_SUCCESSFUL,
+                payload: response
+            })    
+        } else {
+            yield put({type: userManagementTypes.ADD_USER_FAIL, payload: response.message})
+        }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({type: userManagementTypes.ADD_USER_FAIL, payload: error})
     }
 }
 
@@ -46,37 +79,41 @@ export function* watchAddUser() {
     yield takeEvery(userManagementTypes.ADD_USER_START, addUserStart)
 }
 
-// function* addUserSaga() {
-//     yield all([fork(watchAddUser)]);
-// }
-
-function* deleteUserSuccesss({ payload: { user_data } }) {
+function* deleteUserSuccesss({ payload: { user_data, token } }) {
     try {
         console.log('Saga', user_data);
-        const response = yield call(deleteUserSuccess, { user_data });
+        const response = yield call(deleteUserSuccess, { user_data, token });
         console.log(response);
-        yield put({
-            type: userManagementTypes.DELETE_USER_SUCCESSFUL,
-            payload: response.id
-        })
+        if (response.status === 200) {
+            yield put({
+                type: userManagementTypes.DELETE_USER_SUCCESSFUL,
+                payload: response.id
+            })    
+        } else {
+            yield put({type: userManagementTypes.DELETE_USER_FAIL, payload: response.message})
+        }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({type: userManagementTypes.DELETE_USER_FAIL, payload: error})
     }
 }
 
 export function* watchDeleteUser() {
-    yield takeEvery(userManagementTypes.DELETE_USER_SUCCESSFUL, deleteUserSuccesss)
+    yield takeEvery(userManagementTypes.DELETE_USER_START, deleteUserSuccesss)
 }
 
-function* changeUserRoleSuccesss({ payload: { user_data } }) {
+function* changeUserRoleSuccesss({ payload: { user_data, token } }) {
     try {
         console.log('Saga', user_data);
-        const response = yield call(changeUserRoleSuccess, { user_data });
+        const response = yield call(changeUserRoleSuccess, { user_data, token });
         console.log('SAGA RESPONSE : ', response);
-        yield put({type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL, 
-                    payload: response})
+        if (response.status === 200) {
+            yield put({type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL, 
+                payload: response})
+        } else {
+            yield put({type: userManagementTypes.CHANGE_USER_ROLE_FAIL, payload: response.message})
+        }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({type: userManagementTypes.CHANGE_USER_ROLE_FAIL, payload: error})
     }
 }
 
@@ -101,12 +138,9 @@ export function* watchSendEmail() {
     yield takeEvery(userManagementTypes.SEND_EMAIL_START, sendEmailSuccesss)
 }
 
-// function* deleteUserSaga() {
-//     yield all([fork(watchDeleteUser)]);
-// }
-
 function* userManagementSagas() {
     yield all([call(watchAddUser),
+                call(watchGetQuestions),
                 call(watchGetUser),
                 call(watchDeleteUser),
                 call(watchChangeUserRole),
@@ -114,5 +148,3 @@ function* userManagementSagas() {
 }
 
 export default userManagementSagas;
-// export const deleteUserSaga;
-// export default getUserSaga;

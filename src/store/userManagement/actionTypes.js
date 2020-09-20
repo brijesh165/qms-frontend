@@ -19,6 +19,7 @@ const userManagementTypes = {
 
     SEND_EMAIL_START: 'send_email_start',
     SEND_EMAIL_SUCCESSFUL: 'send_email_successful',
+    SEND_EMAIL_FAIL: 'send_email_fail',
 
     API_FAILED: 'api_failed',
 }

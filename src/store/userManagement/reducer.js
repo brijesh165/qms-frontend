@@ -8,7 +8,9 @@ const initialState = {
     deleteUserError: null,
     changeUserRoleFail: false,
     changeUserRoleError: null, 
-    sendEmailSuccess: false
+    sendEmailSuccess: false,
+    sendEmailFail: false,
+    sendEmailError: null
 }
 
 const userManagement = (state = initialState, action) => {
@@ -42,7 +44,7 @@ const userManagement = (state = initialState, action) => {
                 ...state,
                 loading: true,
                 userManagementError: null,
-                questions: action.payload.questions,
+                questions: action.payload.Questions,
             }
             break;
         case userManagementTypes.ADD_USER_START: 
@@ -111,9 +113,10 @@ const userManagement = (state = initialState, action) => {
             let changeRoleFilter = changeUserRole.find((item)=> {
                 return item.id === action.payload.id
             });
-            let index = changeUserRole.findIndex(item => item.id === action.payload.id);
-            let userAfterChangeRole = {...changeRoleFilter, ...{role:action.payload.userrole}};
-            changeUserRole[index] = userAfterChangeRole;
+            let index = changeUserRole.findIndex(item => item.id === action.payload.previd);
+            console.log('INDEX : ', index);
+            // let userAfterChangeRole = {...changeRoleFilter, ...action.payload.data};
+            changeUserRole[index] = action.payload.data;
 
             console.log('AFTER CHANGE ROLE : ', changeUserRole);
             state = {
@@ -132,18 +135,22 @@ const userManagement = (state = initialState, action) => {
         case userManagementTypes.SEND_EMAIL_START:
             state = {
                 ...state,
-                loading: false,
                 userManagementError: null
             }
             break;
         case userManagementTypes.SEND_EMAIL_SUCCESSFUL: 
             state = {
                 ...state, 
-                loading: true,
                 userManagementError: null,
                 sendEmailSuccess: action.payload
             }
             break;
+        case userManagementTypes.SEND_EMAIL_FAIL:
+            state = {
+                ...state,
+                sendEmailFail: true,
+                sendEmailError: action.payload
+            }
         case userManagementTypes.API_FAILED:
             state = {
                 ...state,

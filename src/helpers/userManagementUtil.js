@@ -113,15 +113,15 @@ const sendEmailSuccess = async data => {
         //                 "send": "True",
         //                 };
         console.log('User Management Util', data);
-        return await axios.post(`http://localhost:5000/user-management`, data.email_data, { params: { token: localStorageData.token } })
+        return await axios.post(`http://localhost:5000/user-management/send-mail`, data.email_data, { params: { token: data.token } })
             .then((response) => {
-                console.log('User Management Util : ', response);
+                console.log('User Management EMAIL Util : ', response);
                 if (response.status === 400 || response.status === 500)
-                    throw response.status;
-                return response;
+                    throw response.send;
+                return response.send;
             }).catch(err => {
-                console.log('User Management Util error : ', err);
-                throw err[1];
+                console.log('User Management EMAIL Util error : ', err);
+                return err.response.data
             })
     } catch (error) {
         console.log('User Management Util error : ', error);

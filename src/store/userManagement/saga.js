@@ -10,6 +10,7 @@ import { getUserListUtil,
         getQuestionsUtil,
         addUserUtil, deleteUserSuccess, changeUserRoleSuccess, sendEmailSuccess } from '../.././helpers/userManagementUtil';
 import resetPassword from '../auth/resetpwd/actionTypes';
+import userManagement from './reducer';
 
 //If user is login then dispatch redux action's are directly from here.
 
@@ -121,16 +122,19 @@ export function* watchChangeUserRole() {
     yield takeEvery(userManagementTypes.CHANGE_USER_ROLE_START, changeUserRoleSuccesss)
 }
 
-function* sendEmailSuccesss({ payload: { email_data } }) {
+function* sendEmailSuccesss({ payload: { email_data, token } }) {
     try {
         console.log('Saga', email_data);
-        const response = yield call(sendEmailSuccess, { email_data });
-        console.log(response.status);
-        const status = response.status == 205 ? true : false;
-        yield put({type: userManagementTypes.SEND_EMAIL_SUCCESSFUL,
-            payload: status})
+        const response = yield call(sendEmailSuccess, { email_data, token });
+        console.log(response);
+        if (response.status === 200) {
+            yield put({type: userManagementTypes.SEND_EMAIL_SUCCESSFUL,
+                payload: response})    
+        } else {
+            yield put({type: userManagementTypes.SEND_EMAIL_FAIL, payload: response.message})
+        }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({type: userManagementTypes.SEND_EMAIL_FAIL, payload: error})
     }
 }
 

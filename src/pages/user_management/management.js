@@ -97,6 +97,7 @@ class UserManagement extends Component {
         //     this.state.emailsubject, this.state.expiresat,
         //     this.state.selectedGroup.label, this.state.selectedGroup.id, this.state.selectedEmail,
         //     this.state.sendbody);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.sendemailstart({
             "sendsubject": this.state.emailsubject,
             "sendusers": this.state.selectedEmail,
@@ -105,7 +106,7 @@ class UserManagement extends Component {
             "expirydate": this.state.expiresat,
             "sendbody": this.state.sendbody,
             "send": "True",
-        }, this.props.history);
+        }, localStorageData.token);
     }
 
     handleSelectGroup = (selectedGroup) => {
@@ -118,19 +119,6 @@ class UserManagement extends Component {
         this.props.getUserListStart(localStorageData.token);
         this.props.getQuestionsStart(localStorageData.token);
     }
-
-    // componentWillMount() {
-    //     if (this.props.users) {
-    //         this.setState({
-    //             users: this.props.users
-    //         });
-    //     }
-    //     if (this.props.loading) {
-    //         this.setState({
-    //             loading: this.props.loading
-    //         })
-    //     }
-    // }
 
     componentWillReceiveProps(nextProps) {
         // if (nextProps.users) {
@@ -203,6 +191,14 @@ class UserManagement extends Component {
         if  (this.props.changeUserRoleFail !== prevProps.changeUserRoleFail) {
             alert(this.props.changeUserRoleError)
         }
+
+        if (this.props.userManagementError !== prevProps.userManagementError) {
+            alert(this.props.userManagementError)
+        }
+
+        if (this.props.sendEmailFail !== prevProps.sendEmailFail) {
+            alert(this.props.sendEmailError)
+        }
     }
 
     // setOptionGroup(nextProps) {
@@ -258,7 +254,6 @@ class UserManagement extends Component {
             let new_data = this.props.users.filter(item => {
                 return item.username.toLowerCase().includes(event.target.value.toLowerCase())
             })
-            console.log(new_data, 'vvvv')
             this.setState({ users: new_data })
         }
     }
@@ -519,6 +514,8 @@ const mapStateToProps = ({ Login, userManagement }) => {
         questions: userManagement.questions,
         users: userManagement.userData,
         sendEmailStatus: userManagement.sendEmailSuccess,
+        sendEmailFail: userManagement.sendEmailFail,
+        sendEmailError: userManagement.sendEmailError,
         userManagementError: userManagement.userManagementError,
         addUserFail: userManagement.addUserFail,
         addUserError: userManagement.addUserError,

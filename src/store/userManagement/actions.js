@@ -33,11 +33,10 @@ export const changeUserRoleStart = (user_data, token) => (
         payload: {user_data, token}
 })
 
-export const sendemailstart = (email_data, history) => (
-    console.log('Action Change: ', email_data),
+export const sendemailstart = (email_data, token) => (
     {
         type: userManagementTypes.SEND_EMAIL_START,
-        payload: {email_data, history}
+        payload: {email_data, token}
 })
 
 export const apiError = (error) => {

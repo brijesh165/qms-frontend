@@ -10,7 +10,7 @@ const getQuestionaireUtil = (token) => {
             console.log('RESPONSE : ', response);
             if (response.status === 402 || response.status === 300)
                 throw response.data;
-            return response.data.Questions;
+            return response.data;
         }).catch(err => {
             console.log('Dashboard Management Util error : ', err);
             return err.response;
@@ -22,19 +22,25 @@ const getQuestionaireUtil = (token) => {
 
 const getAdminQuestionaireUtil = (token) => {
     try {
-        console.log('Questionnaire GET',);
-        return axios.get(`http://localhost:5000/questionare`, {params: {token: token}})
-            .then(response => {
-                console.log('Dashboard ADMIN Util Response: ', response);
-                if (response.status === 400 || response.status === 500)
-                    throw response.data;
-                return response.data;
-            }).catch(err => {
-                console.log('Dashboard Admin Util error : ', err);
-                return err.response;
-            })
+        console.log('Questionnaire GET', token);
+        return axios.all([
+            axios.get(`http://localhost:5000/questionare`, {params: {token: token}}),
+            axios.get(`http://localhost:5000/dashboard/responses`, {params: {token: token}})
+        ]).then(axios.spread((questionare, responses) => {
+            const data = {
+                questionare: questionare.data,
+                responses: responses.data
+            }
+            if (questionare.status === 400 || questionare.status === 500 || responses.status === 400 || responses.status === 500)
+                throw data
+            return data;
+        })).catch(error => {
+            const message = "Authorisation Error";
+            return message;
+        })
     } catch (error) {
         console.log('Dashboard Util Error : ', error);
+
     }
 }
 

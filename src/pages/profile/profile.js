@@ -26,7 +26,7 @@ class Profile extends Component {
 	}
 
 	handleChange(event) {
-		const {name, value} = event.target;
+		const { name, value } = event.target;
 		this.setState({
 			[name]: value
 		});
@@ -36,7 +36,6 @@ class Profile extends Component {
 		event.preventDefault();
 		const localStorageData = JSON.parse(localStorage.getItem('user'));
 		const update_data = {
-			id: this.state.id,
 			token: localStorageData.token,
 			username: this.state.username,
 			useremail: this.state.useremail,
@@ -56,7 +55,7 @@ class Profile extends Component {
 			token: localStorageData.token,
 			userpassword: this.state.userpassword
 		}
-		this.props.changePasswordStart(change_password_data); 
+		this.props.changePasswordStart(change_password_data);
 	}
 
 	componentDidMount() {
@@ -76,8 +75,12 @@ class Profile extends Component {
 				usercompany: nextProps.profileData.usercompany,
 			})
 		}
-		if (this.props.changePasswordSuccess) {
-			this.props.history('/profile');
+	}
+
+	componentDidUpdate(prevProps) {
+		if (this.props.changePasswordSuccess !== prevProps.changePasswordSuccess) {
+			alert('Successfully changed password!')
+			this.props.history.push('/dashboard');
 		}
 	}
 
@@ -126,9 +129,12 @@ class Profile extends Component {
 								{
 									this.state.active_tab == 1 ?
 										<div className="tab-pane fade show active" id="account" role="tabpanel">
-											
+
 											{this.props.profileError && <Alert color="danger">
 												{this.props.profileError}</Alert>}
+
+											{this.props.profileUpdateMessage && <Alert color="success">
+												{this.props.profileUpdateMessage}</Alert>}
 
 											<div className="card">
 												<div className="card-header">
@@ -153,48 +159,48 @@ class Profile extends Component {
 															<div className="col-md-12">
 																<div className="form-group">
 																	<label htmlFor="inputUsername">ユーザー名</label>
-																	<input type="text" 
-																		className="form-control" 
-																		id="inputUsername" 
+																	<input type="text"
+																		className="form-control"
+																		id="inputUsername"
 																		name="username"
-																		placeholder="田中_12" 
-																		value={this.state.username} 
+																		placeholder="田中_12"
+																		value={this.state.username}
 																		onChange={this.handleChange}
-																		disabled={this.state.role === 'Super-Admin' ? false : true} />
+																		disabled={this.state.role === 'SuperAdmin' ? false : true} />
 																</div>
 																<div className="form-group">
 																	<label htmlFor="example-email-input">メール</label>
-																	<Input type="email" 
-																			id="example-email-input"
-																			name="useremail"
-																			value={this.state.useremail}
-																			onChange={this.handleChange}
-																			disabled={this.state.role === 'Super-Admin' ? false : true} />
+																	<Input type="email"
+																		id="example-email-input"
+																		name="useremail"
+																		value={this.state.useremail}
+																		onChange={this.handleChange}
+																		disabled={this.state.role === 'SuperAdmin' ? false : true} />
 																</div>
 																<div className="form-group">
 																	<label htmlFor="example-designation-input">指定</label>
-																	<Input type="text" 
-																			id="example-designation-input"
-																			name="userdelg"
-																			value={this.state.userdelg}
-																			onChange={this.handleChange}
-																			disabled={this.state.role === 'Super-Admin' ? false : true} />
+																	<Input type="text"
+																		id="example-designation-input"
+																		name="userdelg"
+																		value={this.state.userdelg}
+																		onChange={this.handleChange}
+																		disabled={this.state.role === 'SuperAdmin' ? false : true} />
 																</div>
 																<div className="form-group">
 																	<label htmlFor="example-company-input">会社</label>
-																	<Input type="text" 
-																			id="example-company-input"
-																			name="usercompany"
-																			value={this.state.usercompany} 
-																			onChange={this.handleChange}
-																			disabled={this.state.role === 'Super-Admin' ? false : true} />
+																	<Input type="text"
+																		id="example-company-input"
+																		name="usercompany"
+																		value={this.state.usercompany}
+																		onChange={this.handleChange}
+																		disabled={this.state.role === 'SuperAdmin' ? false : true} />
 																</div>
 															</div>
 														</div>
 
-														<button type="submit" 
+														<button type="submit"
 															className="btn btn-primary"
-															hidden={this.state.role === 'Super-Admin' ? false : true}>変更を保存</button>
+															hidden={this.state.role === 'SuperAdmin' ? false : true}>変更を保存</button>
 													</form>
 
 												</div>
@@ -207,26 +213,23 @@ class Profile extends Component {
 												<div className="card-body">
 													<h5 className="card-title">パスワード</h5>
 
-													{this.props.changePasswordSuccess && <Alert color="success">
-														{this.props.changePasswordSuccess}</Alert>}
-
 													{this.props.profileError && <Alert color="danger">
 														{this.props.profileError}</Alert>}
 
 													<form onSubmit={this.handleChangePasswordSubmit}>
 														<div className="form-group">
 															<label htmlFor="inputPasswordNew">新しいパスワード</label>
-															<input type="password" 
-																	className="form-control" 
-																	id="inputPasswordNew"
-																	name="userpassword"
-																	value={this.state.userpassword}
-																	onChange={this.handleChange} />
+															<input type="password"
+																className="form-control"
+																id="inputPasswordNew"
+																name="userpassword"
+																value={this.state.userpassword}
+																onChange={this.handleChange} />
 														</div>
 														<div className="form-group">
 															<label htmlFor="inputPasswordNew2">パスワードを認証する</label>
-															<input type="password" 
-																className="form-control" 
+															<input type="password"
+																className="form-control"
 																id="inputPasswordNew2"
 																name="userconfirmpassword"
 																value={this.state.userconfirmpassword}
@@ -249,11 +252,15 @@ class Profile extends Component {
 	}
 }
 
-const mapStatetoProps = ({Profile}) => {
+const mapStatetoProps = ({ Profile }) => {
 	console.log('MAP STATE TO PROPS : ', Profile);
-    const { profileData, profileError, loading } = Profile;
-    return { profileData, profileError, loading };
+	const { profileData, profileError, loading, profileUpdateMessage, 
+			changePasswordSuccess, changePasswordSuccessMessage } = Profile;
+	return { profileData, profileError, loading, profileUpdateMessage, 
+		changePasswordSuccess, changePasswordSuccessMessage };
 }
 
-export default withRouter(connect(mapStatetoProps, { activateAuthLayout, 
-	getProfileStart, updateProfileStart, changePasswordStart })(Profile));
+export default withRouter(connect(mapStatetoProps, {
+	activateAuthLayout,
+	getProfileStart, updateProfileStart, changePasswordStart
+})(Profile));

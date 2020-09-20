@@ -37,9 +37,9 @@ const dashboardManagement = (state = initialState, action) => {
                 ...state,
                 loading: true,
                 dashboardError: null,
-                adminQuestionaireData: action.payload.table1,
-                userQuestionaireData: action.payload.table2,
-                userQuestionaireData2: action.payload.respData
+                adminQuestionaireData: action.payload.questionare.Questions,
+                userQuestionaireData: action.payload.responses.questData,
+                userQuestionaireData2: action.payload.responses.respData
             }
             break;
         case dashboardTypes.GET_USER_QUESTIONAIRE_DATA_START:
@@ -142,6 +142,7 @@ const dashboardManagement = (state = initialState, action) => {
             }
             break;
         case dashboardTypes.API_FAILED:
+            console.log('API FAIL : ', action.payload)
             state = {
                 ...state,
                 loading: false,

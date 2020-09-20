@@ -7,7 +7,7 @@ import {
     Form,
     FormGroup,
     Label,
-    Spinner,
+    Alert
 } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import { CSVLink } from 'react-csv';
 import Rating from 'react-rating';
 import Editable from 'react-x-editable';
+import Spinner from '../../components/Spinner/Spinner';
 
 import {
     getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart,
@@ -64,7 +65,6 @@ class AuthDash extends Component {
         const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.activateAuthLayout();
         this.props.getAdminQuestionaireStart(localStorageData.token);
-        this.props.getUserQuestionaireStart(localStorageData.token);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -75,7 +75,7 @@ class AuthDash extends Component {
             return { 'label': item.questname, 'value': item.questname }
         }) : null
 
-        if (nextProps.questions) {
+        if (this.props.questions) {
             if (this.props.questions) {
                 this.setState({
                     questions: nextProps.questions,
@@ -84,7 +84,7 @@ class AuthDash extends Component {
             }
         }
 
-        if (nextProps.questions2) {
+        if (this.props.questions2) {
             if (this.props.questions2) {
                 this.setState({
                     questions2: nextProps.questions2,
@@ -93,7 +93,7 @@ class AuthDash extends Component {
             }
         }
 
-        if (nextProps.loading && nextProps.downloadSurvey) {
+        if (this.props.loading && this.props.downloadSurvey) {
             if (!this.props.loading && this.props.downloadSurvey) {
                 console.log('IN DOWNLOAD!!!', this.props.downloadSurvey);
                 this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
@@ -587,7 +587,7 @@ class AuthDash extends Component {
         let table3 = <Spinner />
         if (this.props.loading) {
             table3 = this.state.questions.map((item, index) =>
-                <Card className='card-4 mt-3'>
+                <Card className='card-4 mt-3' key={index}>
                     <Row>
                         <Col xl='3 text-center mt-3' >{item.questname}</Col>
                         <Col xl='4 text-center mt-3' >{'Created At : ' + item.createdAt.slice(0, 10).replace(/-/g, "/")}</Col>
@@ -612,7 +612,7 @@ class AuthDash extends Component {
         let table4 = <Spinner />
         if (this.props.loading) {
             table4 = this.state.questions2.map((item, index) =>
-                <Card className='card-4 mt-3'>
+                <Card className='card-4 mt-3' key={index}>
                     <Row>
                         <Col xl='3 text-center mt-3' >{item.questname}</Col>
                         <Col xl='4 text-center mt-3' >{'Created At : ' + item.createdAt.slice(0, 10).replace(/-/g, "/")}</Col>
@@ -652,6 +652,8 @@ class AuthDash extends Component {
                         </Row>
                     </div>
 
+                    {this.props.dashboardError && <Alert color="danger">
+                        {this.props.dashboardError}</Alert>}                        
                     <Row>
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
@@ -840,14 +842,15 @@ class AuthDash extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
-    console.log('ADMIN MAP STATE : ', dashboardManagement.userSurveyData);
+    console.log('ADMIN MAP STATE : ', dashboardManagement);
     return {
         role: Login.role,
-        survey: dashboardManagement.adminSurveyData,
+        survey: dashboardManagement.adminQuestionaireData,
         loading: dashboardManagement.loading,
         downloadSurvey: dashboardManagement.downloadSurvey,
-        questions: dashboardManagement.userSurveyData,
-        questions2: dashboardManagement.userSurveyData2
+        questions: dashboardManagement.userQuestionaireData,
+        questions2: dashboardManagement.userQuestionaireData2,
+        dashboardError: dashboardManagement.dashboardError
     }
 }
 

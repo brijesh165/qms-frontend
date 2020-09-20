@@ -479,9 +479,6 @@ class EndUserDash extends Component {
             <React.Fragment>
                 <Container fluid>
 
-                    {this.props.dashboardError && <Alert className="mt-5" color="danger">
-                        {this.props.dashboardError}</Alert>}
-
                     <div className="page-title-box">
                         <Row className="align-items-center">
                             <Col sm="6">
@@ -506,6 +503,8 @@ class EndUserDash extends Component {
                         </Row>
                     </div>
 
+                    {this.props.dashboardError && <Alert color="danger">
+                        {this.props.dashboardError}</Alert>}
                     <Row>
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>

@@ -31,9 +31,9 @@ function* UpdateProfileSaga({ payload: update_data }) {
     try {
         console.log('Saga', update_data);
         const response = yield call(updateProfileUtil, update_data);
-        console.log(response);
+        console.log('UPDATE PROFILE SAGA RESPONSE : ', response);
         if (response.status === 200) {
-            yield put({type: profilePage.UPDATE_PROFILE_SUCCESSFUL, payload: response.data})
+            yield put({type: profilePage.UPDATE_PROFILE_SUCCESSFUL, payload: response})
         } else {
             yield put({type: profilePage.API_FAILED, payload: response.message})
         }
@@ -52,7 +52,7 @@ function* changePasswordSaga({ payload: change_password_data }) {
         const response = yield call(changePasswordUtil, change_password_data);
         console.log(response);
         if (response.status === 200) {
-            yield put({type: profilePage.CHANGE_PASSWORD_SUCCESS, payload: response.data})
+            yield put({type: profilePage.CHANGE_PASSWORD_SUCCESS, payload: response})
         } else {
             yield put({type: profilePage.API_FAILED, payload: response.message})
         }

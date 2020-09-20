@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    Container, Row, Col, Card, Button, Breadcrumb, BreadcrumbItem,
+    Container, Row, Col, Card, Button, Breadcrumb, BreadcrumbItem, Alert
 } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
@@ -15,6 +15,7 @@ import questions from '../../data/sample.json'
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Spinner from './../../components/Spinner/Spinner';
+import dashboardManagementSagas from '../../store/dashboard/saga';
 
 class AuthDash extends Component {
     constructor(props) {
@@ -190,6 +191,10 @@ class AuthDash extends Component {
                         </Row>
                     </div>
 
+                    {this.props.dashboardError && <Alert color="danger">
+                        {this.props.dashboardError}
+                        </Alert>}
+
                     <Row>
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
                             <Col xl='12'>
@@ -228,6 +233,7 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
     console.log('MAP STATE TO PROPS : ', dashboardManagement)
     return {
         role: Login.role,
+        dashboardError: dashboardManagement.dashboardError,
         questionaire: dashboardManagement.questionaireData,
         loading: dashboardManagement.loading,
         downloadSurvey: dashboardManagement.downloadSurvey

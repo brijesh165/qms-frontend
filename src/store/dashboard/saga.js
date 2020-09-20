@@ -7,6 +7,7 @@ import { apiError } from './actions';
 import { getQuestionaireUtil, endSurveySuccess, downloadSurvetSuccess, 
         getUserQuestionaireUtil, getAdminQuestionaireUtil, fillQuestionUtil,
         submitQuestionUtil } from './../../helpers/dashboardManagementUtil';
+import resetPassword from '../auth/resetpwd/actionTypes';
 
 function* getQuestionaireSaga({payload: token}) {
     try {
@@ -14,12 +15,14 @@ function* getQuestionaireSaga({payload: token}) {
         console.log('GET QUESTIONAIRE SAGA : ', token);
         const response = yield call(getQuestionaireUtil, token);
         console.log(response);
-        if (response) {
+        if (response.status === 200) {
             yield put({type: dashboardTypes.GET_QUESTIONAIRE_DATA_SUCCESS, 
-                        payload: response})
+                        payload: response.Questions})
+        } else {
+            yield put({type: dashboardTypes.API_FAILED, payload: response.data.message});
         }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({type: dashboardTypes.API_FAILED, payload: error});
     }
 }
 
@@ -27,17 +30,19 @@ export function* watchGetSurvey() {
     yield takeEvery(dashboardTypes.GET_QUESTIONAIRE_DATA_START, getQuestionaireSaga)
 }
 
-function* getAdminQuestionaireSaga({payloda: token}) {
+function* getAdminQuestionaireSaga({payload: token}) {
     try {
         console.log('GET ADMIN SURVEY START SAGA', token);
         const response = yield call(getAdminQuestionaireUtil, token);
         console.log('ADMIN : ', response);
-        if (response) {
+        if (response.questionare && response.responses) {
             yield put({type: dashboardTypes.GET_ADMIN_QUESTIONAIRE_DATA_SUCCESS,
                         payload: response})
+        } else {
+            yield put({type: dashboardTypes.API_FAILED, payload: response});
         }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({type: dashboardTypes.API_FAILED, payload: error});
     }
 }
 
@@ -54,10 +59,10 @@ function* getUserQuestionaireSaga({payload: token}) {
             yield put({type: dashboardTypes.GET_USER_QUESTIONAIRE_DATA_SUCCESS,
                         payload: response})
         } else {
-            yield put(apiError(response))
+            yield put({type: dashboardTypes.API_FAILED, payload: response});
         }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({type: dashboardTypes.API_FAILED, payload: error});
     }
 }
 

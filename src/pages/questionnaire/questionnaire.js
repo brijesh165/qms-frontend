@@ -17,7 +17,7 @@ import {
     DropdownItem,
     DropdownMenu,
     DropdownToggle,
-    UncontrolledDropdown
+    UncontrolledDropdown, Alert
 } from 'reactstrap';
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
@@ -26,16 +26,17 @@ import Editable from 'react-x-editable';
 import _ from 'lodash'
 import Rating from 'react-rating';
 
-import {searchquestionnairestrart, 
-        addquestionnairestrart, 
-        reeditquestionnairestart,
-        getquestionnairestart, 
-        copyquestionnairestart, 
-        deletequestionnairestart} from './../../store/actions';
+import { 
+        addQuestionnaireStart, 
+        reeditQuestionnaireStart,
+        getQuestionnaireStart, 
+        copyQuestionnaireStart, 
+        deleteQuestionnaireStart} from './../../store/actions';
 import QuestionModal from '../../components/questionModal'
 import smimg1 from '../../images/small/img-5.jpg';
 
 import Select from 'react-select';
+import questionnaire from '../../store/questionnaire/actionTypes';
 
 let options = [
     { label: "ラジオボタン（1つ選択）", value: 1 },
@@ -320,15 +321,32 @@ class Questionnaire extends Component {
     }
 
     componentDidMount() {
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.activateAuthLayout();
-        this.props.getquestionnairestart();
+        this.props.getQuestionnaireStart(localStorageData.token);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.questions) {
+    componentDidUpdate(prevProps) {
+        if (this.props.questions !== prevProps.questions) {
             this.setState({
-                allquestions: nextProps.questions
+                allquestions: this.props.questions
             })
+        }
+
+        if (this.props.addQuestionnaireFail !== prevProps.addQuestionnaireFail) {
+            alert(this.props.addQuestionnaireError)
+        }
+
+        if (this.props.deleteQuestionnaireFail !== prevProps.deleteQuestionnaireFail) {
+            alert(this.props.deleteQuestionnaireError)
+        }
+
+        if (this.props.copyQuestionnaireFail !== prevProps.copyQuestionnaireFail) {
+            alert(this.props.copyQuestionnaireError)
+        }
+
+        if (this.props.reeditQuestionnaireFail !== prevProps.reeditQuestionnaireFail) {
+            alert(this.props.reeditQuestionnaireError)
         }
     }
 
@@ -345,8 +363,8 @@ class Questionnaire extends Component {
             "questname": this.state.form_name,
             "questdata": this.state.children
         }
-
-        this.props.reeditquestionnairestart(question_data);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.reeditQuestionnaireStart(question_data, localStorageData.token);
         this.setState({ modal_edit: false })
         if (this.props.success) {
             this.setState(prevState => ({
@@ -361,11 +379,11 @@ class Questionnaire extends Component {
 
     onSubmitForm = () => {
         const question_data = {
-            "create": "True",
             "questname": this.state.form_name,
             "questdata": this.state.children
         }
-        this.props.addquestionnairestrart(question_data);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.addQuestionnaireStart(question_data, localStorageData.token);
         this.setState({ modal_large: true })
         this.setState(prevState => ({
             questions: [...prevState.questions, {
@@ -485,11 +503,13 @@ class Questionnaire extends Component {
 
     }
     deleteQuestion = (item) => {
-        this.props.deletequestionnairestart(item);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.deleteQuestionnaireStart(item, localStorageData.token);
     }
 
     duplicateQuestion = (item) => {
-        this.props.copyquestionnairestart(item);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.copyQuestionnaireStart(item, localStorageData.token);
     }
 
     searchQuestion = (event) => {
@@ -566,6 +586,8 @@ class Questionnaire extends Component {
                     </div>
 
 
+                    {this.props.getQuestionnaireFail && <Alert color="danger">
+                        {this.props.getQuestionnaireError}</Alert>}
 
                     <Row>
                         <Card className='card-4' style={{ height: 230, width: 230, borderRadius: 8, margin: 8 }}>
@@ -575,9 +597,7 @@ class Questionnaire extends Component {
                         </Card>
 
                         {
-                            console.log(this.state.allquestions),
                             this.state.allquestions.map((item, ind) => (
-                                console.log('INSIDE MAP : ', item._id),
                                 <Card className='card-4' style={{ height: 230, width: 230, borderRadius: 8, margin: 8 }}>
                                     <UncontrolledDropdown style={{ position: 'absolute', top: 5, right: 5, border: 0, backgroundColor: 'white', borderRadius: '50%' }} >
                                         <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 35, height: 35, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
@@ -948,18 +968,26 @@ class Questionnaire extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({questionnaireManagement}) => {
     return {
-        addQuestionSuccess: state.questionnaireManagement.addQuestionSuccess,
-        questions: state.questionnaireManagement.questions
+        questions: questionnaireManagement.questions,
+        getQuestionnaireFail: questionnaireManagement.getQuestionnaireFail,
+        getQuestionnaireError: questionnaireManagement.getQuestionnaireError,
+        addQuestionnaireFail: questionnaireManagement.addQuestionnaireFail,
+        addQuestionnaireError: questionnaireManagement.addQuestionnaireError,
+        deleteQuestionnaireFail: questionnaireManagement.deleteQuestionnaireFail,
+        deleteQuestionnaireError: questionnaireManagement.deleteQuestionnaireError,
+        copyQuestionnaireFail: questionnaireManagement.copyQuestionnaireFail,
+        copyQuestionnaireError: questionnaireManagement.copyQuestionnaireError,
+        reeditQuestionnaireFail: questionnaireManagement.reeditQuestionnaireFail,
+        reeditQuestionnaireError: questionnaireManagement.reeditQuestionnaireError        
     }
 }
 
 export default withRouter(connect(mapStateToProps, 
                                 { activateAuthLayout, 
-                                    searchquestionnairestrart,
-                                    addquestionnairestrart, 
-                                    reeditquestionnairestart,
-                                    getquestionnairestart,
-                                    copyquestionnairestart,
-                                    deletequestionnairestart })(Questionnaire));
+                                    addQuestionnaireStart, 
+                                    reeditQuestionnaireStart,
+                                    getQuestionnaireStart,
+                                    copyQuestionnaireStart,
+                                    deleteQuestionnaireStart })(Questionnaire));

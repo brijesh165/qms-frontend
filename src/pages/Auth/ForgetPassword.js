@@ -73,7 +73,6 @@ class ForgetPassword extends Component {
 
 
 const mapStatetoProps = ({ Forget }) => {
-    console.log('MAP STATE TO PROPS : ', Forget.forgotPasswordSuccessMsg);
     const { user, forgetPasswordError, forgotPasswordSuccessMsg,loading } = Forget;
     return { user, forgetPasswordError, forgotPasswordSuccessMsg, loading };
 }

@@ -42,7 +42,6 @@ const postRegister = (url, data) => {
 // Login Method
 const loginUserUtil = (data) => {
     return axios.post(`http://localhost:5000/login`, data).then(response => {
-        console.log(response);
         if (response.status === 402 || response.status === 300)
             throw response.message;
         return response.data;

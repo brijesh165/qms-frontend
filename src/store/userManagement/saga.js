@@ -16,9 +16,7 @@ import userManagement from './reducer';
 
 function* getUserSaga({payload: token}) {
     try {
-        console.log('GET USER SAGA', token);
         const response = yield call(getUserListUtil, token);
-        console.log(response);
         if (response.status === 200) {
             yield put({
                 type: userManagementTypes.GET_USER_LIST_SUCCESS,
@@ -38,9 +36,7 @@ export function* watchGetUser() {
 
 function* getQuestionsSaga({payload: token}) {
     try {
-        console.log('GET QUESTIONS SAGA', token);
         const response = yield call(getQuestionsUtil, token);
-        console.log(response);
         if (response.status === 200) {
             yield put({
                 type: userManagementTypes.GET_QUESTIONS_SUCCESS,
@@ -60,9 +56,7 @@ export function* watchGetQuestions() {
 
 function* addUserStart({ payload: {user_data, token} }) {
     try {
-        console.log('Saga', user_data, token);
         const response = yield call(addUserUtil, {user_data, token});
-        console.log(response);
         if (response.status === 200) {
             yield put({
                 type: userManagementTypes.ADD_USER_SUCCESSFUL,
@@ -82,9 +76,7 @@ export function* watchAddUser() {
 
 function* deleteUserSuccesss({ payload: { user_data, token } }) {
     try {
-        console.log('Saga', user_data);
         const response = yield call(deleteUserSuccess, { user_data, token });
-        console.log(response);
         if (response.status === 200) {
             yield put({
                 type: userManagementTypes.DELETE_USER_SUCCESSFUL,
@@ -104,9 +96,7 @@ export function* watchDeleteUser() {
 
 function* changeUserRoleSuccesss({ payload: { user_data, token } }) {
     try {
-        console.log('Saga', user_data);
         const response = yield call(changeUserRoleSuccess, { user_data, token });
-        console.log('SAGA RESPONSE : ', response);
         if (response.status === 200) {
             yield put({type: userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL, 
                 payload: response})
@@ -124,9 +114,7 @@ export function* watchChangeUserRole() {
 
 function* sendEmailSuccesss({ payload: { email_data, token } }) {
     try {
-        console.log('Saga', email_data);
         const response = yield call(sendEmailSuccess, { email_data, token });
-        console.log(response);
         if (response.status === 200) {
             yield put({type: userManagementTypes.SEND_EMAIL_SUCCESSFUL,
                 payload: response})    

@@ -79,7 +79,6 @@ class Pageslogin extends Component {
 }
 
 const mapStatetoProps = ({Login}) => {
-    console.log('LOGIN ERROR : ', Login.loginError);
     const { user, loginError, loading } = Login;
     return { user, loginError, loading };
 }

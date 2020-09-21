@@ -2,30 +2,22 @@ import questionnaire from './actionTypes';
 
 const initialState = {
     questionnaireManagementError: null, loading: null, questions: [],
-    addQuestionSuccess: false
+    getQuestionnaireFail: false,
+    getQuestionnaireError: null,
+    addQuestionnaireFail: false,
+    addQuestionnaireError: null,
+    deleteQuestionnaireFail: false,
+    deleteQuestionnaireError: null,
+    reeditQuestionnaireFail: false,
+    reeditQuestionnaireError: null,
+    copyQuestionnaireFail: false,
+    copyQuestionnaireError: null
 }
 
 const questionnaireManagement = (state = initialState, action) => {
-    console.log('Reducer', action.type);
-    console.log('Reducer', action.payload);
+    // console.log('Reducer', action.type);
+    // console.log('Reducer', action.payload);
     switch (action.type) {
-        case questionnaire.SEARCH_QUESTIONNAIRE_START:
-            state = {
-                ...state,
-                loading: false,
-                questionnaireManagementError: null,
-            }
-            break;
-        case questionnaire.SEARCH_QUESTIONNAIRE_SUCCESSFUL:
-            const searchQuestions = [...state.questions];
-            const searchQuestion = [...searchQuestions, action.payload];
-            state = {
-                ...state,
-                loading: false,
-                questionnaireManagementError: null,
-                questions: searchQuestion
-            }
-            break;
         case questionnaire.GET_QUESTIONNAIRE_START:
             state = {
                 ...state,
@@ -34,7 +26,6 @@ const questionnaireManagement = (state = initialState, action) => {
             }
             break;
         case questionnaire.GET_QUESTIONNAIRE_SUCCESSFUL:
-            console.log('GET REQ : ', action.payload);
             const allQuestions = [];
             for (let i = 0; i < action.payload.length; i++) {
                 let newObj = {
@@ -50,6 +41,13 @@ const questionnaireManagement = (state = initialState, action) => {
                 loading: false,
                 questionnaireManagementError: null,
                 questions: allQuestions
+            }
+            break;
+        case questionnaire.GET_QUESTIONNAIRE_FAIL:
+            state = {
+                ...state,
+                getQuestionnaireFail: true,
+                getQuestionnaireError: action.payload
             }
             break;
         case questionnaire.ADD_QUESTIONNAIRE_START:
@@ -71,25 +69,35 @@ const questionnaireManagement = (state = initialState, action) => {
                 questions: addQuestion
             }
             break;
+        case questionnaire.ADD_QUESTIONNAIRE_FAIL:
+            state = {
+                ...state,
+                addQuestionnaireFail: true,
+                addQuestionnaireError: action.payload
+            }
+            break;
+
         case questionnaire.REEDIT_QUESTIONNAIRE_START:
             state = {
                 ...state,
                 loading: false,
-                addQuestionSuccess: false,
-                questionnaireManagementError: null,
             }
             break;
         case questionnaire.REEDIT_QUESTIONNAIRE_SUCCESSFUL:
             let prevQuestionss = [...state.questions];
             const resp = [];
-            resp.push(action.payload);
+            resp.push(action.payload.questions);
             const mapedQuestion = prevQuestionss.map(obj => resp.find(o => o.id === obj.id) || obj);
             state = {
                 ...state,
-                loading: false,
-                questionnaireManagementError: null,
-                addQuestionSuccess: true,
                 questions: mapedQuestion
+            }
+            break;
+        case questionnaire.REEDIT_QUESTIONNAIRE_FAIL:
+            state = {
+                ...state,
+                reeditQuestionnaireFail: true,
+                reeditQuestionnaireError: action.payload
             }
             break;
 
@@ -105,12 +113,35 @@ const questionnaireManagement = (state = initialState, action) => {
             const deletedQuestions = prevStateQuestion.filter((item) => {
                 return item.id !== action.payload
             });
-            console.log('DELETE SUCCESS : ', deletedQuestions);
             state = {
                 ...state,
                 loading: false,
                 questionnaireManagementError: null,
                 questions: deletedQuestions
+            }
+            break;
+        case questionnaire.DELETE_QUESTIONNAIRE_FAIL:
+            state = {
+                ...state,
+                deleteQuestionnaireFail: true,
+                deleteQuestionnaireError: action.payload
+            }
+            break;
+        case questionnaire.SEARCH_QUESTIONNAIRE_START:
+            state = {
+                ...state,
+                loading: false,
+                questionnaireManagementError: null,
+            }
+            break;
+        case questionnaire.SEARCH_QUESTIONNAIRE_SUCCESSFUL:
+            const searchQuestions = [...state.questions];
+            const searchQuestion = [...searchQuestions, action.payload];
+            state = {
+                ...state,
+                loading: false,
+                questionnaireManagementError: null,
+                questions: searchQuestion
             }
             break;
         case questionnaire.COPY_QUESTIONNAIRE_START:
@@ -122,7 +153,6 @@ const questionnaireManagement = (state = initialState, action) => {
             break;
         case questionnaire.COPY_QUESTIONNAIRE_SUCCESSFUL:
             const copyPrevQuestions = [...state.questions];
-            console.log('Previous Questions', copyPrevQuestions);
             const copyQuestion = [...copyPrevQuestions, action.payload];
             state = {
                 ...state,

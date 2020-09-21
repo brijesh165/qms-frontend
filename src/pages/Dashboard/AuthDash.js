@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { CSVLink } from 'react-csv';
 
-import { getQuestionaireStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart } from './../../store/actions';
+import { getQuestionaireStart, endSurveyStart, downloadSurveyStart, deleteQuestionnaireStart } from './../../store/actions';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import DataTable from 'react-data-table-component';
@@ -64,12 +64,10 @@ class AuthDash extends Component {
     }
 
     onEndSurveyHandler = (questid) => {
-        console.log('QUEST ID : ', questid);
         this.props.endSurveyStart(questid)
     }
 
     onDownloadSurveyHandler = (questid) => {
-        console.log('QUEST NAME : ', questid);
         this.props.downloadSurveyStart(questid);
         if (!this.props.loading && this.props.downloadSurvey.length > 0) {
             this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
@@ -79,7 +77,8 @@ class AuthDash extends Component {
     }
 
     onDeleteHandler = (questid) => {
-        this.props.deletequestionnairestart(questid)
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.deleteQuestionnaireStart(questid, localStorageData.token);
     }
 
     render() {
@@ -230,7 +229,6 @@ class AuthDash extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
-    console.log('MAP STATE TO PROPS : ', dashboardManagement)
     return {
         role: Login.role,
         dashboardError: dashboardManagement.dashboardError,
@@ -242,6 +240,6 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
 
 
 export default withRouter(connect(mapStateToProps, {
-    deletequestionnairestart, activateAuthLayout,
+    deleteQuestionnaireStart, activateAuthLayout,
     getQuestionaireStart, endSurveyStart, downloadSurveyStart
 })(AuthDash));

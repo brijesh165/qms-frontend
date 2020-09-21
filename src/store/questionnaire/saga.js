@@ -2,134 +2,133 @@ import { takeEvery, put, all, call } from 'redux-saga/effects';
 
 // Login Redux States
 import questionnaire from './actionTypes';
-import { apiError } from './actions';
 
 // AUTH related methods
-import {searchQuestionnaireSuccess,
-        addQuestionnaireSuccess, 
-        getQuestionnaireSuccess, 
-        deleteQuestionnaireSuccess, 
-        reeditQuestionnaireSuccess,
-        copyQuestionnaireSuccess } from '../.././helpers/questionnaireUtil';
+import {
+    addQuestionnaireUtil,
+    getQuestionnaireUtil,
+    deleteQuestionnaireUtil,
+    reeditQuestionnaireUtil,
+    copyQuestionnaireUtil
+} from '../.././helpers/questionnaireUtil';
 
 //If user is login then dispatch redux action's are directly from here.
-function* searchQuestionnaireSuccesss( {payload: questname} ) {
+function* getQuestionnaireSaga({ payload: token }) {
     try {
-        console.log('Saga', questname);
-        const response = yield call(searchQuestionnaireSuccess, questname );
-        console.log(response);
-        yield put({type: questionnaire.SEARCH_QUESTIONNAIRE_SUCCESSFUL,
-                    payload: response})
-    } catch (error) {
-        console.log('ADD QUESTION ERROR', error);
-        yield put(apiError(error));
-    }
-}
-
-export function* watchSearchQuestionnaire() {
-    yield takeEvery(questionnaire.SEARCH_QUESTIONNAIRE_START, searchQuestionnaireSuccesss)
-}
-
-function* addQuestionnaireSuccesss( payload ) {
-    try {
-        console.log('Saga', payload.payload);
-        const response = yield call(addQuestionnaireSuccess, payload.payload );
-        console.log(response);
-        yield put({type: questionnaire.ADD_QUESTIONNAIRE_SUCCESSFUL,
-                    payload: response})
-    } catch (error) {
-        console.log('ADD QUESTION ERROR', error);
-        yield put(apiError(error));
-    }
-}
-
-export function* watchAddQuestionnaire() {
-    yield takeEvery(questionnaire.ADD_QUESTIONNAIRE_START, addQuestionnaireSuccesss)
-}
-
-function* reeditQuestionnaireSuccesss( payload ) {
-    try {
-        console.log('Saga', payload.payload);
-        const response = yield call(reeditQuestionnaireSuccess, payload.payload );
-        console.log(response);
-        yield put({type: questionnaire.REEDIT_QUESTIONNAIRE_SUCCESSFUL,
-                    payload: response})
-    } catch (error) {
-        console.log('REEDIT QUESTION ERROR', error);
-        yield put(apiError(error));
-    }
-}
-
-export function* watchReEditQuestionnaire() {
-    yield takeEvery(questionnaire.REEDIT_QUESTIONNAIRE_START, reeditQuestionnaireSuccesss)
-}
-
-function* getQuestionnaireSuccesss() {
-    try {
-        const response = yield call(getQuestionnaireSuccess);
-        if (response.data) {
-            yield put({type: questionnaire.GET_QUESTIONNAIRE_SUCCESSFUL, 
-                        payload: response.data})
+        const response = yield call(getQuestionnaireUtil, token);
+        if (response.status === 200) {
+            yield put({
+                type: questionnaire.GET_QUESTIONNAIRE_SUCCESSFUL,
+                payload: response.Questions
+            })
+        } else {
+            yield put({ type: questionnaire.GET_QUESTIONNAIRE_FAIL, payload: response.message })
         }
-        // yield put(getquestionnairesuccessful(response));
-        // yield put(getquestionnairesuccessful(response));
     } catch (error) {
-        yield put(apiError(error));
+        yield put({ type: questionnaire.API_FAILED, payload: error })
     }
 }
 
 export function* watchGetQuestionnaire() {
-    yield takeEvery(questionnaire.GET_QUESTIONNAIRE_START, getQuestionnaireSuccesss)
+    yield takeEvery(questionnaire.GET_QUESTIONNAIRE_START, getQuestionnaireSaga)
 }
 
-function* deleteQuestionnaireSuccesss( {payload: question_data }) {
+function* addQuestionnaireSaga({ payload: question_data }) {
     try {
-        console.log('Saga', question_data);
-        const response = yield call(deleteQuestionnaireSuccess, question_data );
-        console.log('DELETE RESP : ', response);
-        if (response.success) {
-            yield put({type: questionnaire.DELETE_QUESTIONNAIRE_SUCCESSFUL,
-                    payload: response.id})
+        const question = question_data.question_data;
+        const token = question_data.token;
+        const response = yield call(addQuestionnaireUtil, { question, token });
+        if (response.status === 200) {
+            yield put({
+                type: questionnaire.ADD_QUESTIONNAIRE_SUCCESSFUL,
+                payload: response
+            })
         } else {
-            yield put(apiError(response.error));
+            yield put({ type: questionnaire.ADD_QUESTIONNAIRE_FAIL, payload: response.message })
         }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({ type: questionnaire.API_FAILED, payload: error })
     }
 }
 
-export function* watchDeleteQuestionnaire() {
-    yield takeEvery(questionnaire.DELETE_QUESTIONNAIRE_START, deleteQuestionnaireSuccesss)
+export function* watchAddQuestionnaire() {
+    yield takeEvery(questionnaire.ADD_QUESTIONNAIRE_START, addQuestionnaireSaga)
 }
 
-function* copyQuestionnaireSuccesss( {payload : question_data} ) {
+function* copyQuestionnaireSaga({ payload: question_data }) {
     try {
-        console.log('Saga', question_data);
-        const response = yield call(copyQuestionnaireSuccess, { question_data } );
-        if (response) {
-            console.log('COPY SUCCESS', response);
-            yield put({type: questionnaire.COPY_QUESTIONNAIRE_SUCCESSFUL, 
-                payload: response})
+        const questId = question_data.question_data;
+        const token = question_data.token;
+        const response = yield call(copyQuestionnaireUtil, { questId, token });
+        if (response.status === 200) {
+            yield put({
+                type: questionnaire.COPY_QUESTIONNAIRE_SUCCESSFUL,
+                payload: response
+            })
         } else {
-            console.log('COPY ERROR');
-            yield put(apiError(response.error));
+            yield put({ type: questionnaire.COPY_QUESTIONNAIRE_FAIL, payload: response.message });
         }
     } catch (error) {
-        yield put(apiError(error));
+        yield put({ type: questionnaire.API_FAILED, payload: error });
     }
 }
 
 export function* watchCopyQuestionnaire() {
-    yield takeEvery(questionnaire.COPY_QUESTIONNAIRE_START, copyQuestionnaireSuccesss)
+    yield takeEvery(questionnaire.COPY_QUESTIONNAIRE_START, copyQuestionnaireSaga)
+}
+
+function* reeditQuestionnaireSaga({payload: question_data}) {
+    try {
+        const questData = question_data.question_data;
+        const token = question_data.token;
+        const response = yield call(reeditQuestionnaireUtil, {questData, token});
+        if (response.status === 200) {
+            yield put({
+                type: questionnaire.REEDIT_QUESTIONNAIRE_SUCCESSFUL,
+                payload: response
+            })    
+        } else {
+            yield put({type: questionnaire.REEDIT_QUESTIONNAIRE_FAIL, payload: response.message})
+        }
+    } catch (error) {
+        console.log('REEDIT QUESTION ERROR', error);
+        yield put({type: questionnaire.API_FAILED, payload: error});
+    }
+}
+
+export function* watchReEditQuestionnaire() {
+    yield takeEvery(questionnaire.REEDIT_QUESTIONNAIRE_START, reeditQuestionnaireSaga)
+}
+
+function* deleteQuestionnaireSaga({ payload: question_data }) {
+    try {
+        const id = question_data.question_data;
+        const token = question_data.token;
+        const response = yield call(deleteQuestionnaireUtil, { id, token });
+        if (response.status === 200) {
+            yield put({
+                type: questionnaire.DELETE_QUESTIONNAIRE_SUCCESSFUL,
+                payload: response.id
+            })
+        } else {
+            yield put({ type: questionnaire.DELETE_QUESTIONNAIRE_FAIL, payload: response.message })
+        }
+    } catch (error) {
+        yield put({ type: questionnaire.API_FAILED, payload: error })
+    }
+}
+
+export function* watchDeleteQuestionnaire() {
+    yield takeEvery(questionnaire.DELETE_QUESTIONNAIRE_START, deleteQuestionnaireSaga)
 }
 
 function* questionnaireManagementSagas() {
-    yield all([call(watchSearchQuestionnaire),
-            call(watchAddQuestionnaire),
-            call(watchGetQuestionnaire),
-            call(watchReEditQuestionnaire),
-            call(watchDeleteQuestionnaire),
-            call(watchCopyQuestionnaire)]);
+    yield all([
+        call(watchAddQuestionnaire),
+        call(watchGetQuestionnaire),
+        call(watchReEditQuestionnaire),
+        call(watchDeleteQuestionnaire),
+        call(watchCopyQuestionnaire)]);
 }
 
 export default questionnaireManagementSagas;

@@ -3,10 +3,8 @@ import axios from 'axios';
 const localStorageData = JSON.parse(localStorage.getItem('user'));
 const getUserListUtil = (token) => {
     try {
-        console.log('GET USER LIST UTIL', token);
         return axios.get(`http://localhost:5000/user-management/users`, { params: { token: token } })
             .then((response) => {
-                console.log('User Management GET Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 if (response.data.Role === 'SuperAdmin') {
@@ -32,10 +30,8 @@ const getUserListUtil = (token) => {
 
 const getQuestionsUtil = (token) => {
     try {
-        console.log('GET QUESTIONS LIST UTIL', token);
         return axios.get(`http://localhost:5000/questionare`, { params: { token: token } })
             .then((response) => {
-                console.log('User Management GET Questions Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
@@ -51,10 +47,8 @@ const getQuestionsUtil = (token) => {
 
 const addUserUtil = (data) => {
     try {
-        console.log('ADD USER UTIL : ', data);
         return axios.post(`http://localhost:5000/user-management/create-user`, data.user_data, { params: { token: data.token } })
             .then(response => {
-                console.log('User Management ADD USER Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
@@ -69,10 +63,8 @@ const addUserUtil = (data) => {
 
 const deleteUserSuccess = async data => {
     try {
-        console.log('User Management Util', data);
         return await axios.post(`http://localhost:5000/user-management/delete-user`, data.user_data, { params: { token: data.token } })
             .then((response) => {
-                console.log('User Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
@@ -87,10 +79,8 @@ const deleteUserSuccess = async data => {
 
 const changeUserRoleSuccess = async data => {
     try {
-        console.log('User Management Util', data);
         return await axios.post(`http://localhost:5000/user-management/change-role`, data.user_data, { params: { token: data.token } })
             .then((response) => {
-                console.log('User Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
@@ -112,13 +102,11 @@ const sendEmailSuccess = async data => {
         //                 "sendbody": data.email_data.sendbody,
         //                 "send": "True",
         //                 };
-        console.log('User Management Util', data);
         return await axios.post(`http://localhost:5000/user-management/send-mail`, data.email_data, { params: { token: data.token } })
             .then((response) => {
-                console.log('User Management EMAIL Util : ', response);
                 if (response.status === 400 || response.status === 500)
-                    throw response.send;
-                return response.send;
+                    throw response;
+                return response;
             }).catch(err => {
                 console.log('User Management EMAIL Util error : ', err);
                 return err.response.data

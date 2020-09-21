@@ -259,7 +259,6 @@ class Profile extends Component {
 }
 
 const mapStatetoProps = ({ Profile }) => {
-	console.log('MAP STATE TO PROPS : ', Profile);
 	const { profileData, profileError, loading, profileUpdateMessage, 
 			changePasswordSuccess, changePasswordSuccessMessage } = Profile;
 	return { profileData, profileError, loading, profileUpdateMessage, 

@@ -18,7 +18,7 @@ import Editable from 'react-x-editable';
 import Spinner from '../../components/Spinner/Spinner';
 
 import {
-    getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart, deletequestionnairestart,
+    getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart, deleteQuestionnaireStart,
     getUserQuestionaireStart, fillQuestionStart, submitQuestionStart
 } from './../../store/actions';
 
@@ -128,15 +128,12 @@ class AuthDash extends Component {
     }
     toggleEditModal = (index) => {
         let question = this.state.questions[index]
-        console.log('Questions : ', question);
         this.setState({ selectedQuestion: question }, () => {
             this.setState({ toggleEditModal: !this.state.toggleEditModal })
         })
-        console.log('Toggle Edit Modal : ', this.state.selectedQuestion);
     }
 
     onEndSurveyHandler = (questid) => {
-        console.log('QUEST ID : ', questid);
         this.props.endSurveyStart(questid)
     }
 
@@ -145,7 +142,8 @@ class AuthDash extends Component {
     }
 
     onDeleteHandler = (questid) => {
-        this.props.deletequestionnairestart(questid)
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.deleteQuestionnaireStart(questid, localStorageData.token);
     }
 
     // TABLE 3 AND 4
@@ -406,7 +404,6 @@ class AuthDash extends Component {
         let question = this.state.questions2[index];
         let quest_name = this.state.questions2[index].respname;
         let quest_id = this.state.questions2[index]._id;
-        console.log('SELECTED QUESTION : ', question);
         this.setState({
             selectedQuestion: question,
             form_name: quest_name,
@@ -441,7 +438,6 @@ class AuthDash extends Component {
             this.setState({ ratingCount: option })
             selected_children[parentIndex][childIndex].answers[0] = option;
         } else if (selected_children[parentIndex][childIndex].type.value === 4) {
-            console.log(optionIndex)
             selected_children[parentIndex][childIndex].answers[0] = option.target.value;
         } else if (selected_children[parentIndex][childIndex].type.value === 5) {
             this.setState({
@@ -474,7 +470,6 @@ class AuthDash extends Component {
             "questname": this.state.form_name,
             "id": this.state.quest_id
         }
-        console.log(filledQuestStart);
         this.props.fillQuestionStart(filledQuestStart)
         this.setState({ fillFormToggle: !this.state.fillFormToggle })
     }
@@ -842,7 +837,6 @@ class AuthDash extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
-    console.log('ADMIN MAP STATE : ', dashboardManagement);
     return {
         role: Login.role,
         survey: dashboardManagement.adminQuestionaireData,
@@ -856,6 +850,6 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
 
 
 export default withRouter(connect(mapStateToProps, {
-    deletequestionnairestart, activateAuthLayout, getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart,
+    deleteQuestionnaireStart, activateAuthLayout, getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart,
     getUserQuestionaireStart, fillQuestionStart, submitQuestionStart
 })(AuthDash));

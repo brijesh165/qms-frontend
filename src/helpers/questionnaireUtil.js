@@ -1,16 +1,41 @@
 import axios from 'axios';
 
-const localStorageData = JSON.parse(localStorage.getItem('user'));
-const searchQuestionnaireSuccess = (data) => {
+const getQuestionnaireUtil = (token) => {
     try {
-        const newData = {
-            'questname': data,
-            'searchquest': 'True'
-        };
-        console.log(newData);
-        return axios.post(`http://localhost:5000/questionare`, newData, { params: { token: localStorageData.token } })
+        return axios.get(`http://localhost:5000/questionare`, { params: { token: token } })
             .then(response => {
-                console.log('Questionnaire Management Util : ', response);
+                if (response.status === 400 || response.status === 500)
+                    throw response.data;
+                return response.data;
+            }).catch(err => {
+                console.log('Questionnaire GET Util error : ', err);
+                return err.response.data;
+            })
+    } catch (error) {
+        console.log('Questionnaire Management Util error : ', error);
+    }
+}
+
+const addQuestionnaireUtil = (data) => {
+    try {
+        return axios.post(`http://localhost:5000/questionare/create-question`, {'questdata': data.question}, { params: { token: data.token } })
+            .then(response => {
+                if (response.status === 400 || response.status === 500)
+                    throw response.data;
+                return response.data;
+            }).catch(err => {
+                console.log('Questionnaire Util error : ', err);
+                return err.response.data;
+            })
+    } catch (error) {
+        console.log('Questionnaire Management Util error : ', error);
+    }
+}
+
+const copyQuestionnaireUtil = (data) => {
+    try {
+        return axios.post(`http://localhost:5000/questionare/copy-question`, {'id': data.questId}, { params: { token: data.token } })
+            .then(response => {
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
@@ -23,107 +48,42 @@ const searchQuestionnaireSuccess = (data) => {
     }
 }
 
-const addQuestionnaireSuccess = (data) => {
+const reeditQuestionnaireUtil = (data) => {
     try {
-        console.log('Questionnaire Data', data);
-        return axios.post(`http://localhost:5000/questionare`, data, { params: { token: localStorageData.token } })
+        return axios.post(`http://localhost:5000/questionare/reedit-quest`, {'questdata': data.questData}, { params: { token: data.token } })
             .then(response => {
-                console.log('Questionnaire Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
             }).catch(err => {
                 console.log('Questionnaire Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('Questionnaire Management Util error : ', error);
     }
 }
 
-const reeditQuestionnaireSuccess = (data) => {
+const deleteQuestionnaireUtil = (data) => {
     try {
-        console.log('Questionnaire Data', data);
-        return axios.post(`http://localhost:5000/dashboard`, data, { params: { token: localStorageData.token } })
+        return axios.post(`http://localhost:5000/questionare/delete-question`, {'id': data.id}, { params: { token: data.token } })
             .then(response => {
-                console.log('Questionnaire Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
                 return response.data;
             }).catch(err => {
                 console.log('Questionnaire Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('Questionnaire Management Util error : ', error);
     }
 }
 
-const getQuestionnaireSuccess = () => {
-    try {
-        console.log('Questionnaire GET',);
-        return axios.get(`http://localhost:5000/questionare`, {params: {token: localStorageData.token, questget: "True"}})
-            .then(response => {
-                console.log('Questionnaire Management Util : ', response);
-                if (response.status === 400 || response.status === 500)
-                    throw response.data;
-                return response.data;
-            }).catch(err => {
-                console.log('Questionnaire Util error : ', err);
-                throw err[1];
-            })
-    } catch (error) {
-        console.log('Questionnaire Management Util error : ', error);
-    }
-}
-
-const deleteQuestionnaireSuccess = (data) => {
-    try {
-        const newData = {
-            remove: "True",
-            id: data
-        };
-        console.log('Questionnaire Data', newData);
-        return axios.post(`http://localhost:5000/questionare`, newData, {params: {token: localStorageData.token}})
-            .then(response => {
-                console.log('Questionnaire Management Util : ', response);
-                if (response.status === 400 || response.status === 500)
-                    throw response.data;
-                return response.data;
-            }).catch(err => {
-                console.log('Questionnaire Util error : ', err);
-                throw err[1];
-            })
-    } catch (error) {
-        console.log('Questionnaire Management Util error : ', error);
-    }
-}
-
-const copyQuestionnaireSuccess = (data) => {
-    try {
-        const newData = {
-            copy: "True",
-            id: data.question_data
-        };
-        console.log('Questionnaire Data', newData);
-        return axios.post(`http://localhost:5000/questionare`, newData, { params: { token: localStorageData.token } })
-            .then(response => {
-                console.log('Questionnaire Management Util : ', response);
-                if (response.status === 400 || response.status === 500)
-                    throw response.data;
-                return response.data;
-            }).catch(err => {
-                console.log('Questionnaire Util error : ', err);
-                throw err[1];
-            })
-    } catch (error) {
-        console.log('Questionnaire Management Util error : ', error);
-    }
-}
-
-export { searchQuestionnaireSuccess, 
-        addQuestionnaireSuccess, 
-        reeditQuestionnaireSuccess,
-        getQuestionnaireSuccess, 
-        deleteQuestionnaireSuccess, 
-        copyQuestionnaireSuccess };
+export {
+    addQuestionnaireUtil,
+    reeditQuestionnaireUtil,
+    getQuestionnaireUtil,
+    deleteQuestionnaireUtil,
+    copyQuestionnaireUtil
+};

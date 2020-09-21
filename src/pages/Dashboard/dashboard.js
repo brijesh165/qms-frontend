@@ -35,13 +35,11 @@ class Dashboard extends Component {
     render() {
         
         const localStorageData = JSON.parse(localStorage.getItem('user')) || '';
-        console.log('LOCALSTORAGE ROLE : ', localStorageData.role);
         if (localStorageData.role === "enduser") {
             return (
                 <EndUserDash />
             )
         } else if (localStorageData.role === 'admin') {
-            console.log('IN ADMIN : ', localStorageData.role)
             return (
                     <AdminDash />
                 )
@@ -54,7 +52,6 @@ class Dashboard extends Component {
 }
 
 const mapStateToProps = ({ Login }) => {
-    console.log('MAP STATE TO PROPS : ', Login.role)
     return {
         role: Login.role
     }

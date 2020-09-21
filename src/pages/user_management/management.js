@@ -57,9 +57,7 @@ class UserManagement extends Component {
     }
 
     resetState = () => {
-        console.log('IN RESET');
         this.setState({
-            selectedEmail: [],
             sendsubject: '',
             expirydate: '',
             sendbody: ''
@@ -177,6 +175,7 @@ class UserManagement extends Component {
         }
 
         if (this.props.sendEmailStatus !== prevProps.sendEmailStatus) {
+            alert('Email sent successfully. Please check email!');
             this.resetState()
         }
 
@@ -507,7 +506,6 @@ class UserManagement extends Component {
     }
 }
 const mapStateToProps = ({ Login, userManagement }) => {
-    console.log('MAP STATE TO PROPS : ', userManagement)
     return {
         role: Login.role,
         loading: userManagement.loading,

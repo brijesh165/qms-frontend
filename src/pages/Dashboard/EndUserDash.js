@@ -62,7 +62,6 @@ class EndUserDash extends Component {
         console.log('IN HANDLE SUBMIT : ', selectedGroup);
         const selectQuestion = [...this.state.masterList];
         let new_question = selectQuestion.filter((item) => {
-            console.log(item.questname);
             return item.questname === selectedGroup.value
         })
 
@@ -352,7 +351,6 @@ class EndUserDash extends Component {
         let question = this.state.questions2[index];
         let quest_name = this.state.questions2[index].respname;
         let quest_id = this.state.questions2[index]._id;
-        console.log('SELECTED QUESTION : ', question);
         this.setState({
             selectedQuestion: question,
             form_name: quest_name,
@@ -408,7 +406,7 @@ class EndUserDash extends Component {
             })
             selected_children[parentIndex][childIndex].answers[0] = option.target.value
         }
-        console.log(selected_children);
+        // console.log(selected_children);
         this.setState({ filledChildren: selected_children })
     }
 
@@ -419,7 +417,6 @@ class EndUserDash extends Component {
             "questname": this.state.form_name,
             "id": this.state.quest_id
         }
-        console.log(filledQuestStart);
         this.props.fillQuestionStart(filledQuestStart)
         this.setState({ fillFormToggle: !this.state.fillFormToggle })
     }

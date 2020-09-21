@@ -1,41 +1,34 @@
 import questionnaire from './actionTypes';
 
-export const searchquestionnairestrart = (questname) => (
-    console.log('Search Action : ', questname),
-    {
-        type: questionnaire.SEARCH_QUESTIONNAIRE_START,
-        payload: questname
-})
-
-export const addquestionnairestrart = (question_data) => (
+export const getQuestionnaireStart = (token) => {
+    return {
+        type: questionnaire.GET_QUESTIONNAIRE_START,
+        payload: token
+    }
+}
+export const addQuestionnaireStart = (question_data, token) => (
     {
         type: questionnaire.ADD_QUESTIONNAIRE_START,
-        payload: question_data
+        payload: {question_data, token}
 })
 
-export const reeditquestionnairestart = (question_data) => (
+export const copyQuestionnaireStart = (question_data, token) => (
+    {
+        type: questionnaire.COPY_QUESTIONNAIRE_START,
+        payload: {question_data, token}
+})
+
+export const reeditQuestionnaireStart = (question_data, token) => (
     {
         type: questionnaire.REEDIT_QUESTIONNAIRE_START,
-        payload: question_data
+        payload: {question_data, token}
     }
 )
 
-export const deletequestionnairestart = (question_data) => (
+export const deleteQuestionnaireStart = (question_data, token) => (
     {
         type: questionnaire.DELETE_QUESTIONNAIRE_START,
-        payload: question_data
-})
-
-export const getquestionnairestart = () => {
-    return {
-        type: questionnaire.GET_QUESTIONNAIRE_START
-    }
-}
-
-export const copyquestionnairestart = (question_data) => (
-    {
-        type: questionnaire.COPY_QUESTIONNAIRE_START,
-        payload: question_data
+        payload: {question_data, token}
 })
 
 export const apiError = (error) => (

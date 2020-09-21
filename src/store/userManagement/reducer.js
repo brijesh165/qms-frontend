@@ -14,8 +14,8 @@ const initialState = {
 }
 
 const userManagement = (state = initialState, action) => {
-    console.log('Reducer Action:', action.type);
-    console.log('Reducer Payload:', action.payload);
+    // console.log('Reducer Action:', action.type);
+    // console.log('Reducer Payload:', action.payload);
     switch (action.type) {
         case userManagementTypes.GET_USER_LIST_START: 
             state = {
@@ -114,11 +114,9 @@ const userManagement = (state = initialState, action) => {
                 return item.id === action.payload.id
             });
             let index = changeUserRole.findIndex(item => item.id === action.payload.previd);
-            console.log('INDEX : ', index);
             // let userAfterChangeRole = {...changeRoleFilter, ...action.payload.data};
             changeUserRole[index] = action.payload.data;
 
-            console.log('AFTER CHANGE ROLE : ', changeUserRole);
             state = {
                 ...state, 
                 userManagementError: null,

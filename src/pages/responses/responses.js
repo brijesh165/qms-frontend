@@ -52,7 +52,6 @@ class Responses extends Component {
     }
 
     handleSelectGroup = (selectedGroup) => {
-        console.log('IN HANDLE SUBMIT : ', selectedGroup);
         const selectQuestion = [...this.state.masterList];
         let new_question = selectQuestion.filter((item) => {
             return item.questname === selectedGroup.value
@@ -62,12 +61,10 @@ class Responses extends Component {
     }
 
     onEndSurveyHandler = (questid) => {
-        console.log('QUEST ID : ', questid);
         this.props.endSurveyStart(questid)
     }
 
     onDownloadSurveyHandler = (questname) => {
-        console.log('QUEST NAME : ', questname);
         this.props.downloadSurveyStart(questname);
         if (!this.props.loading && this.props.downloadSurvey.length > 0) {
             this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
@@ -195,7 +192,6 @@ class Responses extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
-    console.log(dashboardManagement);
     return {
         role: Login.role,
         questionaire: dashboardManagement.questionaireData,

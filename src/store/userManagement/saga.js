@@ -9,8 +9,6 @@ import { apiError } from './actions';
 import { getUserListUtil, 
         getQuestionsUtil,
         addUserUtil, deleteUserSuccess, changeUserRoleSuccess, sendEmailSuccess } from '../.././helpers/userManagementUtil';
-import resetPassword from '../auth/resetpwd/actionTypes';
-import userManagement from './reducer';
 
 //If user is login then dispatch redux action's are directly from here.
 

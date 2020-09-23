@@ -10,12 +10,15 @@ const dashboardTypes = {
     
     DELETE_SURVEY_START: 'delete_survey_start',
     DELETE_SURVEY_SUCCESS: 'delete_survey_success',
+    DELETE_SURVEY_FAIL: 'delete_survey_fail',
     
     END_SURVEY_START: 'end_survey_start',
     END_SURVEY_SUCCESS: 'end_survey_success',
+    END_SURVEY_FAIl: 'end_survey_fail',
     
     DOWNLOAD_SURVEY_START: 'download_survey_start',
     DOWNLOAD_SURVEY_SUCCESS: 'download_survey_success',
+    DOWNLOAD_SURVEY_FAIL: 'download_survey_fail',
     
     FILL_QUESTION_START: 'fill_question_start',
     FILL_QUESTION_SUCCESS: 'fill_question_success',

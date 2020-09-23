@@ -62,14 +62,10 @@ const getUserQuestionaireUtil = (token) => {
     }
 }
 
-const endSurveySuccess = (data) => {
+const endSurveyUtil = (data) => {
     try {
-        const newData = {
-            "questid": data,
-            "surveyStatus": "True"
-        }
-        console.log('Questionnaire END', newData);
-        return axios.post(`http://localhost:5000/dashboard`, newData, {params: {token: localStorageData.token}})
+        console.log('Questionnaire END', data);
+        return axios.post(`http://localhost:5000/dashboard/change-surveystatus`, {"questid": data.id}, {params: {token: data.token}})
             .then(response => {
                 console.log('Dashboard Management Util : ', response);
                 if (response.status === 400 || response.status === 500)
@@ -77,21 +73,17 @@ const endSurveySuccess = (data) => {
                 return response.data;
             }).catch(err => {
                 console.log('Dashboard Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('Dashboard Management Util error : ', error);
     }
 }
 
-const downloadSurvetSuccess = (data) => {
+const downloadSurveyUtil = (data) => {
     try {
-        const newData = {
-            "questid": data,
-            "download": "True"
-        }
-        console.log('Questionnaire DOWNLOAD', newData);
-        return axios.post(`http://localhost:5000/dashboard`, newData, { params: { token: localStorageData.token } })
+        console.log('Questionnaire DOWNLOAD', data.questId, data.token);
+        return axios.post(`http://localhost:5000/dashboard/download-response`, {"questid": data.questId}, { params: { token: data.token } })
             .then(response => {
                 console.log('Profile Utils : ', response);
                 if (response.status === 400 || response.status === 500)
@@ -99,7 +91,7 @@ const downloadSurvetSuccess = (data) => {
                 return response.data;
             }).catch(err => {
                 console.log('Profile Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('Dashboard Management Util error : ', error);
@@ -143,5 +135,5 @@ const submitQuestionUtil = (data) => {
 }
 
 export {getQuestionaireUtil, getAdminQuestionaireUtil, getUserQuestionaireUtil, 
-        endSurveySuccess, downloadSurvetSuccess, fillQuestionUtil,
+    endSurveyUtil, downloadSurveyUtil, fillQuestionUtil,
         submitQuestionUtil };

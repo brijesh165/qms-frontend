@@ -4,10 +4,11 @@ import { takeEvery, put, all, call } from 'redux-saga/effects';
 import dashboardTypes from './actionTypes';
 import { apiError } from './actions';
 
-import { getQuestionaireUtil, endSurveySuccess, downloadSurvetSuccess, 
+import { getQuestionaireUtil, endSurveyUtil, downloadSurveyUtil, 
         getUserQuestionaireUtil, getAdminQuestionaireUtil, fillQuestionUtil,
         submitQuestionUtil } from './../../helpers/dashboardManagementUtil';
-import resetPassword from '../auth/resetpwd/actionTypes';
+import {deleteQuestionnaireUtil} from './../../helpers/questionnaireUtil';
+import { yellow } from '@material-ui/core/colors';
 
 function* getQuestionaireSaga({payload: token}) {
     try {
@@ -70,39 +71,69 @@ export function* watchGetUserSurvey() {
     yield takeEvery(dashboardTypes.GET_USER_QUESTIONAIRE_DATA_START, getUserQuestionaireSaga);
 }
 
-function* endSurveyStart({payload: questid}) {
+function* deleteQuestionnaireSaga({ payload: question_data }) {
     try {
-        const response = yield call(endSurveySuccess, questid);
-        console.log(response);
-        if (response) {
-            yield put({type: dashboardTypes.END_SURVEY_SUCCESS,
-                    payload: response.id})
+        const id = question_data.question_data;
+        const token = question_data.token;
+        const response = yield call(deleteQuestionnaireUtil, { id, token });
+        if (response.status === 200) {
+            yield put({
+                type: dashboardTypes.DELETE_SURVEY_SUCCESS,
+                payload: response.id
+            })
+        } else {
+            yield put({ type: dashboardTypes.DELETE_SURVEY_FAIL, payload: response.message })
         }
     } catch (error) {
-        yield put(apiError(error))
+        yield put({ type: dashboardTypes.API_FAILED, payload: error })
+    }
+}
+
+export function* watchDeleteQuestionnaire() {
+    yield takeEvery(dashboardTypes.DELETE_SURVEY_START, deleteQuestionnaireSaga)
+}
+
+function* endSurveySaga({payload: questid}) {
+    try {
+        const id = questid.questid;
+        const token = questid.token;
+        const response = yield call(endSurveyUtil, {id, token});
+        console.log(response);
+        if (response.status === 200) {
+            yield put({type: dashboardTypes.END_SURVEY_SUCCESS,
+                    payload: response.id})
+        } else {
+            yield put({type: dashboardTypes.END_SURVEY_FAIl, payload: response.message})
+        }
+    } catch (error) {
+        yield put({type: dashboardTypes.API_FAILED, payload: error})
     }
 }
 
 export function* watchEndSurvey() {
-    yield takeEvery(dashboardTypes.END_SURVEY_START, endSurveyStart)
+    yield takeEvery(dashboardTypes.END_SURVEY_START, endSurveySaga)
 }
 
-function* downloadSurvetStart({payload: questid}) {
+function* downloadSurveySaga({payload: questid}) {
     try {
-        console.log(questid)
-        const response = yield call(downloadSurvetSuccess, questid);
+        const questId = questid.questid;
+        const token = questid.token;
+        console.log('DOWNLOAD SURVEY SAGA : ', questId, token);
+        const response = yield call(downloadSurveyUtil, {questId, token});
         console.log(response);
-        if (response.data) {
+        if (response.status === 200) {
             yield put({type: dashboardTypes.DOWNLOAD_SURVEY_SUCCESS,
                     payload: response.data})
+        } else {
+            yield put({type: dashboardTypes.DOWNLOAD_SURVEY_FAIL, payload: response.message})
         }
     } catch (error) {
-        yield put(apiError(error))
+        yield put({type: dashboardTypes.API_FAILED, payload: error})
     }
 }
 
 export function* watchDownloadSurvey() {
-    yield takeEvery(dashboardTypes.DOWNLOAD_SURVEY_START, downloadSurvetStart)
+    yield takeEvery(dashboardTypes.DOWNLOAD_SURVEY_START, downloadSurveySaga)
 }
 
 function* fillQuestionStart({payload: quest_data}) {
@@ -145,6 +176,7 @@ function* dashboardManagementSagas() {
     yield all([call(watchGetSurvey),
                 call(watchGetUserSurvey),
                 call(watchGetAdminSurvey),
+                call(watchDeleteQuestionnaire),
                 call(watchEndSurvey),
                 call(watchFillQuestion),
                 call(watchSubmitQuestion),

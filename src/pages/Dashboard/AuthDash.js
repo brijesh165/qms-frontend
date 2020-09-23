@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { CSVLink } from 'react-csv';
 
-import { getQuestionaireStart, endSurveyStart, downloadSurveyStart, deleteQuestionnaireStart } from './../../store/actions';
+import { getQuestionaireStart, endSurveyStart, downloadSurveyStart, deleteSurveyStart } from './../../store/actions';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import DataTable from 'react-data-table-component';
@@ -57,6 +57,18 @@ class AuthDash extends Component {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.downloadSurveySuccess !== prevProps.downloadSurveySuccess) {
+            this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
+                this.surveyLink.link.click()
+            });
+        }
+
+        if (this.props.downloadFail !== prevProps.downloadFail) {
+            alert(this.props.downloadError);
+        }
+    }
+
     deleteQuestion = (index) => {
         let new_questions = [...this.state.questions];
         new_questions.splice(index, 1);
@@ -64,21 +76,24 @@ class AuthDash extends Component {
     }
 
     onEndSurveyHandler = (questid) => {
-        this.props.endSurveyStart(questid)
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.endSurveyStart(questid, localStorageData.token)
     }
 
     onDownloadSurveyHandler = (questid) => {
-        this.props.downloadSurveyStart(questid);
-        if (!this.props.loading && this.props.downloadSurvey.length > 0) {
-            this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
-                this.surveyLink.link.click()
-            });
-        }
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.downloadSurveyStart(questid, localStorageData.token);
+
+        // if (!this.props.downloadSurveySuccess) {
+        //     this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
+        //         this.surveyLink.link.click()
+        //     });
+        // }
     }
 
     onDeleteHandler = (questid) => {
         const localStorageData = JSON.parse(localStorage.getItem('user'));
-        this.props.deleteQuestionnaireStart(questid, localStorageData.token);
+        this.props.deleteSurveyStart(questid, localStorageData.token);
     }
 
     render() {
@@ -133,7 +148,7 @@ class AuthDash extends Component {
                 //     target="_blank">
                 //     <i className="mdi mdi-cloud-download-outline cloud-download" style={{ color: 'grey' }}></i>
                 // </CSVLink>
-                cell: row => <Button onClick={() => this.onDownloadSurveyHandler(row.id)} style={{ backgroundColor: 'transparent', border: 0 }}><i className="mdi mdi-cloud-download-outline cloud-download" style={{ color: 'grey' }}></i></Button>,
+                cell: row => <Button onClick={() => this.onDownloadSurveyHandler(row.questid)} style={{ backgroundColor: 'transparent', border: 0 }}><i className="mdi mdi-cloud-download-outline cloud-download" style={{ color: 'grey' }}></i></Button>,
                 // sortable: true,
                 // right: true,
             },
@@ -192,7 +207,7 @@ class AuthDash extends Component {
 
                     {this.props.dashboardError && <Alert color="danger">
                         {this.props.dashboardError}
-                        </Alert>}
+                    </Alert>}
 
                     <Row>
                         <Scrollbars style={{ height: 300, display: 'flex', alignItems: 'center', border: '1px solid grey' }}>
@@ -229,17 +244,21 @@ class AuthDash extends Component {
 }
 
 const mapStateToProps = ({ Login, dashboardManagement }) => {
+    console.log('MAP STATE : ', dashboardManagement.questionaireData)
     return {
         role: Login.role,
         dashboardError: dashboardManagement.dashboardError,
         questionaire: dashboardManagement.questionaireData,
         loading: dashboardManagement.loading,
-        downloadSurvey: dashboardManagement.downloadSurvey
+        downloadSurvey: dashboardManagement.downloadSurvey,
+        downloadSurveySuccess: dashboardManagement.downloadSurveySuccess,
+        downloadFail: dashboardManagement.downloadFail,
+        downloadError: dashboardManagement.downloadError,    
     }
 }
 
 
 export default withRouter(connect(mapStateToProps, {
-    deleteQuestionnaireStart, activateAuthLayout,
+    deleteSurveyStart, activateAuthLayout,
     getQuestionaireStart, endSurveyStart, downloadSurveyStart
 })(AuthDash));

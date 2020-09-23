@@ -21,6 +21,12 @@ export const getUserQuestionaireStart = (token) => (
     }
 )
 
+export const deleteSurveyStart = (question_data, token) => (
+    {
+        type: dashboardTypes.DELETE_SURVEY_START,
+        payload: {question_data, token}
+})
+
 export const fillQuestionStart = (quest_data) => (
     {
         type: dashboardTypes.FILL_QUESTION_START,
@@ -35,17 +41,17 @@ export const submitQuestionStart = (quest_data) => (
     }
 )
 
-export const endSurveyStart = (questid) => (
+export const endSurveyStart = (questid, token) => (
     {
         type: dashboardTypes.END_SURVEY_START,
-        payload: questid
+        payload: {questid, token}
     }
 )
 
-export const downloadSurveyStart = (questid) => (
+export const downloadSurveyStart = (questid, token) => (
     {
         type: dashboardTypes.DOWNLOAD_SURVEY_START,
-        payload: questid
+        payload: {questid, token}
     }
 )
 

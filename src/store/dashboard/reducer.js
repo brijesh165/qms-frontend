@@ -5,7 +5,14 @@ const initialState = {
     questionaireData: [],
     adminQuestionaireData: [],
     userQuestionaireData: [],
-    userQuestionaireData2: []
+    userQuestionaireData2: [],
+    downloadSurveySuccess: false,
+    downloadFail: false,
+    downloadError: null,
+    deleteQuestionnaireFail: false,
+    deleteQuestionnaireError: null,
+    endSurveyFail: false,
+    endSurveyError: null,
 }
 
 const dashboardManagement = (state = initialState, action) => {
@@ -58,10 +65,36 @@ const dashboardManagement = (state = initialState, action) => {
                 userQuestionaireData2: action.payload.respData
             }
             break;
+
+        case dashboardTypes.DELETE_SURVEY_START:
+            state = {
+                ...state,
+                questionnaireManagementError: null,
+            }
+            break;
+        case dashboardTypes.DELETE_SURVEY_SUCCESS:
+            console.log('DELETE SURVEY : ', action.payload);
+            let prevStateQuestion = [...state.questionaireData];
+            const deletedQuestions = prevStateQuestion.filter((item) => {
+                return item.id !== action.payload
+            });
+            state = {
+                ...state,
+                questionnaireManagementError: null,
+                questionaireData: deletedQuestions
+            }
+            break;
+        case dashboardTypes.DELETE_SURVEY_FAIL:
+            state = {
+                ...state,
+                deleteQuestionnaireFail: true,
+                deleteQuestionnaireError: action.payload
+            }
+            break;
+
         case dashboardTypes.END_SURVEY_START:
             state = {
                 ...state,
-                loading: false,
                 dashboardError: null
             }
             break;
@@ -76,28 +109,39 @@ const dashboardManagement = (state = initialState, action) => {
 
             state = {
                 ...state,
-                loading: true,
                 dashboardError: null,
                 questionaireData: prevSurveyData
             }
             break;
+        case dashboardTypes.END_SURVEY_FAIl:
+            state = {
+                ...state,
+                endSurveyFail: true,
+                endSurveyError: action.payload
+            }
+            break;
+            
         case dashboardTypes.DOWNLOAD_SURVEY_START:
             state = {
                 ...state,
-                loading: false,
-                dashboardError: null
             }
             break;
         case dashboardTypes.DOWNLOAD_SURVEY_SUCCESS:
             state = {
                 ...state,
-                loading: true,
-                dashboardError: null,
+                downloadSurveySuccess: true,
                 downloadSurvey: action.payload
             }
             break;
+        case dashboardTypes.DOWNLOAD_SURVEY_FAIL:
+            state = {
+                ...state,
+                downloadFail: true,
+                downloadError: action.payload
+            }
+            break;
 
-        case dashboardTypes.FILL_QUESTION_START: 
+        case dashboardTypes.FILL_QUESTION_START:
             state = {
                 ...state,
                 loading: false,
@@ -119,7 +163,7 @@ const dashboardManagement = (state = initialState, action) => {
             }
             break;
 
-        case dashboardTypes.SUBMIT_QUESTION_START: 
+        case dashboardTypes.SUBMIT_QUESTION_START:
             state = {
                 ...state,
                 loading: false,

@@ -138,7 +138,8 @@ class AuthDash extends Component {
     }
 
     onDownloadSurveyHandler = (questid) => {
-        this.props.downloadSurveyStart(questid);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.downloadSurveyStart(questid, localStorageData.token);
     }
 
     onDeleteHandler = (questid) => {

@@ -101,7 +101,7 @@ const downloadSurveyUtil = (data) => {
 const fillQuestionUtil = (data) => {
     try {
         console.log('DASHBOARD MANAGEMENT | FILL QUESTION DATA', data);
-        return axios.post(`http://localhost:5000/dashboard`, data, { params: { token: localStorageData.token } })
+        return axios.post(`http://localhost:5000/dashboard/fillout-response`, data.data, { params: { token: data.token } })
             .then(response => {
                 console.log('Profile Utils : ', response);
                 if (response.status === 400 || response.status === 500)
@@ -109,7 +109,7 @@ const fillQuestionUtil = (data) => {
                 return response.data;
             }).catch(err => {
                 console.log('Profile Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('Dashboard Management Util error : ', error);
@@ -119,7 +119,7 @@ const fillQuestionUtil = (data) => {
 const submitQuestionUtil = (data) => {
     try {
         console.log('DASHBOARD MANAGEMENT | SUBMIT QUESTION DATA', data);
-        return axios.post(`http://localhost:5000/dashboard`, data, { params: { token: localStorageData.token } })
+        return axios.post(`http://localhost:5000/dashboard/submit-response`, data.id, { params: { token: data.token } })
             .then(response => {
                 console.log('Profile Utils : ', response);
                 if (response.status === 400 || response.status === 500)
@@ -127,7 +127,7 @@ const submitQuestionUtil = (data) => {
                 return response.data;
             }).catch(err => {
                 console.log('Profile Util error : ', err);
-                throw err[1];
+                return err.response.data;
             })
     } catch (error) {
         console.log('Dashboard Management Util error : ', error);

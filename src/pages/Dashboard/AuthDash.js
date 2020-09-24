@@ -40,24 +40,13 @@ class AuthDash extends Component {
         this.props.getQuestionaireStart(localStorageData.token);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (this.props.questionaire) {
+    componentDidUpdate(prevProps) {
+        if (this.props.questionaire !== prevProps.questionaire) {
             this.setState({
-                questionaireData: nextProps.questionaire
+                questionaireData: this.props.questionaire
             })
         }
 
-        if (this.props.loading && this.props.downloadSurvey) {
-            if (!this.props.loading && this.props.downloadSurvey) {
-                console.log('IN DOWNLOAD!!!', this.props.downloadSurvey);
-                this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
-                    this.surveyLink.link.click()
-                });
-            }
-        }
-    }
-
-    componentDidUpdate(prevProps) {
         if (this.props.downloadSurveySuccess !== prevProps.downloadSurveySuccess) {
             this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
                 this.surveyLink.link.click()
@@ -67,6 +56,14 @@ class AuthDash extends Component {
         if (this.props.downloadFail !== prevProps.downloadFail) {
             alert(this.props.downloadError);
         }
+
+        if (this.props.endSurveyFail !== prevProps.endSurveyFail) {
+            alert(this.props.endSurveyError)
+        }
+        if (this.props.getSurveyFail !== prevProps.getSurveyFail) {
+            alert(this.props.getSurveyError)
+        } 
+
     }
 
     deleteQuestion = (index) => {
@@ -83,12 +80,6 @@ class AuthDash extends Component {
     onDownloadSurveyHandler = (questid) => {
         const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.downloadSurveyStart(questid, localStorageData.token);
-
-        // if (!this.props.downloadSurveySuccess) {
-        //     this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
-        //         this.surveyLink.link.click()
-        //     });
-        // }
     }
 
     onDeleteHandler = (questid) => {
@@ -253,7 +244,11 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
         downloadSurvey: dashboardManagement.downloadSurvey,
         downloadSurveySuccess: dashboardManagement.downloadSurveySuccess,
         downloadFail: dashboardManagement.downloadFail,
-        downloadError: dashboardManagement.downloadError,    
+        downloadError: dashboardManagement.downloadError,
+        endSurveyFail: dashboardManagement.endSurveyFail,
+        endSurveyError: dashboardManagement.endSurveyError,
+        getSurveyFail: dashboardManagement.getSurveyFail,
+        getSurveyError: dashboardManagement.getSurveyError,    
     }
 }
 

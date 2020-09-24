@@ -27,17 +27,17 @@ export const deleteSurveyStart = (question_data, token) => (
         payload: {question_data, token}
 })
 
-export const fillQuestionStart = (quest_data) => (
+export const fillQuestionStart = (quest_data, token) => (
     {
         type: dashboardTypes.FILL_QUESTION_START,
-        payload: quest_data
+        payload: {quest_data, token}
     }
 )
 
-export const submitQuestionStart = (quest_data) => (
+export const submitQuestionStart = (id, token) => (
     {
         type: dashboardTypes.SUBMIT_QUESTION_START,
-        payload: quest_data
+        payload: {id, token}
     }
 )
 

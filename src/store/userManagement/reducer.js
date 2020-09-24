@@ -110,9 +110,9 @@ const userManagement = (state = initialState, action) => {
             break;
         case userManagementTypes.CHANGE_USER_ROLE_SUCCESSFUL: 
             let changeUserRole = [...state.userData];
-            let changeRoleFilter = changeUserRole.find((item)=> {
-                return item.id === action.payload.id
-            });
+            // let changeRoleFilter = changeUserRole.find((item)=> {
+            //     return item.id === action.payload.id
+            // });
             let index = changeUserRole.findIndex(item => item.id === action.payload.previd);
             // let userAfterChangeRole = {...changeRoleFilter, ...action.payload.data};
             changeUserRole[index] = action.payload.data;
@@ -149,6 +149,7 @@ const userManagement = (state = initialState, action) => {
                 sendEmailFail: true,
                 sendEmailError: action.payload
             }
+            break;
         case userManagementTypes.API_FAILED:
             state = {
                 ...state,

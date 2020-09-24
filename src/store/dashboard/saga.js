@@ -2,13 +2,10 @@ import { takeEvery, put, all, call } from 'redux-saga/effects';
 
 // Login Redux States
 import dashboardTypes from './actionTypes';
-import { apiError } from './actions';
-
 import { getQuestionaireUtil, endSurveyUtil, downloadSurveyUtil, 
         getUserQuestionaireUtil, getAdminQuestionaireUtil, fillQuestionUtil,
         submitQuestionUtil } from './../../helpers/dashboardManagementUtil';
 import {deleteQuestionnaireUtil} from './../../helpers/questionnaireUtil';
-import { yellow } from '@material-ui/core/colors';
 
 function* getQuestionaireSaga({payload: token}) {
     try {
@@ -20,7 +17,7 @@ function* getQuestionaireSaga({payload: token}) {
             yield put({type: dashboardTypes.GET_QUESTIONAIRE_DATA_SUCCESS, 
                         payload: response.Questions})
         } else {
-            yield put({type: dashboardTypes.API_FAILED, payload: response.data.message});
+            yield put({type: dashboardTypes.GET_QUESTIONAIRE_DATA_FAIL, payload: response.data.message});
         }
     } catch (error) {
         yield put({type: dashboardTypes.API_FAILED, payload: error});
@@ -40,7 +37,7 @@ function* getAdminQuestionaireSaga({payload: token}) {
             yield put({type: dashboardTypes.GET_ADMIN_QUESTIONAIRE_DATA_SUCCESS,
                         payload: response})
         } else {
-            yield put({type: dashboardTypes.API_FAILED, payload: response});
+            yield put({type: dashboardTypes.GET_ADMIN_QUESTIONAIRE_DATA_FAIL, payload: response});
         }
     } catch (error) {
         yield put({type: dashboardTypes.API_FAILED, payload: error});
@@ -60,7 +57,7 @@ function* getUserQuestionaireSaga({payload: token}) {
             yield put({type: dashboardTypes.GET_USER_QUESTIONAIRE_DATA_SUCCESS,
                         payload: response})
         } else {
-            yield put({type: dashboardTypes.API_FAILED, payload: response});
+            yield put({type: dashboardTypes.GET_USER_QUESTIONAIRE_DATA_FAIL, payload: response});
         }
     } catch (error) {
         yield put({type: dashboardTypes.API_FAILED, payload: error});
@@ -136,40 +133,46 @@ export function* watchDownloadSurvey() {
     yield takeEvery(dashboardTypes.DOWNLOAD_SURVEY_START, downloadSurveySaga)
 }
 
-function* fillQuestionStart({payload: quest_data}) {
+function* fillQuestionSaga({payload: quest_data}) {
     try {
-        console.log(quest_data)
-        const response = yield call(fillQuestionUtil, quest_data);
+        const data = quest_data.quest_data;
+        const token = quest_data.token;
+        const response = yield call(fillQuestionUtil, {data, token});
         console.log(response);
-        if (response) {
+        if (response.status === 200) {
             yield put({type: dashboardTypes.FILL_QUESTION_SUCCESS,
                     payload: response})
+        } else {
+            yield put({type: dashboardTypes.FILL_QUESTION_FAIl, payload: response.message})
         }
     } catch (error) {
-        yield put(apiError(error))
+        yield put({type: dashboardTypes.API_FAILED, payload: error})
     }
 }
 
 export function* watchFillQuestion() {
-    yield takeEvery(dashboardTypes.FILL_QUESTION_START, fillQuestionStart)
+    yield takeEvery(dashboardTypes.FILL_QUESTION_START, fillQuestionSaga)
 }
 
-function* submitQuestionStart({payload: quest_data}) {
+function* submitQuestionSaga({payload: quest_data}) {
     try {
-        console.log(quest_data)
-        const response = yield call(submitQuestionUtil, quest_data);
+        const id = quest_data.id;
+        const token = quest_data.token;
+        const response = yield call(submitQuestionUtil, {id, token});
         console.log(response);
-        if (response.data) {
+        if (response.status === 200) {
             yield put({type: dashboardTypes.SUBMIT_QUESTION_SUCCESS,
                     payload: response.data})
+        } else {
+            yield put({type: dashboardTypes.SUBMIT_QUESTION_FAIL, payload: response.message})
         }
     } catch (error) {
-        yield put(apiError(error))
+        yield put({type: dashboardTypes.API_FAILED, payload: error})
     }
 }
 
 export function* watchSubmitQuestion() {
-    yield takeEvery(dashboardTypes.SUBMIT_QUESTION_START, submitQuestionStart)
+    yield takeEvery(dashboardTypes.SUBMIT_QUESTION_START, submitQuestionSaga)
 }
 
 function* dashboardManagementSagas() {

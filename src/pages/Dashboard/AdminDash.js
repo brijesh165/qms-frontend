@@ -18,7 +18,7 @@ import Editable from 'react-x-editable';
 import Spinner from '../../components/Spinner/Spinner';
 
 import {
-    getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart, deleteQuestionnaireStart,
+    getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart, deleteSurveyStart,
     getUserQuestionaireStart, fillQuestionStart, submitQuestionStart
 } from './../../store/actions';
 
@@ -67,40 +67,54 @@ class AuthDash extends Component {
         this.props.getAdminQuestionaireStart(localStorageData.token);
     }
 
-    componentWillReceiveProps(nextProps) {
-        let optionGroupName = this.props.questions ? this.props.questions.map((item) => {
-            return { 'label': item.questname, 'value': item.questname }
-        }) : null
-        let optionGroupName2 = this.props.questions2 ? this.props.questions2.map((item) => {
-            return { 'label': item.questname, 'value': item.questname }
-        }) : null
-
-        if (this.props.questions) {
-            if (this.props.questions) {
-                this.setState({
-                    questions: nextProps.questions,
-                    optionGroup: optionGroupName
-                })
-            }
+    componentDidUpdate(prevProps) {
+        if (this.props.questions !== prevProps.questions) {
+            let optionGroupName = this.props.questions ? this.props.questions.map((item) => {
+                return { 'label': item.questname, 'value': item.questname }
+            }) : null
+    
+            this.setState({
+                questions: this.props.questions,
+                optionGroup: optionGroupName
+            })
         }
 
-        if (this.props.questions2) {
-            if (this.props.questions2) {
-                this.setState({
-                    questions2: nextProps.questions2,
-                    optionGroup2: optionGroupName2
-                })
-            }
+        if (this.props.questions2 !== prevProps.questions2) {
+            let optionGroupName2 = this.props.questions2 ? this.props.questions2.map((item) => {
+                return { 'label': item.questname, 'value': item.questname }
+            }) : null
+    
+            this.setState({
+                questions2: this.props.questions2,
+                optionGroup2: optionGroupName2
+            })
         }
 
-        if (this.props.loading && this.props.downloadSurvey) {
-            if (!this.props.loading && this.props.downloadSurvey) {
-                console.log('IN DOWNLOAD!!!', this.props.downloadSurvey);
-                this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
-                    this.surveyLink.link.click()
-                });
-            }    
+        if (this.props.downloadSurveySuccess !== prevProps.downloadSurveySuccess) {
+            this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
+                this.surveyLink.link.click()
+            });
         }
+
+        if (this.props.downloadFail !== prevProps.downloadFail) {
+            alert(this.props.downloadError);
+        }
+        if (this.props.endSurveyFail !== prevProps.endSurveyFail) {
+            alert(this.props.endSurveyError)
+        }
+        if (this.props.fillSurveyFail !== prevProps.fillSurveyFail) {
+            alert(this.props.fillSurveyError)
+        }
+        if (this.props.submitSurveyFail !== prevProps.submitSurveyFail) {
+            alert(this.props.submitSurveyError)
+        }
+        if (this.props.getAdminSurveyFail !== prevProps.getAdminSurveyFail) {
+            alert(this.props.getAdminSurveyError)
+        } 
+        if (this.props.getUserSurveyFail !== prevProps.getUserSurveyFail) {
+            alert(this.props.getUserSurveyError)
+        }
+
     }
 
 
@@ -134,7 +148,8 @@ class AuthDash extends Component {
     }
 
     onEndSurveyHandler = (questid) => {
-        this.props.endSurveyStart(questid)
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.endSurveyStart(questid, localStorageData.token)
     }
 
     onDownloadSurveyHandler = (questid) => {
@@ -144,7 +159,7 @@ class AuthDash extends Component {
 
     onDeleteHandler = (questid) => {
         const localStorageData = JSON.parse(localStorage.getItem('user'));
-        this.props.deleteQuestionnaireStart(questid, localStorageData.token);
+        this.props.deleteSurveyStart(questid, localStorageData.token);
     }
 
     // TABLE 3 AND 4
@@ -415,12 +430,9 @@ class AuthDash extends Component {
     }
 
     onSubmitHandler = (index) => {
-        let quest_id = this.state.questions[index]._id;
-        const data = {
-            "submit": "True",
-            id: quest_id
-        }
-        this.props.submitQuestionStart(data);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        let id = this.state.questions[index]._id;
+        this.props.submitQuestionStart(id, localStorageData.token);
     }
 
 
@@ -466,12 +478,12 @@ class AuthDash extends Component {
 
     onSaveHandler = () => {
         const filledQuestStart = {
-            "fillout": 'True',
             "response": this.state.filledChildren,
             "questname": this.state.form_name,
             "id": this.state.quest_id
         }
-        this.props.fillQuestionStart(filledQuestStart)
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.fillQuestionStart(filledQuestStart, localStorageData.token);
         this.setState({ fillFormToggle: !this.state.fillFormToggle })
     }
 
@@ -840,17 +852,30 @@ class AuthDash extends Component {
 const mapStateToProps = ({ Login, dashboardManagement }) => {
     return {
         role: Login.role,
-        survey: dashboardManagement.adminQuestionaireData,
+        survey: dashboardManagement.questionaireData,
         loading: dashboardManagement.loading,
         downloadSurvey: dashboardManagement.downloadSurvey,
         questions: dashboardManagement.userQuestionaireData,
         questions2: dashboardManagement.userQuestionaireData2,
-        dashboardError: dashboardManagement.dashboardError
+        dashboardError: dashboardManagement.dashboardError,
+        downloadSurveySuccess: dashboardManagement.downloadSurveySuccess,
+        downloadFail: dashboardManagement.downloadFail,
+        downloadError: dashboardManagement.downloadError,
+        endSurveyFail: dashboardManagement.endSurveyFail,
+        endSurveyError: dashboardManagement.endSurveyError,
+        submitSurveyFail: dashboardManagement.submitSurveyFail,
+        submitSurveyError: dashboardManagement.submitSurveyError,
+        fillSurveyFail: dashboardManagement.fillSurveyFail,
+        fillSurveyError: dashboardManagement.fillSurveyError,
+        getAdminSurveyFail: dashboardManagement.getAdminSurveyFail,
+        getAdminSurveyError: dashboardManagement.getAdminSurveyError,
+        getUserSurveyFail: dashboardManagement.getUserSurveyFail,
+        getUserSurveyError: dashboardManagement.getUserSurveyError,            
     }
 }
 
 
 export default withRouter(connect(mapStateToProps, {
-    deleteQuestionnaireStart, activateAuthLayout, getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart,
+    deleteSurveyStart, activateAuthLayout, getAdminQuestionaireStart, endSurveyStart, downloadSurveyStart,
     getUserQuestionaireStart, fillQuestionStart, submitQuestionStart
 })(AuthDash));

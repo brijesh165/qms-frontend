@@ -9,10 +9,20 @@ const initialState = {
     downloadSurveySuccess: false,
     downloadFail: false,
     downloadError: null,
+    getSurveyFail: false,
+    getSurveyError: null,
+    getAdminSurveyFail: false,
+    getAdminSurveyError: null,
+    getUserSurveyFail: false,
+    getUserSurveyError: null,
     deleteQuestionnaireFail: false,
     deleteQuestionnaireError: null,
     endSurveyFail: false,
     endSurveyError: null,
+    submitSurveyFail: false,
+    submitSurveyError: null,
+    fillSurveyFail: false,
+    fillSurveyError: null,
 }
 
 const dashboardManagement = (state = initialState, action) => {
@@ -32,6 +42,14 @@ const dashboardManagement = (state = initialState, action) => {
                 questionaireData: action.payload
             }
             break;
+        case dashboardTypes.GET_QUESTIONAIRE_DATA_FAIL:
+            state = {
+                ...state,
+                getSurveyFail: false,
+                getSurveyError: null,
+            }
+            break;
+
         case dashboardTypes.GET_ADMIN_QUESTIONAIRE_DATA_START:
             state = {
                 ...state,
@@ -44,11 +62,19 @@ const dashboardManagement = (state = initialState, action) => {
                 ...state,
                 loading: true,
                 dashboardError: null,
-                adminQuestionaireData: action.payload.questionare.Questions,
+                questionaireData: action.payload.questionare.Questions,
                 userQuestionaireData: action.payload.responses.questData,
                 userQuestionaireData2: action.payload.responses.respData
             }
             break;
+        case dashboardTypes.GET_ADMIN_QUESTIONAIRE_DATA_FAIL:
+            state = {
+                ...state,
+                getAdminSurveyFail: false,
+                getAdminSurveyError: null,
+            }
+            break;
+
         case dashboardTypes.GET_USER_QUESTIONAIRE_DATA_START:
             state = {
                 ...state,
@@ -63,6 +89,13 @@ const dashboardManagement = (state = initialState, action) => {
                 dashboardError: null,
                 userQuestionaireData: action.payload.questData,
                 userQuestionaireData2: action.payload.respData
+            }
+            break;
+        case dashboardTypes.GET_USER_QUESTIONAIRE_DATA_FAIL:
+            state = {
+                ...state,
+                getUserSurveyFail: false,
+                getUserSurveyError: null,
             }
             break;
 
@@ -120,7 +153,7 @@ const dashboardManagement = (state = initialState, action) => {
                 endSurveyError: action.payload
             }
             break;
-            
+
         case dashboardTypes.DOWNLOAD_SURVEY_START:
             state = {
                 ...state,
@@ -144,7 +177,6 @@ const dashboardManagement = (state = initialState, action) => {
         case dashboardTypes.FILL_QUESTION_START:
             state = {
                 ...state,
-                loading: false,
                 dashboardError: null,
             }
             break;
@@ -157,16 +189,21 @@ const dashboardManagement = (state = initialState, action) => {
 
             state = {
                 ...state,
-                loading: true,
                 dashboardError: null,
                 userQuestionaireData: unfilledData
+            }
+            break;
+        case dashboardTypes.FILL_QUESTION_FAIl:
+            state = {
+                ...state,
+                fillSurveyFail: true,
+                fillSurveyError: action.payload,
             }
             break;
 
         case dashboardTypes.SUBMIT_QUESTION_START:
             state = {
                 ...state,
-                loading: false,
                 dashboardError: null
             }
             break;
@@ -179,10 +216,16 @@ const dashboardManagement = (state = initialState, action) => {
 
             state = {
                 ...state,
-                loading: true,
                 dashboardError: null,
                 userQuestionaireData: removeFromUserSurvey,
                 userQuestionaireData2: updatedUserSurvetData2
+            }
+            break;
+        case dashboardTypes.SUBMIT_QUESTION_FAIL:
+            state = {
+                ...state,
+                submitSurveyFail: true,
+                submitSurveyError: action.payload
             }
             break;
         case dashboardTypes.API_FAILED:

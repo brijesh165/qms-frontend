@@ -34,6 +34,7 @@ class EndUserDash extends Component {
             success_dlg: '',
             error_dlg: '',
             masterList: [],
+            masterList2: [],
             questions: [],
             questions2: [],
             optionGroup: [],
@@ -59,7 +60,6 @@ class EndUserDash extends Component {
     }
 
     handleSelectGroup = (selectedGroup) => {
-        console.log('IN HANDLE SUBMIT : ', selectedGroup);
         const selectQuestion = [...this.state.masterList];
         let new_question = selectQuestion.filter((item) => {
             return item.questname === selectedGroup.value
@@ -68,28 +68,48 @@ class EndUserDash extends Component {
         this.setState({ questions: new_question })
     }
 
-    componentWillReceiveProps(nextProps) {
-        let optionGroupName = this.props.questions ? this.props.questions.map((item) => {
-            return { 'label': item.questname, 'value': item.questname }
-        }) : null;
-        let optionGroupName2 = this.props.questions2 ? this.props.questions2.map((item) => {
-            return { 'label': item.respname, 'value': item.respname }
-        }) : null;
+    handleSelectGroup2 = (selectedGroup2) => {
+        const selectQuestion = [...this.state.masterList2];
+        let new_question = selectQuestion.filter((item) => {
+            return item.respname === selectedGroup2.value
+        })
+        this.setState({ questions2: new_question })
+    }
 
-        if (this.props.questions) {
+    componentDidUpdate(prevProps) {
+        if (this.props.questions !== prevProps.questions) {
+            let optionGroupName = this.props.questions ? this.props.questions.map((item) => {
+                return { 'label': item.questname, 'value': item.questname }
+            }) : null;
+
             this.setState({
-                questions: nextProps.questions,
-                masterList: [...nextProps.questions],
+                questions: this.props.questions,
+                masterList: [...this.props.questions],
                 optionGroup: optionGroupName
             })
         }
 
 
-        if (this.props.questions2) {
+        if (this.props.questions2 !== prevProps.questions2) {
+            let optionGroupName2 = this.props.questions2 ? this.props.questions2.map((item) => {
+                return { 'label': item.respname, 'value': item.respname }
+            }) : null;
+
             this.setState({
-                questions2: nextProps.questions2,
+                questions2: this.props.questions2,
+                masterList2: [...this.props.questions2],
                 optionGroup2: optionGroupName2
             })
+        }
+
+        if (this.props.fillSurveyFail !== prevProps.fillSurveyFail) {
+            alert(this.props.fillSurveyError)
+        }
+        if (this.props.submitSurveyFail !== prevProps.submitSurveyFail) {
+            alert(this.props.submitSurveyError)
+        }
+        if (this.props.getUserSurveyFail !== prevProps.getUserSurveyFail) {
+            alert(this.props.getUserSurveyError)
         }
     }
 
@@ -361,12 +381,9 @@ class EndUserDash extends Component {
     }
 
     onSubmitHandler = (index) => {
-        let quest_id = this.state.questions[index]._id;
-        const data = {
-            "submit": "True",
-            id: quest_id
-        }
-        this.props.submitQuestionStart(data);
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        let id = this.state.questions[index]._id;
+        this.props.submitQuestionStart(id, localStorageData.token);
     }
 
 
@@ -412,17 +429,18 @@ class EndUserDash extends Component {
 
     onSaveHandler = () => {
         const filledQuestStart = {
-            "fillout": 'True',
             "response": this.state.filledChildren,
             "questname": this.state.form_name,
             "id": this.state.quest_id
         }
-        this.props.fillQuestionStart(filledQuestStart)
+        const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.props.fillQuestionStart(filledQuestStart, localStorageData.token);
         this.setState({ fillFormToggle: !this.state.fillFormToggle })
     }
 
     render() {
         const { selectedGroup } = this.state;
+        const { selectedGroup2 } = this.state;
         let table1 = <Spinner />
         if (this.props.loading) {
             table1 = this.state.questions.map((item, index) =>
@@ -432,7 +450,7 @@ class EndUserDash extends Component {
                         <Col xl='4 text-center mt-3' >{'Created At : ' + item.createdAt.slice(0, 10).replace(/-/g, "/")}</Col>
                         <Col xl='4 text-center mt-3' >{'Expires At : ' + item.dateexpired.slice(0, 10).replace(/-/g, "/")}</Col>
                         {/* <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col> */}
-                        <Col xl='1  text-center' >
+                        <Col xl='1  text-center mt-1' >
                             <UncontrolledDropdown  >
                                 <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
                                     <i className="mdi mdi-dots-vertical-circle" style={{ color: 'grey', fontSize: 25 }}></i>
@@ -457,7 +475,7 @@ class EndUserDash extends Component {
                         <Col xl='4 text-center mt-3' >{'Created At : ' + item.createdAt.slice(0, 10).replace(/-/g, "/")}</Col>
                         <Col xl='4 text-center mt-3' >{'Expires At : ' + item.dateexpired.slice(0, 10).replace(/-/g, "/")}</Col>
                         {/* <Col xl='2  text-center mt-2' ><i class="mdi mdi-cloud-download-outline cloud-download"></i></Col> */}
-                        <Col xl='1  text-center' >
+                        <Col xl='1  text-center mt-1' >
                             <UncontrolledDropdown  >
                                 <DropdownToggle className='toggler-custom' style={{ backgroundColor: 'transparent', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 0 }}>
                                     <i className="mdi mdi-dots-vertical-circle" style={{ color: 'grey', fontSize: 25 }}></i>
@@ -519,11 +537,10 @@ class EndUserDash extends Component {
                                 <h4 className="page-title">以前に記入したアンケート。</h4>
                                 <Col md='6 p-0 m-0'>
                                     <Select
-                                        value={selectedGroup}
-                                        onChange={this.handleSelectGroup}
+                                        value={selectedGroup2}
+                                        onChange={this.handleSelectGroup2}
                                         options={this.state.optionGroup2}
-                                        placeholder='アンケートを検索'
-                                    />
+                                        placeholder='アンケートを検索' />
                                 </Col>
                                 {/* <BreadcrumbItem active>Welcome to Qms Dashboard</BreadcrumbItem> */}
                             </Col>
@@ -664,7 +681,13 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
         loading: dashboardManagement.loading,
         questions: dashboardManagement.userQuestionaireData,
         questions2: dashboardManagement.userQuestionaireData2,
-        dashboardError: dashboardManagement.dashboardError
+        dashboardError: dashboardManagement.dashboardError,
+        submitSurveyFail: dashboardManagement.submitSurveyFail,
+        submitSurveyError: dashboardManagement.submitSurveyError,
+        fillSurveyFail: dashboardManagement.fillSurveyFail,
+        fillSurveyError: dashboardManagement.fillSurveyError,
+        getUserSurveyFail: dashboardManagement.getUserSurveyFail,
+        getUserSurveyError: dashboardManagement.getUserSurveyError,
     }
 }
 

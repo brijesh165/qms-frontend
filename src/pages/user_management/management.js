@@ -78,7 +78,7 @@ class UserManagement extends Component {
 
     handleEditorChange = (event) => {
         this.setState({
-            sendbody: event.blocks[0].text
+            sendbody: event.blocks
         })
     }
 
@@ -116,35 +116,6 @@ class UserManagement extends Component {
         this.props.activateAuthLayout();
         this.props.getUserListStart(localStorageData.token);
         this.props.getQuestionsStart(localStorageData.token);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        // if (nextProps.users) {
-        //     this.setState({
-        //         users: nextProps.users
-        //     })
-        // }
-
-        // if (nextProps.loading) {
-        //     this.setState({
-        //         loading: nextProps.loading
-        //     })
-        // }
-
-        // if (nextProps.questions) {
-        //     let optionGroup = this.props.questions ? this.props.questions.map((item) => {
-        //         console.log('ITEM : ', item);
-        //         return { 'id': item.id, 'label': item.questname, 'value': item.questions }
-        //     }) : null;
-
-        //     this.setState({
-        //         optionGroup: optionGroup
-        //     })
-        // }
-
-        // if (nextProps.sendEmailStatus) {
-        //     this.resetState()
-        // }
     }
 
     componentDidUpdate(prevProps) {
@@ -200,26 +171,6 @@ class UserManagement extends Component {
         }
     }
 
-    // setOptionGroup(nextProps) {
-    //     let newOptionGroup = [];
-    //     let newOptions;
-    //     for (let i = 0; i < nextProps.length; i++) {
-    //         newOptions = {
-    //             id: nextProps[i].id,
-    //             label: nextProps[i].questname,
-    //             value: nextProps[i].questions
-    //         }
-
-    //         newOptionGroup.push(newOptions);
-    //     }
-
-    //     this.setState({
-    //         optionGroup: newOptionGroup
-    //     }, () => {
-    //         localStorage.setItem('optionGroup', JSON.stringify(newOptionGroup))
-    //     })
-    // }
-
     componentWillUnmount() {
         this.setState = (state, callback) => {
             return;
@@ -238,12 +189,6 @@ class UserManagement extends Component {
             let newEmail = prevState.indexOf(item.username);
             prevState.splice(newEmail, 1);
             console.log(prevState);
-            // let new_mails = [...this.state.selectedEmail].map(itm => {
-            //     if (itm !== item.useremail) {
-            //         return itm
-            //     }
-            // })
-            // console.log(new_mails);
             this.setState({ selectedEmail: prevState })
         }
     }

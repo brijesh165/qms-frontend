@@ -75,6 +75,7 @@ class Questionnaire extends Component {
         this.setState({ modal_edit: true })
         let question = this.props.questions[index];
         let questionName = this.props.questions[index].questname
+        console.log('REEDIT QUESTION : ', question.questions);
         this.setState({
             questid: this.props.questions[index].id
         });
@@ -320,6 +321,13 @@ class Questionnaire extends Component {
         this.setState({ children: new_children });
     }
 
+    handleRequired = (parentIndex, childIndex) => {
+        let new_children = [...this.state.children];
+        new_children[parentIndex][childIndex].required = !new_children[parentIndex][childIndex].required;
+
+        this.setState({ children: new_children });    
+    }
+
     componentDidMount() {
         const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.activateAuthLayout();
@@ -404,10 +412,15 @@ class Questionnaire extends Component {
             type: { label: "ラジオボタン（1つ選択）", value: 1 },
             question: "",
             options: [''],
-            answers: ['']
+            answers: [''],
+            required: false
         })
         console.log(new_children, 'ckckckckckck')
         this.setState({ children: new_children })
+    }
+
+    onRequired = () => {
+
     }
 
     onReEditChangeQuestion = (e, childIndex, parentIndex) => {
@@ -417,6 +430,7 @@ class Questionnaire extends Component {
     }
 
     onChangeQuestion = (e, childIndex, parentIndex) => {
+        console.log('ON CHANGE QUESTION : ');
         let children = [...this.state.children];
         children[parentIndex][childIndex].question = e.target.value
         this.setState({ children: children })
@@ -738,7 +752,8 @@ class Questionnaire extends Component {
                                                             </Col>
                                                             <Col xs='2' style={{ marginTop: 20 }}>
                                                                 <Label check>
-                                                                    <Input type="checkbox" />
+                                                                    {console.log('REQUIRED ?? : ',child.required)}
+                                                                    <Input type="checkbox" checked={child.required} />
                                                             必須
                                                         </Label>
                                                             </Col>
@@ -891,7 +906,7 @@ class Questionnaire extends Component {
                                                             </Col>
                                                             <Col xs='2' style={{ marginTop: 20 }}>
                                                                 <Label check>
-                                                                    <Input type="checkbox" />
+                                                                    <Input type="checkbox" onClick={() => this.handleRequired(index, childIndex)}/>
                                                             必須
                                                         </Label>
                                                             </Col>

@@ -119,7 +119,7 @@ const fillQuestionUtil = (data) => {
 const submitQuestionUtil = (data) => {
     try {
         console.log('DASHBOARD MANAGEMENT | SUBMIT QUESTION DATA', data);
-        return axios.post(`http://localhost:5000/dashboard/submit-response`, data.id, { params: { token: data.token } })
+        return axios.post(`http://localhost:5000/dashboard/submit-response`, {"questid": data.id}, { params: { token: data.token } })
             .then(response => {
                 console.log('Profile Utils : ', response);
                 if (response.status === 400 || response.status === 500)

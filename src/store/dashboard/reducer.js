@@ -209,10 +209,10 @@ const dashboardManagement = (state = initialState, action) => {
             break;
         case dashboardTypes.SUBMIT_QUESTION_SUCCESS:
             let submitQuest = [...state.userQuestionaireData];
-            let submitedQuest = submitQuest.find((item) => item.id === action.payload.id);
+            let submitedQuest = submitQuest.find((item) => item.id === action.payload.data.id);
             let removeFromUserSurvey = submitQuest.filter((item) => item.id !== submitedQuest.id)
             let newUserSurveyData2 = [...state.userQuestionaireData2];
-            let updatedUserSurvetData2 = [...newUserSurveyData2, action.payload];
+            let updatedUserSurvetData2 = [...newUserSurveyData2, action.payload.data.data];
 
             state = {
                 ...state,

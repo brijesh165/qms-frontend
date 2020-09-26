@@ -26,6 +26,8 @@ import { connect } from 'react-redux';
 import 'chartist/dist/scss/chartist.scss';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { Editor } from 'react-draft-wysiwyg';
+import draftToHtml from 'draftjs-to-html';
+import { convertToRaw } from 'draft-js';
 import Select from 'react-select';
 
 import EditToggler from '../../components/userEditToggler';
@@ -77,8 +79,10 @@ class UserManagement extends Component {
     }
 
     handleEditorChange = (event) => {
+        // console.log(draftToHtml(convertToRaw(event)));
+        console.log('EVENT : ', event);
         this.setState({
-            sendbody: event.blocks
+            sendbody: event
         })
     }
 
@@ -96,13 +100,16 @@ class UserManagement extends Component {
         //     this.state.selectedGroup.label, this.state.selectedGroup.id, this.state.selectedEmail,
         //     this.state.sendbody);
         const localStorageData = JSON.parse(localStorage.getItem('user'));
+        const sendbody = draftToHtml(convertToRaw(this.state.sendbody.getCurrentContent()));
+        console.log(draftToHtml(convertToRaw(this.state.sendbody.getCurrentContent())));
+
         this.props.sendemailstart({
             "sendsubject": this.state.emailsubject,
             "sendusers": this.state.selectedEmail,
             "questname": this.state.selectedGroup.label,
             "questid": this.state.selectedGroup.id,
             "expirydate": this.state.expiresat,
-            "sendbody": this.state.sendbody,
+            "sendbody": sendbody,
             "send": "True",
         }, localStorageData.token);
     }
@@ -433,7 +440,8 @@ class UserManagement extends Component {
                                     }
                                     name="sendbody"
                                     value={this.state.sendbody}
-                                    onChange={this.handleEditorChange}
+                                    editorState={this.state.sendbody}
+                                    onEditorStateChange={this.handleEditorChange}
                                 />
                             </Col>
                             <Col xl='12 pull-right mt-4'>

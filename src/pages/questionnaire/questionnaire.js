@@ -72,6 +72,7 @@ class Questionnaire extends Component {
     }
 
     toggleEditModal = (index) => {
+        console.log('IN EDIT TOGGLE')
         this.setState({ modal_edit: true })
         let question = this.props.questions[index];
         let questionName = this.props.questions[index].questname
@@ -373,7 +374,7 @@ class Questionnaire extends Component {
         }
         const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.reeditQuestionnaireStart(question_data, localStorageData.token);
-        this.setState({ modal_edit: false })
+        this.setState({ modal_large: false })
         if (this.props.success) {
             this.setState(prevState => ({
                 questions: [...prevState.questions, {
@@ -417,10 +418,6 @@ class Questionnaire extends Component {
         })
         console.log(new_children, 'ckckckckckck')
         this.setState({ children: new_children })
-    }
-
-    onRequired = () => {
-
     }
 
     onReEditChangeQuestion = (e, childIndex, parentIndex) => {
@@ -628,36 +625,11 @@ class Questionnaire extends Component {
                                     <CardBody style={{ padding: 10 }}>
                                         <Row>
                                             <Col className="mt-3" md='12 text-center'>
-                                                {/* <p>
-                                                    <Editable
-                                                        name="username"
-                                                        dataType="text"
-                                                        mode="inline"
-                                                        title="Please enter username"
-                                                        validate={(value) => {
-                                                            if (!value) {
-                                                                return 'Required';
-                                                            } else {
-                                                                let questions = [...this.state.questions]
-                                                                questions[ind].name = value
-                                                                this.setState({ questions: questions })
-                                                            }
-                                                        }}
-                                                        value={item.name.slice(0, 20)}
-                                                    />
-                                                </p> */}
                                                 <span>{item.questname.slice(0,20)}</span>
                                                 <br />
                                                 <span>{item.createdAt.slice(0,10).replace(/-/g, "/")}</span>
                                             </Col>
                                             <Col md='4 p-0 mt-3'>
-                                                {/* <Switch
-                                                    uncheckedIcon={<Offsymbol />}
-                                                    checkedIcon={<OnSymbol />}
-                                                    onColor="#626ed4"
-                                                    onChange={() => this.setState({ switch1: ind })}
-                                                    checked={this.state.switch1 == ind}
-                                                    /> */}
                                             </Col>
 
                                         </Row>
@@ -674,7 +646,7 @@ class Questionnaire extends Component {
                     <Modal className="modal-lg" isOpen={this.state.modal_edit} toggle={this.tog_large} >
                         <div className="modal-header">
                             <h5 className="modal-title mt-0" id="myLargeModalLabel">新しいアンケートを作成しています。</h5>
-                            <button onClick={() => this.setState({ modal_edit: false })} type="button" className="close" data-dismiss="modal" aria-label="Close">
+                            <button onClick={() => this.setState({ modal_edit: false, children: [[],], form_name: '' })} type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -752,7 +724,6 @@ class Questionnaire extends Component {
                                                             </Col>
                                                             <Col xs='2' style={{ marginTop: 20 }}>
                                                                 <Label check>
-                                                                    {console.log('REQUIRED ?? : ',child.required)}
                                                                     <Input type="checkbox" checked={child.required} />
                                                             必須
                                                         </Label>
@@ -819,17 +790,18 @@ class Questionnaire extends Component {
                             </Col>
                         </ModalBody>
                         <ModalFooter>
-                            <Button type="button" color="secondary" onClick={() => this.setState({ modal_edit: false })} className="waves-effect">閉じる</Button>
+                            <Button type="button" color="secondary" onClick={() => this.setState({ modal_edit: false, children: [[],], form_name: '' })} className="waves-effect">閉じる</Button>
                             <Button onClick={this.onReEditSubmit} type="button" color="primary" className="waves-effect waves-light">変更を保存</Button>
                         </ModalFooter>
                     </Modal>
 
 
                     {/* Create Survay PopUP */}
+                    {console.log('CREATE SURVEY : ', this.state.modal_large, this.state.children)}
                     <Modal className="modal-lg" isOpen={this.state.modal_large} toggle={this.tog_large} >
                         <div className="modal-header">
                             <h5 className="modal-title mt-0" id="myLargeModalLabel">新しいアンケートを作成しています。</h5>
-                            <button onClick={() => this.setState({ modal_large: false })} type="button" className="close" data-dismiss="modal" aria-label="Close">
+                            <button onClick={() => this.setState({ modal_large: false, children: [[],], form_name: '' })} type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -972,7 +944,7 @@ class Questionnaire extends Component {
                             </Col>
                         </ModalBody>
                         <ModalFooter>
-                            <Button type="button" color="secondary" onClick={() => this.setState({ modal_large: false })} className="waves-effect">閉じる</Button>
+                            <Button type="button" color="secondary" onClick={() => this.setState({ modal_large: false, children: [[],], form_name: '' })} className="waves-effect">閉じる</Button>
                             <Button onClick={this.onSubmitForm} type="button" color="primary" className="waves-effect waves-light">変更を保存</Button>
                         </ModalFooter>
                     </Modal>

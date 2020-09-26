@@ -136,6 +136,7 @@ export function* watchDownloadSurvey() {
 function* fillQuestionSaga({payload: quest_data}) {
     try {
         const data = quest_data.quest_data;
+        console.log('QUEST DATA : ', quest_data.quest_data);
         const token = quest_data.token;
         const response = yield call(fillQuestionUtil, {data, token});
         console.log(response);
@@ -162,7 +163,7 @@ function* submitQuestionSaga({payload: quest_data}) {
         console.log(response);
         if (response.status === 200) {
             yield put({type: dashboardTypes.SUBMIT_QUESTION_SUCCESS,
-                    payload: response.data})
+                    payload: response})
         } else {
             yield put({type: dashboardTypes.SUBMIT_QUESTION_FAIL, payload: response.message})
         }

@@ -124,7 +124,7 @@ const submitQuestionUtil = (data) => {
                 console.log('Profile Utils : ', response);
                 if (response.status === 400 || response.status === 500)
                     throw response.data;
-                return response.data;
+                return response;
             }).catch(err => {
                 console.log('Profile Util error : ', err);
                 return err.response.data;

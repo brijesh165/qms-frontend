@@ -60,8 +60,8 @@ class UserManagement extends Component {
 
     resetState = () => {
         this.setState({
-            sendsubject: '',
-            expirydate: '',
+            emailsubject: '',
+            expiresat: '',
             sendbody: ''
         })
     }
@@ -79,8 +79,6 @@ class UserManagement extends Component {
     }
 
     handleEditorChange = (event) => {
-        // console.log(draftToHtml(convertToRaw(event)));
-        console.log('EVENT : ', event);
         this.setState({
             sendbody: event
         })

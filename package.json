@@ -60,6 +60,7 @@
     "react-select": "^3.0.4",
     "react-sparklines": "^1.7.0",
     "react-switch": "^5.0.1",
+    "react-table": "^7.5.1",
     "react-x-editable": "0.0.10-beta",
     "reactstrap": "^8.0.1",
     "redux": "^4.0.4",

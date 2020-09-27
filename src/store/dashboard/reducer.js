@@ -160,6 +160,7 @@ const dashboardManagement = (state = initialState, action) => {
             }
             break;
         case dashboardTypes.DOWNLOAD_SURVEY_SUCCESS:
+            console.log('DOWNLOAD REDUCER  : ', action.payload);
             state = {
                 ...state,
                 downloadSurveySuccess: true,

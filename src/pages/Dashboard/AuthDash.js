@@ -5,6 +5,7 @@ import {
 import { activateAuthLayout } from '../../store/actions';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import ReactTable from "react-table";
 import { CSVLink } from 'react-csv';
 
 import { getQuestionaireStart, endSurveyStart, downloadSurveyStart, deleteSurveyStart } from './../../store/actions';
@@ -15,7 +16,6 @@ import questions from '../../data/sample.json'
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Spinner from './../../components/Spinner/Spinner';
-import dashboardManagementSagas from '../../store/dashboard/saga';
 
 class AuthDash extends Component {
     constructor(props) {
@@ -30,6 +30,7 @@ class AuthDash extends Component {
             editQuestionModal: false,
             selectedQuestion: '',
             downloadSurveyData: [],
+            downloadFilename: ''
         };
         this.surveyLink = React.createRef();
     }
@@ -48,7 +49,16 @@ class AuthDash extends Component {
         }
 
         if (this.props.downloadSurveySuccess !== prevProps.downloadSurveySuccess) {
-            this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
+            console.log('DOWNLOAD DATA : ', this.props.downloadSurvey[0].response)
+            const data = [
+                { firstname: "Ahmed", lastname: "Tomi", email: "ah@smthing.co.com" },
+                { firstname: "Raed", lastname: "Labes", email: "rl@smthing.co.com" },
+                { firstname: "Yezzi", lastname: "Min l3b", email: "ymin@cocococo.com" }
+              ]
+            this.setState({
+                downloadSurveyData: data,
+                downloadFilename: this.props.downloadSurvey[0].respname
+            }, () => {
                 this.surveyLink.link.click()
             });
         }
@@ -62,7 +72,7 @@ class AuthDash extends Component {
         }
         if (this.props.getSurveyFail !== prevProps.getSurveyFail) {
             alert(this.props.getSurveyError)
-        } 
+        }
 
     }
 
@@ -208,12 +218,14 @@ class AuthDash extends Component {
                         </Scrollbars>
                     </Row>
 
-                    <CSVLink style={{ textDecoration: 'none' }}
-                        data={this.state.downloadSurveyData}
-                        ref={(r) => this.surveyLink = r}
-                        filename={'questions.csv'}
-                        target="_blank" />
-
+                    {console.log('BEFORE DOWNLOAD : ', this.state.downloadSurveyData)}
+                    <div>
+                        <CSVLink style={{ textDecoration: 'none' }}
+                            data={this.state.downloadSurveyData}
+                            ref={(r) => this.surveyLink = r}
+                            filename={this.state.downloadFilename + '.csv'}
+                        />
+                    </div>
                     {surveyTable}
                     {
                         this.state.confirm_both &&
@@ -248,7 +260,7 @@ const mapStateToProps = ({ Login, dashboardManagement }) => {
         endSurveyFail: dashboardManagement.endSurveyFail,
         endSurveyError: dashboardManagement.endSurveyError,
         getSurveyFail: dashboardManagement.getSurveyFail,
-        getSurveyError: dashboardManagement.getSurveyError,    
+        getSurveyError: dashboardManagement.getSurveyError,
     }
 }
 

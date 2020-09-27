@@ -15,7 +15,7 @@ import {
     Button,
     Modal,
     ModalBody,
-    Spinner, 
+    Spinner,
     Alert
 } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
@@ -51,7 +51,8 @@ class UserManagement extends Component {
             expiresat: '',
             sendbody: '',
             optionGroup: [],
-            loading: false
+            loading: false,
+            usercompanyName: ''
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleEmailSubmit = this.handleEmailSubmit.bind(this);
@@ -118,6 +119,9 @@ class UserManagement extends Component {
 
     componentDidMount() {
         const localStorageData = JSON.parse(localStorage.getItem('user'));
+        this.setState({
+            usercompany: localStorageData.usercompany
+        })
         this.props.activateAuthLayout();
         this.props.getUserListStart(localStorageData.token);
         this.props.getQuestionsStart(localStorageData.token);
@@ -163,7 +167,7 @@ class UserManagement extends Component {
             alert(this.props.deleteUserError)
         }
 
-        if  (this.props.changeUserRoleFail !== prevProps.changeUserRoleFail) {
+        if (this.props.changeUserRoleFail !== prevProps.changeUserRoleFail) {
             alert(this.props.changeUserRoleError)
         }
 
@@ -305,7 +309,7 @@ class UserManagement extends Component {
                         <Col xl="12 text-center">
                             <Card>
                                 <CardBody>
-                                    {/* <h4 className="mt-0 header-title mb-4">株式会社 島根情報処理センターのユーザーリスト</h4> */}
+                                    <h4 className="mt-0 header-title mb-4">Welcome to {this.state.usercompany} User-Management Page</h4>
                                     <div className="table-responsive" style={{
                                         maxHeight: '400px',
                                         overflowY: 'auto'
@@ -469,7 +473,7 @@ const mapStateToProps = ({ Login, userManagement }) => {
         addUserFail: userManagement.addUserFail,
         addUserError: userManagement.addUserError,
         changeUserRoleFail: userManagement.changeUserRoleFail,
-        changeUserRoleError: userManagement.changeUserRoleError, 
+        changeUserRoleError: userManagement.changeUserRoleError,
         deleteUserFail: userManagement.deleteUserFail,
         deleteUserError: userManagement.deleteUserError
     }

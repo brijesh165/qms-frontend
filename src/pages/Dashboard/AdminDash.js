@@ -91,9 +91,17 @@ class AuthDash extends Component {
         }
 
         if (this.props.downloadSurveySuccess !== prevProps.downloadSurveySuccess) {
-            this.setState({ downloadSurveyData: this.props.downloadSurvey }, () => {
-                this.surveyLink.link.click()
-            });
+            console.log('DOWNLOAD DATA : ', this.props.downloadSurvey[0].response)
+            const downloadResp = this.props.downloadSurvey[0].response;
+            let anotherObj = downloadResp[0].map(function(item){
+                return Object.values({question: item.question, options: item.options.join("|"), answers: item.answers.join("|")})
+
+            })
+            anotherObj.unshift(['Question', 'Options', 'Answers']);
+            console.log('Another Obj : ', anotherObj);
+            let csvContent = "data:text/csv;charset=utf-8," + anotherObj.map(e => e.join(",")).join("\n");
+            var encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
         }
 
         if (this.props.downloadFail !== prevProps.downloadFail) {

@@ -16,6 +16,7 @@ import questions from '../../data/sample.json'
 import 'chartist/dist/scss/chartist.scss';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import Spinner from './../../components/Spinner/Spinner';
+import { object } from 'prop-types';
 
 class AuthDash extends Component {
     constructor(props) {
@@ -29,10 +30,7 @@ class AuthDash extends Component {
             changeName: null,
             editQuestionModal: false,
             selectedQuestion: '',
-            downloadSurveyData: [],
-            downloadFilename: ''
         };
-        this.surveyLink = React.createRef();
     }
 
     componentDidMount() {
@@ -50,17 +48,15 @@ class AuthDash extends Component {
 
         if (this.props.downloadSurveySuccess !== prevProps.downloadSurveySuccess) {
             console.log('DOWNLOAD DATA : ', this.props.downloadSurvey[0].response)
-            const data = [
-                { firstname: "Ahmed", lastname: "Tomi", email: "ah@smthing.co.com" },
-                { firstname: "Raed", lastname: "Labes", email: "rl@smthing.co.com" },
-                { firstname: "Yezzi", lastname: "Min l3b", email: "ymin@cocococo.com" }
-              ]
-            this.setState({
-                downloadSurveyData: data,
-                downloadFilename: this.props.downloadSurvey[0].respname
-            }, () => {
-                this.surveyLink.link.click()
-            });
+            const downloadResp = this.props.downloadSurvey[0].response;
+            let anotherObj = downloadResp[0].map(function(item){
+                return Object.values({question: item.question, options: item.options.join("|"), answers: item.answers.join("|")})
+            })
+            anotherObj.unshift(['Question', 'Options', 'Answers']);
+            console.log('Another Obj : ', anotherObj);
+            let csvContent = "data:text/csv;charset=utf-8," + anotherObj.map(e => e.join(",")).join("\n");
+            var encodedUri = encodeURI(csvContent);
+            window.open(encodedUri);
         }
 
         if (this.props.downloadFail !== prevProps.downloadFail) {
@@ -218,14 +214,6 @@ class AuthDash extends Component {
                         </Scrollbars>
                     </Row>
 
-                    {console.log('BEFORE DOWNLOAD : ', this.state.downloadSurveyData)}
-                    <div>
-                        <CSVLink style={{ textDecoration: 'none' }}
-                            data={this.state.downloadSurveyData}
-                            ref={(r) => this.surveyLink = r}
-                            filename={this.state.downloadFilename + '.csv'}
-                        />
-                    </div>
                     {surveyTable}
                     {
                         this.state.confirm_both &&

@@ -443,7 +443,9 @@ class Questionnaire extends Component {
         children[parentIndex][childIndex].question = e.target.value
         this.setState({ children: children })
     }
+
     splitChildren = (parentIndex, childIndex) => {
+        console.log('IN SPLIT CHILDREN');
         let new_children = [...this.state.children];
         if (new_children[parentIndex].length == 1) {
             return;
@@ -455,11 +457,13 @@ class Questionnaire extends Component {
         this.setState({ children: new_children })
 
     }
+
     onSaveOptions = (option, parentIndex, childIndex, optionIndex) => {
         let new_children = [...this.state.children];
         new_children[parentIndex][childIndex].options[optionIndex] = option
         this.setState({ children: new_children })
     }
+
     addOption = (parentIndex, childIndex) => {
         let new_children = [...this.state.children];
         new_children[parentIndex][childIndex].options.push('')

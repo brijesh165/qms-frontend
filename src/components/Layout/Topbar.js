@@ -115,14 +115,14 @@ class Topbar extends Component {
                                     </DropdownMenu>
                                 </Dropdown>
                             </li> */}
-                            <li className="dropdown notification-list list-inline-item d-none d-md-inline-block mr-1">
+                            {/* <li className="dropdown notification-list list-inline-item d-none d-md-inline-block mr-1">
                                 <form role="search" className="app-search">
                                     <div className="form-group mb-0">
                                         <input type="text" className="form-control" placeholder="アンケートを検索" />
                                         <button type="submit"><i className="fa fa-search"></i></button>
                                     </div>
                                 </form>
-                            </li>
+                            </li> */}
                          
                         </ul>
                     </nav>

@@ -47,12 +47,48 @@ class AuthDash extends Component {
         }
 
         if (this.props.downloadSurveySuccess !== prevProps.downloadSurveySuccess) {
-            console.log('DOWNLOAD DATA : ', this.props.downloadSurvey[0].response)
-            const downloadResp = this.props.downloadSurvey[0].response;
-            let anotherObj = downloadResp[0].map(function(item){
-                return Object.values({question: item.question, options: item.options.join("|"), answers: item.answers.join("|")})
+            console.log('DOWNLOAD DATA : ', this.props.downloadSurvey);
+            // const downloadResp = this.props.downloadSurvey.map((item, index) => {
+            //     console.log('IN MAP : ', item.response[index][index]);
+            //     return {"question": item.response[index][index].question, 
+            //             "options": item.response[index][index].options,
+            //             "answers": item.response[index][index].answers
+            //         }
+            // });
+            let downloadResp = [];
+
+            for (let i = 0; i < this.props.downloadSurvey.length; i++) {
+                // for (let j=0; j < this.props.downloadSurvey[i].response.length; j++) {
+                //     console.log('IN LOOP : ', this.props.downloadSurvey[i].response[j][i]);
+                //     let resp = {
+                //         "question": this.props.downloadSurvey[i].response[j][i].question,                
+                //         "options": this.props.downloadSurvey[i].response[j][i].options,                
+                //         "answers": this.props.downloadSurvey[i].response[j][i].answers,
+                //         "username": this.props.downloadSurvey[i].username        
+                //     }
+                //     downloadResp.push(resp);
+                // }
+
+                for (let j=0; j<this.props.downloadSurvey[i].response[0].length; j++){
+                    let resp = {
+                        "question": this.props.downloadSurvey[i].response[0][j].question,
+                        "options": this.props.downloadSurvey[i].response[0][j].options,
+                        "answers": this.props.downloadSurvey[i].response[0][j].answers,
+                        "username": this.props.downloadSurvey[i].username
+                    }
+                    downloadResp.push(resp);
+                }
+            }
+            console.log('DOWNLOAD RESP : ', downloadResp);
+            let anotherObj = downloadResp.map(function (item) {
+                return Object.values({
+                    username: item.username.replace(/,/g, ''),
+                    question: item.question.replace(/,/g, ''),
+                    answers: item.answers.join("|").replace(/,/g, ''),
+                    options: item.options.join("|").replace(/,/g, ''),
+                })
             })
-            anotherObj.unshift(['Question', 'Options', 'Answers']);
+            anotherObj.unshift(['User Name', 'Question', 'Answers', 'Options']);
             console.log('Another Obj : ', anotherObj);
             let csvContent = "data:text/csv;charset=utf-8," + anotherObj.map(e => e.join(",")).join("\n");
             var encodedUri = encodeURI(csvContent);

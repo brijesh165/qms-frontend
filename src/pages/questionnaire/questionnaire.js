@@ -732,7 +732,7 @@ class Questionnaire extends Component {
                                                                         child.type.value == 1 || child.type.value == 2 ?
                                                                             child.options.map((it, optionIndex) =>
                                                                                 <Input className='mt-2' type="select" name="ddlCreditCardType" id="ddlCreditCardType"
-                                                                                onChange={(e) => this.handleWhere(e, index, childIndex, optionIndex)}
+                                                                                    onChange={(e) => this.handleWhere(e, index, childIndex, optionIndex)}
                                                                                 >
                                                                                     {
                                                                                         item.map((itm, i) =>
@@ -745,7 +745,7 @@ class Questionnaire extends Component {
                                                                             )
                                                                             :
                                                                             <Input className='mt-2' type="select" name="ddlCreditCardType" id="ddlCreditCardType"
-                                                                            onChange={(e) => this.handleWhere(e, index, childIndex, 0)}
+                                                                                onChange={(e) => this.handleWhere(e, index, childIndex, 0)}
                                                                             >
                                                                                 {
                                                                                     item.map((itm, i) =>
@@ -765,8 +765,8 @@ class Questionnaire extends Component {
                                                                 </Col>
                                                                 <Col xs='2' style={{ marginTop: 20 }}>
                                                                     <Label check>
-                                                                        <Input type="checkbox" checked={child.required} onClick={() => this.handleRequired(index, childIndex)} />
-                                                            必須
+                                                                        {/* <Input type="checkbox" checked={child.required} onClick={() => this.handleRequired(index, childIndex)} /> */}
+                                                            {/* 必須 */}
                                                         </Label>
                                                                 </Col>
                                                                 <Col xs='1' style={{ marginTop: 20 }}>
@@ -922,9 +922,9 @@ class Questionnaire extends Component {
                                                             </Col>
                                                             <Col xs='2' style={{ marginTop: 20 }}>
                                                                 <Label check>
-                                                                    <Input type="checkbox" onClick={() => this.handleRequired(index, childIndex)} />
-                                                            必須
-                                                        </Label>
+                                                                    {/* <Input type="checkbox" onClick={() => this.handleRequired(index, childIndex)} /> */}
+                                                                    {/* 必須 */}
+                                                                </Label>
                                                             </Col>
                                                             <Col xs='1' style={{ marginTop: 20 }}>
 

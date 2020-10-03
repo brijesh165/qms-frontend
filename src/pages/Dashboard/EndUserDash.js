@@ -124,7 +124,7 @@ class EndUserDash extends Component {
         switch (type.value) {
             case 1:
                 return (
-                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                    <Row className="text-center ml-1" style={{ width: '250%' }} id={parentIndex}>
                         {options.map((item, index) => (
                             <Row className='text-center'>
                                 <div className="custom-control custom-radio custom-control-inline ml-2 mt-3">
@@ -147,7 +147,7 @@ class EndUserDash extends Component {
                 )
             case 2:
                 return (
-                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                    <Row className="text-center ml-1" style={{ width: '250%' }} id={parentIndex}>
                         {options.map((item, index) => (
                             <Row className='text-center'>
                                 <div className="custom-control custom-radio custom-control-inline ml-4 mt-4">
@@ -165,7 +165,7 @@ class EndUserDash extends Component {
                 )
             case 3:
                 return (
-                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                    <Row className="text-center ml-1" style={{ width: '250%' }} id={parentIndex}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div className="custom-control custom-radio custom-control-inline ml-2 mt-3">
                                 {
@@ -186,7 +186,7 @@ class EndUserDash extends Component {
                 )
             case 4:
                 return (
-                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                    <Row className="text-center ml-1" style={{ width: '250%' }} id={parentIndex}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
                                 <Input type="select"
@@ -207,7 +207,7 @@ class EndUserDash extends Component {
                 )
             case 5:
                 return (
-                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                    <Row className="text-center ml-1" style={{ width: '250%' }} id={parentIndex}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
                                 <Input type="text" value={answers[0] === "" ? this.state.q5InputValue : answers[0]}
@@ -220,7 +220,7 @@ class EndUserDash extends Component {
                 )
             case 6:
                 return (
-                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                    <Row className="text-center ml-1" style={{ width: '250%' }} id={parentIndex}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
                                 {
@@ -278,7 +278,7 @@ class EndUserDash extends Component {
                 )
             case 7:
                 return (
-                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                    <Row className="text-center ml-1" style={{ width: '250%' }} id={parentIndex}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
                                 {
@@ -334,7 +334,7 @@ class EndUserDash extends Component {
                 )
             case 8:
                 return (
-                    <Row className="text-center ml-1" style={{ width: '250%' }}>
+                    <Row className="text-center ml-1" style={{ width: '250%' }} id={parentIndex}>
                         <Row className='text-center' style={{ width: '100%' }}>
                             <div style={{ width: '100%' }} className="custom-control custom-radio custom-control-inline mt-3 ml-2 mb-1 p-0">
                                 <Input type="textarea" value={answers[0] === "" ? this.state.q8InputValue : answers[0]}
@@ -386,35 +386,122 @@ class EndUserDash extends Component {
         this.props.submitQuestionStart(id, localStorageData.token);
     }
 
+    highlightQuestion = (index) => {
+        let id = document.getElementById("question-item-"+index);
+        id.style.border = "2px solid red";
+        setTimeout(() => {
+            id.style.border = "1px solid black"
+        }, 2000);
+    }
+
+    isNumeric = (str) => {
+        if (typeof str != "string") return false // we only process strings!  
+        return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+               !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+      }
 
     onSaveOptions = (option, parentIndex, childIndex, optionIndex, optionChildIndex) => {
         let selected_children = [...this.state.filledChildren];
         if (selected_children[parentIndex][childIndex].type.value === 1) {
             this.setState({ radioButton: option.target.value })
             selected_children[parentIndex][childIndex].answers[0] = option.target.name;
+            let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+            if (this.isNumeric(gotoId)) {
+                let elem = document.getElementById("question-item-"+gotoId);
+                let topPos = elem.offsetTop;
+                let questionElm = document.getElementById("question-list-container");
+                questionElm.scrollTop = topPos-50;    
+                this.highlightQuestion(gotoId);
+            }
+
         } else if (selected_children[parentIndex][childIndex].type.value === 2) {
+            console.log('CHECK BOX OPTION');
             if (option.target.checked) {
                 selected_children[parentIndex][childIndex].answers[optionIndex] = option.target.value;
+                let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+                if (this.isNumeric(gotoId)) {
+                    let elem = document.getElementById("question-item-"+gotoId);
+                    let topPos = elem.offsetTop;
+                    let questionElm = document.getElementById("question-list-container");
+                    questionElm.scrollTop = topPos-50;    
+                    this.highlightQuestion(gotoId);
+                }
             } else {
                 selected_children[parentIndex][childIndex].answers.splice(optionIndex, 1)
+                let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+                if (this.isNumeric(gotoId)) {
+                    let elem = document.getElementById("question-item-"+gotoId);
+                    let topPos = elem.offsetTop;
+                    let questionElm = document.getElementById("question-list-container");
+                    questionElm.scrollTop = topPos-50;    
+                    this.highlightQuestion(gotoId);
+                }    
             }
         } else if (selected_children[parentIndex][childIndex].type.value === 3) {
             this.setState({ ratingCount: option })
             selected_children[parentIndex][childIndex].answers[0] = option;
+            let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+            if (this.isNumeric(gotoId)) {
+                let elem = document.getElementById("question-item-"+gotoId);
+                let topPos = elem.offsetTop;
+                let questionElm = document.getElementById("question-list-container");
+                questionElm.scrollTop = topPos-50;    
+                this.highlightQuestion(gotoId);
+            }
         } else if (selected_children[parentIndex][childIndex].type.value === 4) {
             selected_children[parentIndex][childIndex].answers[0] = option.target.value;
+            let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+            if (this.isNumeric(gotoId)) {
+                let elem = document.getElementById("question-item-"+gotoId);
+                let topPos = elem.offsetTop;
+                let questionElm = document.getElementById("question-list-container");
+                questionElm.scrollTop = topPos-50;    
+                this.highlightQuestion(gotoId);
+            }
         } else if (selected_children[parentIndex][childIndex].type.value === 5) {
             this.setState({
                 q5InputValue: option.target.value
             })
             selected_children[parentIndex][childIndex].answers[0] = option.target.value
+            let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+            if (this.isNumeric(gotoId)) {
+                let elem = document.getElementById("question-item-"+gotoId);
+                let topPos = elem.offsetTop;
+                let questionElm = document.getElementById("question-list-container");
+                questionElm.scrollTop = topPos-50;    
+                this.highlightQuestion(gotoId);
+            }
         } else if (selected_children[parentIndex][childIndex].type.value === 6) {
-            selected_children[parentIndex][childIndex].answers[optionIndex - 1][optionChildIndex - 1] = option.target.value
+            selected_children[parentIndex][childIndex].answers[optionIndex - 1][optionChildIndex - 1] = option.target.value;
+            let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+            if (this.isNumeric(gotoId)) {
+                let elem = document.getElementById("question-item-"+gotoId);
+                let topPos = elem.offsetTop;
+                let questionElm = document.getElementById("question-list-container");
+                questionElm.scrollTop = topPos-50;    
+                this.highlightQuestion(gotoId);
+            }
         } else if (selected_children[parentIndex][childIndex].type.value === 7) {
             if (option.target.checked) {
                 selected_children[parentIndex][childIndex].answers[optionIndex - 1][optionChildIndex - 1] = option.target.value
+                let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+                if (this.isNumeric(gotoId)) {
+                    let elem = document.getElementById("question-item-"+gotoId);
+                    let topPos = elem.offsetTop;
+                    let questionElm = document.getElementById("question-list-container");
+                    questionElm.scrollTop = topPos-50;    
+                    this.highlightQuestion(gotoId);
+                }
             } else {
                 selected_children[parentIndex][childIndex].answers[optionIndex - 1].splice(optionChildIndex - 1, 1);
+                let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+                if (this.isNumeric(gotoId)) {
+                    let elem = document.getElementById("question-item-"+gotoId);
+                    let topPos = elem.offsetTop;
+                    let questionElm = document.getElementById("question-list-container");
+                    questionElm.scrollTop = topPos-50;    
+                    this.highlightQuestion(gotoId);
+                }
             }
         }
         else if (selected_children[parentIndex][childIndex].type.value === 8) {
@@ -422,6 +509,14 @@ class EndUserDash extends Component {
                 q8InputValue: option.target.value
             })
             selected_children[parentIndex][childIndex].answers[0] = option.target.value
+            let gotoId = selected_children[parentIndex][childIndex].goto[optionIndex];
+            if (this.isNumeric(gotoId)) {
+                let elem = document.getElementById("question-item-"+gotoId);
+                let topPos = elem.offsetTop;
+                let questionElm = document.getElementById("question-list-container");
+                questionElm.scrollTop = topPos-50;    
+                this.highlightQuestion(gotoId);
+            }
         }
         // console.log(selected_children);
         this.setState({ filledChildren: selected_children })
@@ -557,8 +652,6 @@ class EndUserDash extends Component {
                                 {
                                     table2
                                 }
-
-
                             </Col>
                         </Scrollbars>
                     </Row>
@@ -578,14 +671,17 @@ class EndUserDash extends Component {
 
 
 
-                    <Modal className="modal-lg" isOpen={this.state.fillFormToggle || this.state.showFormToggle} toggle={() => this.setState({ fillFormToggle: false })} >
+                    <Modal className="modal-lg" 
+                        isOpen={this.state.fillFormToggle || this.state.showFormToggle} 
+                        toggle={() => this.setState({ fillFormToggle: false })} 
+                        >
                         <div className="modal-header">
                             <h5 className="modal-title mt-0" id="myLargeModalLabel">Fill questions here</h5>
                             <button onClick={() => this.setState({ fillFormToggle: false, showFormToggle: false })} type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <ModalBody>
+                        <ModalBody  >
                             <Form>
                                 <FormGroup row>
                                     <Label htmlFor="example-search-input" sm="2">Name</Label>
@@ -594,7 +690,7 @@ class EndUserDash extends Component {
                                     </Col>
                                 </FormGroup>
                             </Form>
-                            <Col xs='12 text-center'>
+                            <Col xs='12 text-center' style={{maxHeight: 'calc(100vh - 100px)',overflow:'scroll'}} id="question-list-container">
                                 {
                                     this.state.selectedQuestion.questions ?
                                         this.state.selectedQuestion.questions.map((item, index) => (
@@ -605,7 +701,7 @@ class EndUserDash extends Component {
                                                 }
                                                 {
                                                     item.map((child, childIndex) => (
-                                                        <Card className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
+                                                        <Card id={"question-item-"+childIndex} className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
                                                             <Row>
                                                                 <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }} disabled>
                                                                     <Input disabled={this.state.fillFormToggle}
@@ -633,7 +729,7 @@ class EndUserDash extends Component {
                                                     }
                                                     {
                                                         item.map((child, childIndex) => (
-                                                            <Card className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
+                                                            <Card id={"question-item-"+childIndex}  className='mt-3' style={{ width: '100%', minHeight: 120, border: '1px solid grey', borderRadius: 5 }}>
                                                                 <Row>
                                                                     <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }} disabled>
                                                                         <Input disabled={this.state.fillFormToggle}

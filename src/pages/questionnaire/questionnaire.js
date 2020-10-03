@@ -77,7 +77,6 @@ class Questionnaire extends Component {
         this.setState({ modal_edit: true })
         let question = this.props.questions[index];
         let questionName = this.props.questions[index].questname
-        console.log('REEDIT QUESTION : ', question.questions);
         this.setState({
             questid: this.props.questions[index].id
         });
@@ -315,11 +314,11 @@ class Questionnaire extends Component {
         }
     }
 
-    handleWhere = (selectedGroup, parentIndex, childIndex) => {
-        console.log('SELECTED GOTO : ', selectedGroup.target.value, parentIndex, childIndex);
+    handleWhere = (selectedGroup, parentIndex, childIndex, optionIndex) => {
+        console.log('SELECTED GOTO : ', selectedGroup.target, selectedGroup.target.value, parentIndex, childIndex, optionIndex);
         let new_children = [...this.state.children];
-        new_children[parentIndex][childIndex].goto = selectedGroup.target.value;
-
+        new_children[parentIndex][childIndex].goto[optionIndex] = selectedGroup.target.value;
+        console.log('ON HANDLE WHERE : ', new_children);
         this.setState({ children: new_children });
     }
 
@@ -461,19 +460,27 @@ class Questionnaire extends Component {
     onSaveOptions = (option, parentIndex, childIndex, optionIndex) => {
         let new_children = [...this.state.children];
         new_children[parentIndex][childIndex].options[optionIndex] = option
+        new_children[parentIndex][childIndex].goto[optionIndex] = "next"
+
+        console.log('ON SAVE OPTION : ', new_children);
+
         this.setState({ children: new_children })
     }
 
     addOption = (parentIndex, childIndex) => {
         let new_children = [...this.state.children];
+        console.log('ADD OPTION : ', new_children[parentIndex][childIndex])
         new_children[parentIndex][childIndex].options.push('')
         new_children[parentIndex][childIndex].answers.push('')
+        new_children[parentIndex][childIndex].goto.push('next')
         this.setState({ children: new_children })
     }
 
     onAddSelectOption = (option, parentIndex, childIndex) => {
+        console.log('ON ADD SELECT OPTION');
         let new_children = [...this.state.children];
         new_children[parentIndex][childIndex].options.push(option)
+        new_children[parentIndex][childIndex].goto.push("next")
         this.setState({ children: new_children })
     }
 
@@ -481,25 +488,34 @@ class Questionnaire extends Component {
         let new_children = [...this.state.children];
         new_children[parentIndex][childIndex]['options'] = [['', ''], ['', '']]
         new_children[parentIndex][childIndex]['answers'] = [['', ''], ['', '']]
+        new_children[parentIndex][childIndex]['goto'] = [['', ''], ['', '']]
         this.setState({ children: new_children })
     }
     martixAddQuestionHandler = (parentIndex, childIndex) => {
+        console.log('ON MATRIX ADD QUESTION HANDLER');
         let new_children = [...this.state.children];
         let options = new_children[parentIndex][childIndex]['options'];
         let answers = new_children[parentIndex][childIndex]['answers'];
+        let goto = new_children[parentIndex][childIndex]['goto']
         let length = options[0].length;
         let new_options = [];
         let new_answers = [];
+        let new_goto = [];
         for (let i = 0; i < length; i++) {
             new_options.push('')
             new_answers.push('')
+            new_goto.push('')
         }
         options.push(new_options)
         answers.push(new_answers)
+        goto.push(new_goto)
+
+        console.log('ON MATRIX ADD QUESTION HANDLER', new_children);
         this.setState({ children: new_children })
 
     }
     martixAddOptionHandler = (parentIndex, childIndex) => {
+        console.log('ON MATRIX ADD OPTION HANDLER')
         let new_children = [...this.state.children];
         let options = new_children[parentIndex][childIndex]['options'];
         // let answers = new_children[parentIndex][childIndex]['answers'];
@@ -508,15 +524,22 @@ class Questionnaire extends Component {
             options[i].push('')
             // answers[i].push('')
         }
+
+        console.log('ON MATRIX ADD OPTION HANDLER', new_children);
         this.setState({ children: new_children })
     }
     onAddMatrixQ = (option, parentIndex, childIndex, i, i2) => {
         let new_children = [...this.state.children];
+        console.log('ON ADD MATRIX Q : ', option);
         let options = new_children[parentIndex][childIndex]['options'];
         let answers = new_children[parentIndex][childIndex]['answers'];
+        let gotos = new_children[parentIndex][childIndex]['goto'];
         console.log(option, options[i], options[i][i2], 'mmmm')
         options[i][i2] = option;
         answers[i][i2] = answers;
+        gotos[i][i2] = gotos;
+
+        console.log('ON ADD MATRIX Q', new_children);
         this.setState({ children: new_children })
     }
 
@@ -524,10 +547,11 @@ class Questionnaire extends Component {
 
     deleteQ = (index, childIndex) => {
         let new_children = [...this.state.children];
-        delete new_children[index][childIndex];
+        // delete new_children[index][childIndex];
+        new_children[index].splice(childIndex, 1);
         this.setState({ children: new_children })
-
     }
+
     deleteQuestion = (item) => {
         const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.deleteQuestionnaireStart(item, localStorageData.token);
@@ -706,32 +730,30 @@ class Questionnaire extends Component {
                                                                     />
                                                                     {
                                                                         child.type.value == 1 || child.type.value == 2 ?
-                                                                            child.options.map(it =>
+                                                                            child.options.map((it, optionIndex) =>
                                                                                 <Input className='mt-2' type="select" name="ddlCreditCardType" id="ddlCreditCardType"
-                                                                                    onChange={(e) => this.handleWhere(e, index, childIndex)}
+                                                                                onChange={(e) => this.handleWhere(e, index, childIndex, optionIndex)}
                                                                                 >
-                                                                                    <option value="">次の質問へ</option>
                                                                                     {
                                                                                         item.map((itm, i) =>
                                                                                             itm.question != child.question &&
-                                                                                            <option value={i}>{itm.question}</option>
+                                                                                            <option value={i} selected={child.goto[optionIndex] == i ? child.goto[optionIndex] : ""}>{itm.question}</option>
                                                                                         )
                                                                                     }
-                                                                                    <option value="DI">アンケートを送信</option>
+                                                                                    <option value="next" selected={child.goto[optionIndex] == "next" ? child.goto[optionIndex] : ""}>次の質問へ</option>
                                                                                 </Input>
                                                                             )
                                                                             :
                                                                             <Input className='mt-2' type="select" name="ddlCreditCardType" id="ddlCreditCardType"
-                                                                                onChange={(e) => this.handleWhere(e, index, childIndex)}
+                                                                            onChange={(e) => this.handleWhere(e, index, childIndex, 0)}
                                                                             >
-                                                                                <option value="">次の質問へ</option>
                                                                                 {
                                                                                     item.map((itm, i) =>
                                                                                         itm.question != child.question &&
-                                                                                        <option value={i}>{itm.question}</option>
+                                                                                        <option value={i} selected={child.goto[0] == i ? child.goto[0] : ""}>{itm.question}</option>
                                                                                     )
                                                                                 }
-                                                                                <option value="DI">アンケートを送信</option>
+                                                                                <option value="next" selected={child.goto[0] == "next" ? child.goto[0] : ""}>次の質問へ</option>
                                                                             </Input>
                                                                     }
                                                                     {/* <Select
@@ -743,7 +765,7 @@ class Questionnaire extends Component {
                                                                 </Col>
                                                                 <Col xs='2' style={{ marginTop: 20 }}>
                                                                     <Label check>
-                                                                        <Input type="checkbox" checked={child.required} />
+                                                                        <Input type="checkbox" checked={child.required} onClick={() => this.handleRequired(index, childIndex)} />
                                                             必須
                                                         </Label>
                                                                 </Col>
@@ -848,7 +870,7 @@ class Questionnaire extends Component {
                                                         <Button onClick={() => this.deleteQ(index, childIndex)} style={{ position: 'absolute', top: 5, right: 5, border: 0, backgroundColor: 'transparent' }}>
                                                             <i style={{ color: 'red', fontSize: 20 }} className='mdi mdi-trash-can'></i>
                                                         </Button>
-                                                        <Row>
+                                                        <Row id={childIndex}>
                                                             <Col xs='5 text-center' style={{ marginTop: 21, marginLeft: 20 }}>
                                                                 <Input placeholder='質問を入力してください。' value={child.question} type="text" id="example-text-input" onChange={(e) => this.onChangeQuestion(e, childIndex, index)} />
                                                                 {this.questionTypeHandler(child.type, child.options, index, childIndex)}
@@ -863,33 +885,32 @@ class Questionnaire extends Component {
                                                                 />
                                                                 {
                                                                     child.type.value == 1 || child.type.value == 2 ?
-                                                                        child.options.map(it =>
-
+                                                                        child.options.map((it, optionIndex) =>
                                                                             <Input className='mt-2' type="select" name="ddlCreditCardType" id="ddlCreditCardType"
-                                                                                onChange={(e) => this.handleWhere(e, index, childIndex)}
+                                                                                onChange={(e) => this.handleWhere(e, index, childIndex, optionIndex)}
                                                                             >
-                                                                                <option value="">次の質問へ</option>
+                                                                                <option value="next">次の質問へ</option>
                                                                                 {
                                                                                     item.map((itm, i) =>
                                                                                         itm.question != child.question &&
-                                                                                        <option value={i}>{itm.question}</option>
+                                                                                        <option value={i} key={i}>{itm.question}</option>
                                                                                     )
                                                                                 }
-                                                                                <option value="DI">アンケートを送信</option>
+                                                                                <option value="DI" key={item.length}>アンケートを送信</option>
                                                                             </Input>
                                                                         )
                                                                         :
                                                                         <Input className='mt-2' type="select" name="ddlCreditCardType" id="ddlCreditCardType"
-                                                                            onChange={(e) => this.handleWhere(e, index, childIndex)}
+                                                                            onChange={(e) => this.handleWhere(e, index, childIndex, item, 0)}
                                                                         >
                                                                             <option value="">次の質問へ</option>
                                                                             {
                                                                                 item.map((itm, i) =>
                                                                                     itm.question != child.question &&
-                                                                                    <option value={i}>{itm.question}</option>
+                                                                                    <option value={i} key={i}>{itm.question}</option>
                                                                                 )
                                                                             }
-                                                                            <option value="DI">アンケートを送信</option>
+                                                                            <option value="DI" key={item.length}>アンケートを送信</option>
                                                                         </Input>
                                                                 }
                                                                 {/* <Select
@@ -979,6 +1000,7 @@ class Questionnaire extends Component {
 }
 
 const mapStateToProps = ({ questionnaireManagement }) => {
+    console.log('MAP STATE TO PROPS : ', questionnaireManagement.questions);
     return {
         questions: questionnaireManagement.questions,
         getQuestionnaireFail: questionnaireManagement.getQuestionnaireFail,

@@ -87,10 +87,13 @@ const questionnaireManagement = (state = initialState, action) => {
             let prevQuestionss = [...state.questions];
             const resp = [];
             resp.push(action.payload.questions);
-            const mapedQuestion = prevQuestionss.map(obj => resp.find(o => o.id === obj.id) || obj);
+            // const mapedQuestion = prevQuestionss.map(obj => resp.find(o => o.id === obj.id) || obj);
+            const foundIndex = prevQuestionss.findIndex(x => x.id === action.payload.questions.questid);
+            prevQuestionss[foundIndex].questname = action.payload.questions.questname;
+            prevQuestionss[foundIndex].questions = action.payload.questions.questdata;
             state = {
                 ...state,
-                questions: mapedQuestion
+                questions: prevQuestionss
             }
             break;
         case questionnaire.REEDIT_QUESTIONNAIRE_FAIL:

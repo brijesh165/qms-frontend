@@ -237,6 +237,7 @@ class UserManagement extends Component {
                                     <EditToggler
                                         user={item}
                                         role={this.props.role}
+                                        selectedEmail={this.props.selectedEmail}
                                     />
                                 </div>
                             </td>

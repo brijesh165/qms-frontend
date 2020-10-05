@@ -50,8 +50,8 @@ class ResetPassword extends Component {
                                 {this.props.resetPasswordError}</Alert>}
 
                             <AvForm className="form-horizontal m-t-30" onValidSubmit={this.handleSubmit} >
-                                <AvField name="password" label="パスワード" value={this.state.password} placeholder="パスワードを入力してください。" type="text" required />
-                                <AvField name="confirmpassword" label="パスワードを認証する" value={this.state.confirmpassword} placeholder="確認パスワードを入力してください。" type="text" required />
+                                <AvField name="password" label="パスワード" value={this.state.password} placeholder="パスワードを入力してください。" type="password" required />
+                                <AvField name="confirmpassword" label="パスワードを認証する" value={this.state.confirmpassword} placeholder="確認パスワードを入力してください。" type="password" required />
 
                                 <Row className="form-group m-t-20 mb-0">
                                     <Col md="12" className="text-right">

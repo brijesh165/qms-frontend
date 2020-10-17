@@ -32,7 +32,8 @@ const questionnaireManagement = (state = initialState, action) => {
                     "id": action.payload[i].id,
                     "questions": action.payload[i].questions,
                     "questname": action.payload[i].questname,
-                    "createdAt": action.payload[i].createdAt
+                    "createdAt": action.payload[i].createdAt,
+                    "questmessage": action.payload[i].questmessage
                 }
                 allQuestions.push(newObj);
             }

@@ -74,16 +74,16 @@ class Questionnaire extends Component {
     }
 
     toggleEditModal = (index) => {
-        console.log('IN EDIT TOGGLE')
+        console.log('IN EDIT TOGGLE', this.props.questions[index])
         this.setState({ modal_edit: true })
         let question = this.props.questions[index];
         let questionName = this.props.questions[index].questname
+        let questmessage = this.props.questions[index].questmessage
         this.setState({
-            questid: this.props.questions[index].id,
-            messageValue: this.props.questions[index].messageValue
+            questid: this.props.questions[index].id
         });
         this.setState({ children: question.questions }, () => {
-            this.setState({ form_name: questionName })
+            this.setState({ form_name: questionName, messageValue: questmessage })
         }, () => {
             this.setState({ toggleEditModal: !this.state.toggleEditModal })
         })
@@ -383,7 +383,7 @@ class Questionnaire extends Component {
     componentDidUpdate(prevProps) {
         if (this.props.questions !== prevProps.questions) {
             this.setState({
-                allquestions: this.props.questions
+                allquestions: this.props.questions,
             })
         }
 
@@ -429,7 +429,7 @@ class Questionnaire extends Component {
                     children: this.state.children
                 }]
             }), () => console.log(this.state.questions, 'llllll'))
-            this.setState({ form_header: '', form_name: '', modal_large: false, children: [[],] })
+            this.setState({ form_header: '', messageValue: '',form_name: '', modal_large: false, children: [[],] })
         }
     }
 
@@ -449,7 +449,7 @@ class Questionnaire extends Component {
                 children: this.state.children
             }]
         }), () => console.log(this.state.questions, 'llllll'))
-        this.setState({ form_header: '', form_name: '', modal_large: false, children: [[],] })
+        this.setState({ form_header: '', messageValue: '',form_name: '', modal_large: false, children: [[],] })
     }
 
 

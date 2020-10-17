@@ -48,7 +48,7 @@ class Pageslogin extends Component {
 
                             <AvForm className="form-horizontal m-t-30" onValidSubmit={this.handleSubmit} >
                                 <AvField name="username" label="ユーザーID" value={this.state.username} placeholder="ご利用にはQMSのユーザIDでログインしてください。" type="text" required />
-                                <AvField name="password" label="パスワード" value={this.state.password} placeholder="" type="password" required />
+                                <AvField name="password" label="パスワード" value={this.state.password} placeholder="" type="text" required />
 
                                 <Row className="form-group m-t-20">
                                     <Col sm="6">

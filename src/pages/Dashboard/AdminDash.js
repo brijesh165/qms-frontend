@@ -321,7 +321,7 @@ class AuthDash extends Component {
                                         <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
                                         :
                                         <>
-                                            <table class="table columntitle table-striped" disabled={this.state.showFormToggle}>
+                                            <table className="table columntitle table-striped" disabled={this.state.showFormToggle}>
                                                 {
                                                     options.map((item, i) => (
                                                         <tr>
@@ -378,7 +378,7 @@ class AuthDash extends Component {
                                         <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
                                         :
                                         <>
-                                            <table class="table columntitle table-striped" disabled={this.state.showFormToggle}>
+                                            <table className="table columntitle table-striped" disabled={this.state.showFormToggle}>
                                                 {
                                                     options.map((item, i) => (
                                                         <tr>

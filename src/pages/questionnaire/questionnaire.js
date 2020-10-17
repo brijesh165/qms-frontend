@@ -65,7 +65,8 @@ class Questionnaire extends Component {
             selectedQuestion: '',
             searchQuestionnaire: '',
             questid: '',
-            allquestions: []
+            allquestions: [],
+            messageValue: 'ご協力ありがとうございました。'
         };
         // this.setState({
         //     children: this.props.questions    
@@ -78,7 +79,8 @@ class Questionnaire extends Component {
         let question = this.props.questions[index];
         let questionName = this.props.questions[index].questname
         this.setState({
-            questid: this.props.questions[index].id
+            questid: this.props.questions[index].id,
+            messageValue: this.props.questions[index].messageValue
         });
         this.setState({ children: question.questions }, () => {
             this.setState({ form_name: questionName })
@@ -105,6 +107,9 @@ class Questionnaire extends Component {
                                             mode="inline"
                                             value={item ? item : 'クリックして編集する'}
                                         />
+                                        <Button onClick={(option) => this.deleteOption(option, parentIndex, childIndex, index)} style={{ position: 'absolute', top: -5, left: 220, border: 0, backgroundColor: 'transparent' }}>
+                                            <i style={{ color: 'red', fontSize: 20 }} className='mdi mdi-trash-can'></i>
+                                        </Button>
                                     </Label>
                                 </div>
                             </Row>
@@ -129,6 +134,10 @@ class Questionnaire extends Component {
                                             mode="inline"
                                             value={item ? item : 'クリックして編集する'}
                                         />
+
+                                        <Button onClick={(option) => this.deleteOption(option, parentIndex, childIndex, index)} style={{ position: 'absolute', top: -5, left: 220, border: 0, backgroundColor: 'transparent' }}>
+                                            <i style={{ color: 'red', fontSize: 20 }} className='mdi mdi-trash-can'></i>
+                                        </Button>
                                     </Label>
                                 </div>
                             </Row>
@@ -143,6 +152,12 @@ class Questionnaire extends Component {
                         <Row className='text-center'>
                             <div className="custom-control custom-radio custom-control-inline ml-3 mt-3">
                                 <Rating fractions={2} stop={options.length} />
+
+                            </div>
+                            <div>
+                                <Button onClick={(option) => this.deleteRating(parentIndex, childIndex)} style={{ position: 'absolute', top: 5, left: 260, border: 0, backgroundColor: 'transparent' }}>
+                                    <i style={{ color: 'red', fontSize: 20 }} className='mdi mdi-trash-can'></i>
+                                </Button>
                             </div>
                         </Row>
 
@@ -173,7 +188,9 @@ class Questionnaire extends Component {
                             value={'クリックして編集する'}
                         />
 
-
+                        {/* <Button onClick={(option) => this.onDeleteSelectOption(option, parentIndex, childIndex)} style={{ position: 'absolute', top: -5, left: 220, border: 0, backgroundColor: 'transparent' }}>
+                            <i style={{ color: 'red', fontSize: 20 }} className='mdi mdi-trash-can'></i>
+                        </Button> */}
                         {/* <a href='javascript:void(0)' onClick={() =>this.addOption(parentIndex, childIndex)} className='m-2  ml-4 pull-left' >オプションを追加</a> */}
                     </Col>
                 )
@@ -197,7 +214,7 @@ class Questionnaire extends Component {
                                         <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
                                         :
                                         <>
-                                            <table class="table columntitle table-striped">
+                                            <table className="table columntitle table-striped">
                                                 {
                                                     options.map((item, i) => (
                                                         <tr>
@@ -207,15 +224,26 @@ class Questionnaire extends Component {
                                                                         {
                                                                             <th>{
                                                                                 i == 0 && i2 == 0 ? '' : i == 0 || i2 == 0 ?
-                                                                                    <Editable
-                                                                                        validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
-                                                                                        name="username"
-                                                                                        dataType="text"
-                                                                                        mode="inline"
-                                                                                        value={itm ? itm : '編集する'}
-                                                                                    />
+                                                                                    <React.Fragment>
+                                                                                        <Editable
+                                                                                            validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
+                                                                                            name="username"
+                                                                                            dataType="text"
+                                                                                            mode="inline"
+                                                                                            value={itm ? itm : '編集する'}
+                                                                                        />
+                                                                                        {
+                                                                                            i >= 1 && i2 == 0 ?
+                                                                                                <Button onClick={() => this.martixDeleteOptionHandler(parentIndex, childIndex, i, i2)} style={{ position: 'relative', left: -50, top: -30, border: 0, backgroundColor: 'transparent' }}>
+                                                                                                    <i style={{ color: 'red', fontSize: 20 }} className='mdi mdi-trash-can'></i>
+                                                                                                </Button> : null
+                                                                                        }
 
-                                                                                    : <Input className='p-0 m-0' type={'radio'} id={i != 0 && i2 != 0 ? i.toString() + 'c' : i2} name={i != 0 && i2 != 0 ? i.toString() + 'c' : i2} />
+                                                                                    </React.Fragment>
+                                                                                    :
+                                                                                    <React.Fragment>
+                                                                                        <Input className='p-0 m-0' type={'radio'} id={i != 0 && i2 != 0 ? i.toString() + 'c' : i2} name={i != 0 && i2 != 0 ? i.toString() + 'c' : i2} style={{ verticalAlign: 'middle' }} />
+                                                                                    </React.Fragment>
 
                                                                             }</th>
                                                                         }
@@ -238,7 +266,7 @@ class Questionnaire extends Component {
                             options.length > 1 &&
                             <Row>
                                 <Button onClick={() => this.martixAddQuestionHandler(parentIndex, childIndex)} color='primary' size='sm  m-3'>質問を追加</Button>&nbsp;
-                                    <Button onClick={() => this.martixAddOptionHandler(parentIndex, childIndex)} color='primary' size='sm m-3'>オプションを追加</Button>
+                                <Button onClick={() => this.martixAddOptionHandler(parentIndex, childIndex)} color='primary' size='sm m-3'>オプションを追加</Button>
                             </Row>
                         }
 
@@ -254,7 +282,7 @@ class Questionnaire extends Component {
                                         <Button onClick={() => this.martixQuestionHandler(parentIndex, childIndex)} color='primary' size='sm mt-2'>追加</Button>
                                         :
                                         <>
-                                            <table class="table columntitle table-striped">
+                                            <table className="table columntitle table-striped">
                                                 {
                                                     options.map((item, i) => (
                                                         <tr>
@@ -264,19 +292,28 @@ class Questionnaire extends Component {
                                                                         {
                                                                             <th>{
                                                                                 i == 0 && i2 == 0 ? '' : i == 0 || i2 == 0 ?
-                                                                                    <Editable
-                                                                                        validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
-                                                                                        name="username"
-                                                                                        dataType="text"
-                                                                                        mode="inline"
-                                                                                        value={itm ? itm : '編集する'}
-                                                                                    />
-
-                                                                                    : <Input className='p-0 m-0' type={'checkbox'} />
+                                                                                    <React.Fragment>
+                                                                                        <Editable
+                                                                                            validate={option => this.onAddMatrixQ(option, parentIndex, childIndex, i, i2)}
+                                                                                            name="username"
+                                                                                            dataType="text"
+                                                                                            mode="inline"
+                                                                                            value={itm ? itm : '編集する'}
+                                                                                        />
+                                                                                        {
+                                                                                            i >= 1 && i2 == 0 ?
+                                                                                                <Button onClick={() => this.martixDeleteOptionHandler(parentIndex, childIndex, i, i2)} style={{ position: 'relative', left: -50, top: -30, border: 0, backgroundColor: 'transparent' }}>
+                                                                                                    <i style={{ color: 'red', fontSize: 20 }} className='mdi mdi-trash-can'></i>
+                                                                                                </Button> : null
+                                                                                        }
+                                                                                    </React.Fragment>
+                                                                                    :
+                                                                                    <React.Fragment>
+                                                                                        <Input className='p-0 m-0' type={'checkbox'} />
+                                                                                    </React.Fragment>
 
                                                                             }</th>
                                                                         }
-
                                                                     </>
                                                                 ))
                                                             }
@@ -299,7 +336,7 @@ class Questionnaire extends Component {
                             </Row>
                         }
 
-                    </Col>
+                    </Col >
                 )
             case 8:
                 return (
@@ -378,7 +415,8 @@ class Questionnaire extends Component {
             "reedit": "True",
             "questid": this.state.questid,
             "questname": this.state.form_name,
-            "questdata": this.state.children
+            "questdata": this.state.children,
+            "questmessage": this.state.messageValue
         }
         const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.reeditQuestionnaireStart(question_data, localStorageData.token);
@@ -398,7 +436,8 @@ class Questionnaire extends Component {
     onSubmitForm = () => {
         const question_data = {
             "questname": this.state.form_name,
-            "questdata": this.state.children
+            "questdata": this.state.children,
+            "questmessage": this.state.messageValue
         }
         const localStorageData = JSON.parse(localStorage.getItem('user'));
         this.props.addQuestionnaireStart(question_data, localStorageData.token);
@@ -467,6 +506,26 @@ class Questionnaire extends Component {
         this.setState({ children: new_children })
     }
 
+    deleteOption = (option, parentIndex, childIndex, optionIndex) => {
+        let new_children = [...this.state.children];
+        new_children[parentIndex][childIndex].options.splice(optionIndex, 1);
+        new_children[parentIndex][childIndex].answers.splice(optionIndex, 1);
+        new_children[parentIndex][childIndex].goto.splice(optionIndex, 1);
+
+        console.log('ON DELETE OPTION : ', new_children);
+
+        this.setState({ children: new_children })
+    }
+
+    deleteRating = (parentIndex, childIndex) => {
+        let new_children = [...this.state.children];
+        new_children[parentIndex][childIndex].options.splice(0, 1);
+        new_children[parentIndex][childIndex].answers.splice(0, 1)
+        new_children[parentIndex][childIndex].goto.splice(1, 1);
+
+        this.setState({ children: new_children });
+    }
+
     addOption = (parentIndex, childIndex) => {
         let new_children = [...this.state.children];
         console.log('ADD OPTION : ', new_children[parentIndex][childIndex])
@@ -491,6 +550,7 @@ class Questionnaire extends Component {
         new_children[parentIndex][childIndex]['goto'] = [['', ''], ['', '']]
         this.setState({ children: new_children })
     }
+
     martixAddQuestionHandler = (parentIndex, childIndex) => {
         console.log('ON MATRIX ADD QUESTION HANDLER');
         let new_children = [...this.state.children];
@@ -514,6 +574,7 @@ class Questionnaire extends Component {
         this.setState({ children: new_children })
 
     }
+
     martixAddOptionHandler = (parentIndex, childIndex) => {
         console.log('ON MATRIX ADD OPTION HANDLER')
         let new_children = [...this.state.children];
@@ -528,6 +589,26 @@ class Questionnaire extends Component {
         console.log('ON MATRIX ADD OPTION HANDLER', new_children);
         this.setState({ children: new_children })
     }
+
+    martixDeleteOptionHandler = (parentIndex, childIndex, i, i2) => {
+        console.log('ON MATRIX ADD OPTION HANDLER')
+        let new_children = [...this.state.children];
+        console.log(i, i2)
+        new_children[parentIndex][childIndex]['options'].splice(i, 1)
+        console.log('Options : ', new_children)
+
+        this.setState({ children: new_children })
+        // let answers = new_children[parentIndex][childIndex]['answers'];
+        // for (let i = 0; i < options.length; i++) {
+        //     //
+        //     options[i].splice('', 1)
+        //     // answers[i].splice('', 1)
+        // }
+
+        // console.log('ON MATRIX ADD OPTION HANDLER', new_children);
+        // this.setState({ children: new_children })
+    }
+
     onAddMatrixQ = (option, parentIndex, childIndex, i, i2) => {
         let new_children = [...this.state.children];
         console.log('ON ADD MATRIX Q : ', option);
@@ -542,7 +623,6 @@ class Questionnaire extends Component {
         console.log('ON ADD MATRIX Q', new_children);
         this.setState({ children: new_children })
     }
-
 
 
     deleteQ = (index, childIndex) => {
@@ -570,6 +650,13 @@ class Questionnaire extends Component {
             console.log(new_data, 'vvvv')
             this.setState({ allquestions: new_data })
         }
+    }
+
+    handleMessageChange = (event) => {
+        console.log(event)
+        this.setState({
+            messageValue: event
+        })
     }
 
     render() {
@@ -766,8 +853,8 @@ class Questionnaire extends Component {
                                                                 <Col xs='2' style={{ marginTop: 20 }}>
                                                                     <Label check>
                                                                         {/* <Input type="checkbox" checked={child.required} onClick={() => this.handleRequired(index, childIndex)} /> */}
-                                                            {/* 必須 */}
-                                                        </Label>
+                                                                        {/* 必須 */}
+                                                                    </Label>
                                                                 </Col>
                                                                 <Col xs='1' style={{ marginTop: 20 }}>
 
@@ -813,18 +900,13 @@ class Questionnaire extends Component {
                                     <Card className='mt-3' style={{ width: '100%', height: 70, border: '1px solid grey', borderRadius: 5 }}>
                                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
                                             <Editable
-                                                name="username"
+                                                name="messageValue"
                                                 dataType="text"
                                                 mode="inline"
                                                 title="Please enter username"
-                                                validate={(value) => {
-                                                    if (!value) {
-                                                        return 'Required';
-                                                    }
-                                                }}
-                                                value="ご協力ありがとうございました。"
+                                                validate={event => this.handleMessageChange(event)}
+                                                value={this.state.messageValue}
                                             />
-
                                         </Row>
                                     </Card>
                                 }
@@ -970,16 +1052,22 @@ class Questionnaire extends Component {
                                     <Card className='mt-3' style={{ width: '100%', height: 70, border: '1px solid grey', borderRadius: 5 }}>
                                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
                                             <Editable
-                                                name="username"
+                                                name="messageValue"
                                                 dataType="text"
                                                 mode="inline"
                                                 title="Please enter username"
-                                                validate={(value) => {
-                                                    if (!value) {
-                                                        return 'Required';
-                                                    }
-                                                }}
-                                                value="ご協力ありがとうございました。"
+                                                validate={event => this.handleMessageChange(event)}
+
+                                                // validate={(value) => {
+                                                //     if (!value) {
+                                                //         return 'Required';
+                                                //     } else {
+                                                //         validate={option => this.onAddSelectOption(option, parentIndex, childIndex)}
+
+                                                //         this.handleMessageChange()
+                                                //     }
+                                                // }}
+                                                value={this.state.messageValue}
                                             />
 
                                         </Row>
